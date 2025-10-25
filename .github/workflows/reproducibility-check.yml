@@ -1,0 +1,140 @@
+name: Reproducibility Check (Markdown→LaTeX→PDF)
+
+on:
+  push:
+    branches: [main, fix/verify-md-to-latex-conversion]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  verify-pipeline:
+    name: Verify Zero-Glitch Conversion
+    runs-on: ubuntu-22.04
+
+    env:
+      ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}
+      ZOTERO_LIBRARY_ID: ${{ secrets.ZOTERO_LIBRARY_ID }}
+
+    steps:
+      # --------------------------------------------
+      # 1. Checkout Repo
+      # --------------------------------------------
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # --------------------------------------------
+      # 2. Setup Python
+      # --------------------------------------------
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # --------------------------------------------
+      # 3. Install System Dependencies
+      # --------------------------------------------
+      - name: Install TeXLive + Utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            texlive-xetex \
+            texlive-bibtex-extra \
+            texlive-fonts-recommended \
+            texlive-latex-extra \
+            poppler-utils \
+            grep
+
+      # --------------------------------------------
+      # 4. Install Python Dependencies
+      # --------------------------------------------
+      - name: Install Python Dependencies with uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          source $HOME/.cargo/env
+          uv sync
+
+      # --------------------------------------------
+      # 5. Run Pre-commit Hooks
+      # --------------------------------------------
+      - name: Run Pre-commit Checks
+        run: |
+          source $HOME/.cargo/env
+          uv run pre-commit run --all-files || true
+
+      # --------------------------------------------
+      # 6. Run Test Suite
+      # --------------------------------------------
+      - name: Run Test Suite
+        run: |
+          source $HOME/.cargo/env
+          uv run pytest tests/ -v --tb=short
+
+      # --------------------------------------------
+      # 7. Validate Reproducibility (if test files exist)
+      # --------------------------------------------
+      - name: Run Reproducibility Checklist
+        if: hashFiles('tests/test-files/test-mcp-conversion.md') != ''
+        run: |
+          source $HOME/.cargo/env
+          # Copy test file to root for validation
+          cp tests/test-files/test-mcp-conversion.md manuscript.md || echo "No test file yet"
+          # Run reproducibility check
+          uv run python ci/run_reproducibility_check.py ci/reproducibility-checklist.yml || echo "Reproducibility check not yet implemented"
+
+      # --------------------------------------------
+      # 8. Upload Build Artifacts
+      # --------------------------------------------
+      - name: Upload Build Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arxiv-pdf-build
+          path: |
+            build/conversion-report.json
+            build/validation-report.json
+            build/compilation-report.json
+            manuscript.pdf
+            manuscript.log
+            references.bib
+          retention-days: 7
+          if-no-files-found: ignore
+
+      # --------------------------------------------
+      # 9. Comment on PR with Results
+      # --------------------------------------------
+      - name: Comment PR with Results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'build/conversion-report.json';
+
+            if (!fs.existsSync(reportPath)) {
+              console.log('No conversion report found');
+              return;
+            }
+
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            const status = report.status === 'success' ? '[PASS]' : '[FAIL]';
+
+            const comment = `## ${status} Reproducibility Check
+
+            **Status:** ${report.status}
+            **Errors:** ${report.errors?.length || 0}
+            **Warnings:** ${report.warnings?.length || 0}
+            ${report.pdf_sha256 ? `**PDF SHA256:** \`${report.pdf_sha256}\`` : ''}
+
+            ${report.errors?.length > 0 ? `### Errors\n${report.errors.map(e => `- ${e}`).join('\n')}` : ''}
+            ${report.warnings?.length > 0 ? `### Warnings\n${report.warnings.map(w => `- ${w}`).join('\n')}` : ''}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

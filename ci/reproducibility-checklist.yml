@@ -1,0 +1,145 @@
+# ===========================================================
+#  Markdown → LaTeX → PDF Conversion: Reproducibility Spec
+# ===========================================================
+# Goal: Ensure that the same input markdown always yields
+#       an identical, arXiv-compliant PDF with zero warnings.
+# -----------------------------------------------------------
+
+metadata:
+  pipeline_name: deep-biblio-arxiv
+  version: 1.0
+  maintainer: Deep Biblio Tools Team
+  created: 2025-10-25
+  environment: arxiv_compatible_texlive2023
+
+environment:
+  python_version: "3.12"
+  texlive_version: "2023"
+  os: ubuntu-22.04
+  locale: en_US.UTF-8
+  fonts:
+    - "TeX Gyre Termes"
+    - "TeX Gyre Heros"
+  latex_engine: xelatex
+  bibtex_engine: bibtex
+
+dependencies:
+  python:
+    - markdown-it-py==3.0.0
+    - PyPDF2==3.0.1
+    - pyyaml==6.0.1
+    - requests==2.31.0
+  latex:
+    - natbib
+    - hyperref
+    - url
+    - spbasic_pt.bst
+  tools:
+    - pdftotext
+    - grep
+
+validation_targets:
+  markdown_structure:
+    must_pass: true
+    rules:
+      - no_unmatched_brackets
+      - valid_tables
+      - no_empty_citation_links
+      - no_nested_lists_over_3_levels
+  citation_resolution:
+    must_be_100_percent: true
+    sources_priority: [citation_cache, zotero_api, local_bib_cache]
+    cache_file: .cache/citation_validation/validation_cache.json
+  latex_compilation:
+    passes_required: 3
+    error_free: true
+    warning_free: true
+    grep_checks:
+      - "! "            # no LaTeX fatal errors
+      - "Warning"       # no LaTeX warnings
+  bibliography:
+    no_raw_urls: true
+    authors_hyperlinked: true
+    en_dash_for_pages: true
+    style_file: spbasic_pt.bst
+  pdf_post_validation:
+    no_unknown_citations: true
+    no_question_marks: true
+    no_unicode_replacement: true
+
+determinism:
+  hash_inputs:
+    - manuscript.md
+    - references.bib
+    - spbasic_pt.bst
+  expected_pdf_hash_algorithm: sha256
+  reproducible_build: true
+  ignore_timestamps: true
+  citation_cache_enabled: true
+
+arxiv_compliance:
+  document_class: "article"
+  font_size: 10pt
+  packages_allowed:
+    - natbib
+    - hyperref
+    - url
+    - graphicx
+    - geometry
+    - amsmath
+    - amssymb
+    - booktabs
+    - longtable
+  disallowed_features:
+    - shell_escape
+    - minted
+    - system_calls
+    - network_access
+
+ci_pipeline:
+  stages:
+    - validate_markdown
+    - resolve_citations
+    - convert_to_latex
+    - compile_pdf
+    - validate_bibliography
+    - validate_pdf_output
+  commands:
+    validate_markdown: >
+      python scripts/validate_markdown_structure.py manuscript.md --output build/validation-report.json
+    resolve_citations: >
+      python scripts/resolve_citations.py manuscript.md --cache .cache/citation_validation/validation_cache.json
+    convert_to_latex: >
+      deep-biblio-md2latex manuscript.md --bibliography-style spbasic_pt
+    compile_pdf: >
+      python scripts/compile_latex_with_validation.py manuscript.tex --output-report build/compilation-report.json
+    validate_bibliography: >
+      python scripts/validate_bibliography.py references.bib --check-raw-urls --check-hyperlinks
+    validate_pdf_output: >
+      python scripts/validate_pdf_output.py manuscript.pdf --check-citations --check-unicode
+
+logging:
+  report_file: build/conversion-report.json
+  artifacts:
+    - manuscript.tex
+    - manuscript.pdf
+    - references.bib
+    - manuscript.log
+    - build/validation-report.json
+    - build/compilation-report.json
+  metrics:
+    - markdown_errors
+    - missing_citations
+    - latex_errors
+    - latex_warnings
+    - bibliography_issues
+    - pdf_checksum
+
+signoff:
+  reproducibility_verified_by: "Automated CI"
+  criteria:
+    - zero_errors: true
+    - zero_warnings: true
+    - all_citations_resolved: true
+    - pdf_hash_consistent: true
+  approval_required: false
