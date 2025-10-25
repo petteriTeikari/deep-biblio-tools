@@ -1,0 +1,113 @@
+name: Branch Naming Convention
+
+on:
+  pull_request:
+    branches: [ main, master, dev, develop ]
+  workflow_dispatch:
+
+jobs:
+  check-branch-naming:
+    runs-on: ubuntu-latest
+    name: Validate Branch Naming Convention
+
+    steps:
+    - name: Check branch name
+      run: |
+        echo "[SEARCH] Validating branch naming convention..."
+
+        # Get the branch name (works for both PR and push events)
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          BRANCH_NAME="${{ github.head_ref }}"
+        else
+          BRANCH_NAME="${{ github.ref_name }}"
+        fi
+
+        # Fallback for act testing - use current git branch if empty
+        if [[ -z "$BRANCH_NAME" ]]; then
+          BRANCH_NAME=$(git branch --show-current 2>/dev/null || echo "feature/test-branch")
+        fi
+
+        echo "Branch name: $BRANCH_NAME"
+
+        # Define allowed prefixes
+        ALLOWED_PREFIXES=(
+          "feature/"
+          "feat/"
+          "bugfix/"
+          "fix/"
+          "hotfix/"
+          "chore/"
+          "docs/"
+          "style/"
+          "refactor/"
+          "perf/"
+          "test/"
+          "build/"
+          "ci/"
+          "revert/"
+        )
+
+        # Check if branch name matches any allowed pattern
+        VALID=false
+        for prefix in "${ALLOWED_PREFIXES[@]}"; do
+          if [[ $BRANCH_NAME =~ ^${prefix}[a-z0-9-]+$ ]]; then
+            VALID=true
+            echo "[OK] Branch name '$BRANCH_NAME' matches pattern: $prefix"
+            break
+          fi
+        done
+
+        # Special case for release branches
+        if [[ $BRANCH_NAME =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          VALID=true
+          echo "[OK] Branch name '$BRANCH_NAME' matches release pattern"
+        fi
+
+        # Special case for dependabot branches
+        if [[ $BRANCH_NAME =~ ^dependabot/ ]]; then
+          VALID=true
+          echo "[OK] Branch name '$BRANCH_NAME' is a dependabot branch"
+        fi
+
+        if [[ $VALID == false ]]; then
+          echo "[ERROR] Invalid branch name: '$BRANCH_NAME'"
+          echo ""
+          echo "[ALERT] Branch names must follow the convention: <type>/<description>"
+          echo ""
+          echo "Allowed types:"
+          printf '  • %s\n' "${ALLOWED_PREFIXES[@]}"
+          echo "  • release/vX.Y.Z"
+          echo ""
+          echo "Examples:"
+          echo "  • feature/user-authentication"
+          echo "  • bugfix/payment-validation"
+          echo "  • hotfix/security-patch"
+          echo "  • chore/update-dependencies"
+          echo "  • release/v1.2.3"
+          echo ""
+          echo "Branch description should be:"
+          echo "  • lowercase"
+          echo "  • hyphen-separated"
+          echo "  • descriptive of the change"
+          exit 1
+        fi
+
+        echo "[OK] Branch naming convention check passed!"
+
+    - name: Generate branch naming report
+      if: always()
+      run: |
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          BRANCH_NAME="${{ github.head_ref }}"
+        else
+          BRANCH_NAME="${{ github.ref_name }}"
+        fi
+
+        echo "## [EMOJI] Branch Naming Validation Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** \`$BRANCH_NAME\`" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Naming Convention Requirements" >> $GITHUB_STEP_SUMMARY
+        echo "- Format: \`<type>/<description>\`" >> $GITHUB_STEP_SUMMARY
+        echo "- Description: lowercase, hyphen-separated" >> $GITHUB_STEP_SUMMARY
+        echo "- Types: feature, bugfix, hotfix, chore, docs, etc." >> $GITHUB_STEP_SUMMARY

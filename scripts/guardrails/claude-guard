@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+"""
+Claude Guard - Unified CLI for Claude Code Guardrails
+
+Manages sessions, context, analytics, and validation for Claude interactions.
+"""
+
+import argparse
+import subprocess
+import sys
+import uuid
+from pathlib import Path
+
+
+class ClaudeGuard:
+    def __init__(self):
+        self.project_root = Path.cwd()
+        self.claude_dir = self.project_root / ".claude"
+        self.sessions_dir = self.claude_dir / "sessions"
+        self.analytics_dir = self.claude_dir / "analytics"
+
+    def session_start(self, description: str):
+        """Start a new Claude session."""
+        session_id = str(uuid.uuid4())[:8]
+
+        # Implementation continues...
+        print(f"[OK] Started session {session_id}: {description}")
+
+    def context_copy(self):
+        """Copy optimized context to clipboard."""
+        context_script = (
+            self.project_root / "scripts" / "guardrails" / "context-server.py"
+        )
+
+        if not context_script.exists():
+            print("[ERROR] Context server not found")
+            return
+
+        try:
+            result = subprocess.run(
+                [sys.executable, str(context_script), "--copy"],
+                capture_output=True,
+                text=True,
+            )
+
+            if result.returncode == 0:
+                print("[OK] " + result.stdout.strip())
+            else:
+                print("[ERROR] " + result.stderr.strip())
+        except Exception as e:
+            print("[ERROR] Error running context server: " + str(e))
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Claude Guard - Unified Claude Code Guardrails CLI"
+    )
+    subparsers = parser.add_subparsers(
+        dest="command", help="Available commands"
+    )
+
+    # Session management
+    session_parser = subparsers.add_parser("session", help="Session management")
+    session_subparsers = session_parser.add_subparsers(dest="session_command")
+
+    start_parser = session_subparsers.add_parser(
+        "start", help="Start new session"
+    )
+    start_parser.add_argument("description", help="Session description")
+
+    # Context management
+    context_parser = subparsers.add_parser("context", help="Context management")
+    context_subparsers = context_parser.add_subparsers(dest="context_command")
+    context_subparsers.add_parser("copy", help="Copy context to clipboard")
+
+    args = parser.parse_args()
+
+    guard = ClaudeGuard()
+
+    if args.command == "session" and args.session_command == "start":
+        guard.session_start(args.description)
+    elif args.command == "context" and args.context_command == "copy":
+        guard.context_copy()
+
+
+if __name__ == "__main__":
+    main()

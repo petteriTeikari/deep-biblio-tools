@@ -1,0 +1,91 @@
+# Incremental Development Configuration
+# Forces smaller steps with tighter guardrail focus based on risk tolerance
+
+step_limits:
+  production:
+    max_files_per_response: 1
+    max_lines_per_change: 50
+    require_explanation_first: true
+    require_linting_after_each_file: true
+    checklist_before_action:
+      - "Have I read the guardrails?"
+      - "Is this change deterministic?"
+      - "Do I need an ADR?"
+      - "Will this need tests?"
+      - "Have I documented why?"
+
+  staging:
+    max_files_per_response: 2
+    max_lines_per_change: 100
+    require_explanation_first: true
+    require_linting_after_each_file: true
+    checklist_before_action:
+      - "Have I checked guardrails?"
+      - "Is this the minimal change?"
+      - "Are tests affected?"
+
+  development:
+    max_files_per_response: 3
+    max_lines_per_change: 200
+    require_explanation_first: false
+    require_linting_after_each_file: false
+    checklist_before_action:
+      - "Does this follow patterns?"
+
+  sandbox:
+    max_files_per_response: 5
+    max_lines_per_change: 500
+    require_explanation_first: false
+    require_linting_after_each_file: false
+    checklist_before_action: []
+
+response_templates:
+  production: |
+    ## Guardrail Check
+    - [ ] Read CLAUDE.md
+    - [ ] Checked repo-maturity.yaml
+    - [ ] Reviewed recent ADRs
+
+    ## Change Plan
+    [What I'm about to do and why]
+
+    ## Implementation
+    [Single focused change]
+
+    ## Verification
+    [How I verified this works]
+
+  staging: |
+    ## Plan
+    [Brief explanation]
+
+    ## Changes
+    [1-2 focused changes]
+
+    ## Checks
+    - [ ] Linted
+    - [ ] Tested
+
+  development: |
+    Making changes to [files]...
+    [Changes]
+
+  sandbox: |
+    [Direct implementation]
+
+mandatory_pauses:
+  production:
+    after_each_file: true
+    message: "[PAUSE] Pausing to verify: Does this change align with guardrails? Continue?"
+
+  staging:
+    after_each_file: false
+    message: null
+
+  development:
+    after_each_file: false
+    message: null
+
+  sandbox:
+    after_each_file: false
+    message: null

@@ -1,0 +1,135 @@
+name: Validate Claude Code Guardrails
+
+on:
+  pull_request:
+    branches: [ main, dev, master ]  # Run on all PRs targeting main, dev, or master
+  workflow_dispatch:
+
+jobs:
+  validate-guardrails:
+    runs-on: ubuntu-latest
+    name: Validate Claude Code Guardrails
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Validate required Claude files
+      run: |
+        echo "[SEARCH] Validating Claude Code guardrails..."
+
+        # Define required files
+        required_files=(
+          ".claude/CLAUDE.md"
+          ".claude/golden-paths.md"
+          ".claude/auto-context.yaml"
+          "CLAUDE.md"
+        )
+
+        # Check if required files exist
+        missing_files=()
+        for file in "${required_files[@]}"; do
+          if [[ ! -f "$file" ]]; then
+            missing_files+=("$file")
+          else
+            echo "[OK] Found: $file"
+          fi
+        done
+
+        # Fail if any required files are missing
+        if [[ ${#missing_files[@]} -gt 0 ]]; then
+          echo "[ERROR] Missing required Claude Code guardrail files:"
+          printf '   - %s\n' "${missing_files[@]}"
+          echo ""
+          echo "[ALERT] This repository must include Claude Code guardrails for AI development safety."
+          echo "Please ensure all required files are present before merging."
+          exit 1
+        fi
+
+        echo "[OK] All required Claude Code guardrail files are present!"
+
+    - name: Validate CLAUDE.md content
+      run: |
+        echo "[TODO] Validating CLAUDE.md content..."
+
+        # Check main CLAUDE.md file
+        if ! grep -q "refer to \*\*\.claude/CLAUDE\.md\*\*" CLAUDE.md; then
+          echo "[ERROR] CLAUDE.md must reference .claude/CLAUDE.md"
+          exit 1
+        fi
+
+        echo "[OK] CLAUDE.md content validation passed!"
+
+    - name: Validate .claude directory structure
+      run: |
+        echo "[EMOJI] Validating .claude directory structure..."
+
+        # Check for CLAUDE.md content sections
+        claude_file=".claude/CLAUDE.md"
+        required_sections=(
+          "Forbidden Actions"
+          "Required Patterns"
+          "Architecture Context"
+          "Development Workflow"
+        )
+
+        for section in "${required_sections[@]}"; do
+          if ! grep -q "$section" "$claude_file"; then
+            echo "[ERROR] Missing required section in $claude_file: $section"
+            exit 1
+          else
+            echo "[OK] Found section: $section"
+          fi
+        done
+
+        # Validate auto-context.yaml has basic structure
+        if ! grep -q "patterns:" ".claude/auto-context.yaml"; then
+          echo "[ERROR] .claude/auto-context.yaml missing 'patterns:' section"
+          exit 1
+        fi
+
+        echo "[OK] .claude directory structure validation passed!"
+
+    - name: Check for AIDEV-IMMUTABLE markers
+      run: |
+        echo "[IMMUTABLE] Checking for AIDEV-IMMUTABLE marker usage..."
+
+        # Count AIDEV-IMMUTABLE markers (optional check)
+        immutable_count=$(find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rs" \) -exec grep -l "AIDEV-IMMUTABLE" {} \; | wc -l)
+
+        if [[ $immutable_count -gt 0 ]]; then
+          echo "[OK] Found $immutable_count files with AIDEV-IMMUTABLE markers"
+          echo "[EMOJI] Files with protected sections:"
+          find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" -o -name "*.rs" \) -exec grep -l "AIDEV-IMMUTABLE" {} \;
+        else
+          echo "ℹ[EMOJI] No AIDEV-IMMUTABLE markers found (this is optional)"
+        fi
+
+    - name: Generate guardrails report
+      if: always()
+      run: |
+        echo "[CHART] Generating Claude Code guardrails compliance report..."
+        echo "## [EMOJI] Claude Code Guardrails Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----------|---------|" >> $GITHUB_STEP_SUMMARY
+
+        # Check each required file
+        files=(".claude/CLAUDE.md" ".claude/golden-paths.md" ".claude/auto-context.yaml" "CLAUDE.md")
+        for file in "${files[@]}"; do
+          if [[ -f "$file" ]]; then
+            echo "| $file | [OK] Present |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| $file | [ERROR] Missing |" >> $GITHUB_STEP_SUMMARY
+          fi
+        done
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Project Configuration" >> $GITHUB_STEP_SUMMARY
+        echo "- **Repository**: $(basename $GITHUB_REPOSITORY)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch**: $GITHUB_REF_NAME" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+        echo "- **Workflow**: $GITHUB_WORKFLOW" >> $GITHUB_STEP_SUMMARY
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "[OK] **Claude Code guardrails validation completed successfully!**" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,50 @@
+# Context Budget Management
+
+# Token budget configuration for optimal Claude interactions
+max_context_tokens: 200000
+target_context_tokens: 150000
+warning_threshold: 180000
+
+# Context prioritization
+priority_contexts:
+  - file: ".claude/CLAUDE.md"
+    priority: 1
+    description: "Behavior contract - always include"
+
+  - file: ".claude/golden-paths.md"
+    priority: 2
+    description: "Development patterns"
+
+  - file: ".claude/sessions/current-session.md"
+    priority: 3
+    description: "Session continuity"
+
+  - pattern: "src/**/*.py"
+    priority: 4
+    description: "Core source code"
+    max_files: 10
+
+  - pattern: "tests/**/*test*.py"
+    priority: 5
+    description: "Test files"
+    max_files: 5
+
+# Context optimization
+auto_truncate: true
+smart_truncation: true
+preserve_structure: true
+
+# Context caching
+cache_enabled: true
+cache_duration: 3600  # 1 hour
+
+# Dynamic context injection
+auto_context_patterns:
+  - when: "working on tests"
+    include: ["test/**/*", "conftest.py", "pytest.ini"]
+
+  - when: "debugging errors"
+    include: ["logs/**/*", "*.log", "error_*.py"]
+
+  - when: "api development"
+    include: ["routes/**/*", "models/**/*", "schemas/**/*"]

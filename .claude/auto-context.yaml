@@ -1,0 +1,123 @@
+# Auto-context configuration for Deep Biblio Tools
+
+# Include patterns for relevant files
+patterns:
+  # Core library modules
+  - "src/bibliography/**/*.py"
+  - "src/citations/**/*.py"
+  - "src/api_clients/**/*.py"
+  - "src/converters/**/*.py"
+  - "src/cli/**/*.py"
+  - "src/utils/**/*.py"
+
+  # Tests
+  - "tests/**/*.py"
+
+  # Scripts
+  - "scripts/**/*.py"
+
+  # Configuration
+  - "pyproject.toml"
+  - ".ruff.toml"
+  - "Dockerfile*"
+  - "docker-compose.yml"
+
+  # Documentation
+  - "README.md"
+  - "docs/**/*.md"
+  - "CLAUDE.md"
+  - ".claude/**/*"
+
+# Exclude patterns
+exclude:
+  - "**/__pycache__/**"
+  - "**/*.pyc"
+  - "**/.pytest_cache/**"
+  - "**/.coverage*"
+  - "**/htmlcov/**"
+  - "**/.mypy_cache/**"
+  - "**/.ruff_cache/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/*.egg-info/**"
+  - "**/.git/**"
+  - "**/.cache/**"
+  - "**/archived/**"
+  - "**/deprecated/**"
+
+# Context providers for specific workflows
+contexts:
+  bibliography_processing:
+    description: "Context for bibliography processing and validation"
+    patterns:
+      - "src/bibliography/**/*.py"
+      - "src/citations/**/*.py"
+      - "tests/test_bibliography*.py"
+      - "tests/test_citations*.py"
+
+  api_integration:
+    description: "Context for API client development"
+    patterns:
+      - "src/api_clients/**/*.py"
+      - "tests/test_api*.py"
+      - "src/utils/rate_limiter.py"
+      - "src/cache/**/*.py"
+
+  cli_development:
+    description: "Context for CLI command development"
+    patterns:
+      - "src/cli/**/*.py"
+      - "src/__main__.py"
+      - "tests/test_cli*.py"
+      - "pyproject.toml"
+
+  testing:
+    description: "Context for test development"
+    patterns:
+      - "tests/**/*.py"
+      - "conftest.py"
+      - ".github/workflows/*test*.yml"
+      - "pytest.ini"
+
+  docker:
+    description: "Context for Docker development"
+    patterns:
+      - "Dockerfile*"
+      - "docker-compose.yml"
+      - ".dockerignore"
+      - "scripts/docker-*.sh"
+
+# Priority files that should always be included
+priority:
+  - "CLAUDE.md"
+  - ".claude/CLAUDE.md"
+  - ".claude/repo-maturity.yaml"
+  - ".claude/golden-paths.md"
+  - ".claude/guardrails-learnings.md"
+  - "pyproject.toml"
+  - "README.md"
+  - ".pre-commit-config.yaml"
+
+# Metadata about the project structure
+metadata:
+  project_type: "python_library"
+  primary_language: "python"
+  test_framework: "pytest"
+  package_manager: "uv"
+  ci_platform: "github_actions"
+  deployment_target: "docker"
+
+# Semantic understanding hints
+semantic_hints:
+  - pattern: "**/test_*.py"
+    purpose: "Unit and integration tests"
+  - pattern: "src/bibliography/**"
+    purpose: "Core bibliography processing logic"
+  - pattern: "src/citations/**"
+    purpose: "Citation extraction and validation"
+  - pattern: "src/api_clients/**"
+    purpose: "External API integrations"
+  - pattern: "scripts/**"
+    purpose: "Development and maintenance scripts"
+  - pattern: ".claude/**"
+    purpose: "Claude Code AI assistant configuration"

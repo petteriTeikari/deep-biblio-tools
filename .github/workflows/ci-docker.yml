@@ -1,0 +1,29 @@
+name: Docker CI
+
+# Validates that tests pass in a clean Docker environment
+# This ensures the project works correctly in containerized deployments
+# and catches environment-specific issues
+on:
+  pull_request:
+    branches: [ main, dev ]
+  push:
+    branches: [ main, dev ]
+
+jobs:
+  # Docker-based testing to ensure environment consistency
+  docker-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build test Docker image
+      run: docker build -f Dockerfile.test -t deep-biblio-tools-test .
+
+    - name: Run linting in Docker
+      run: docker run --rm deep-biblio-tools-test sh -c "uv run ruff check . && uv run ruff format --check ."
+
+    - name: Run tests in Docker
+      run: docker run --rm deep-biblio-tools-test uv run pytest tests/ -v
+
+    - name: Run Claude constraints validation in Docker
+      run: docker run --rm deep-biblio-tools-test uv run python scripts/validate_claude_constraints.py

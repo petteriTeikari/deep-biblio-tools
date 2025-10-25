@@ -1,0 +1,52 @@
+# Repository Maturity Level Configuration
+# This file configures Claude's behavior based on repo state
+
+maturity_level: "production"  # sandbox | development | staging | production
+
+behavior_modes:
+  sandbox:
+    risk_tolerance: high
+    documentation_required: minimal
+    testing_required: false
+    guardrails_enforcement: relaxed
+    refactoring_allowed: aggressive
+    ai_personality: "Move fast, experiment freely"
+
+  development:
+    risk_tolerance: medium
+    documentation_required: basic
+    testing_required: true
+    guardrails_enforcement: standard
+    refactoring_allowed: moderate
+    ai_personality: "Balance speed with quality"
+
+  staging:
+    risk_tolerance: low
+    documentation_required: comprehensive
+    testing_required: true
+    guardrails_enforcement: strict
+    refactoring_allowed: conservative
+    ai_personality: "Quality first, document everything"
+
+  production:
+    risk_tolerance: zero
+    documentation_required: exhaustive
+    testing_required: mandatory
+    guardrails_enforcement: paranoid
+    refactoring_allowed: minimal
+    ai_personality: "Senior engineer: Every change needs justification"
+
+current_rules:
+  - "ALWAYS read guardrails before coding"
+  - "DOCUMENT every significant decision"
+  - "NO shortcuts or 'quick fixes'"
+  - "TEST everything that changes"
+  - "EXPLAIN rationale before acting"
+
+code_review_checklist:
+  - "Does this change have an ADR if significant?"
+  - "Are all imports properly ordered?"
+  - "Is there any regex parsing of structured formats?"
+  - "Have linters been run?"
+  - "Is the change deterministic?"
+  - "Are there tests for new functionality?"

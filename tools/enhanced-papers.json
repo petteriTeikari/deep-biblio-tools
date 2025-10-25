@@ -1,0 +1,4105 @@
+[
+  {
+    "title": "Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction",
+    "authors": [],
+    "highlights": [
+      "An automated Scan-to-BIM framework is proposed that integrates deep learning-based geometry and material analysis.",
+      "An enhanced instance segmentation network is developed to improve object identification in complex indoor environments.",
+      "An accurate 3D BIM modeling workflow is created that reconstructs space-forming and space-occupying elements while preserving key attributes.",
+      "A deep learning-based material classification model is developed, and a Revit-based algorithm is introduced for automatic 3D modeling and property assignment.AbstractAutomating 3D reconstruction ofindoor environmentsis essential for scene understanding inBuilding Information Modeling(BIM). This paper addresses the challenge of integrating geometric and material attributes in scan-to-BIM processes. A deep learning-based framework is developed to automatically extract and integrate geometric and material attributes from point clouds, incorporating an enhanced instance segmentation network, a material classification model, and an automated BIM integration workflow for accurate indoor modeling. The proposed framework reconstructs accurate 3D BIM models of space-forming and space-occupying elements while preserving key attributes. Experimental results show significant improvements in instance segmentation accuracy, with reconstructed 3D BIM models achieving over 98 %correctnessandcompleteness, while the material classification model attains a point-based weightedF1−scoreof 0.973 and an object-based accuracy of 94.70 %. These findings advance automated BIM generation, enhancingbuilding planning, asset management, andsustainable designwhile inspiring further developments in scan-to-BIM automation."
+    ],
+    "abstract": "Automating 3D reconstruction ofindoor environmentsis essential for scene understanding inBuilding Information Modeling(BIM). This paper addresses the challenge of integrating geometric and material attributes in scan-to-BIM processes. A deep learning-based framework is developed to automatically extract and integrate geometric and material attributes from point clouds, incorporating an enhanced instance segmentation network, a material classification model, and an automated BIM integration workflow for accurate indoor modeling. The proposed framework reconstructs accurate 3D BIM models of space-forming and space-occupying elements while preserving key attributes. Experimental results show significant improvements in instance segmentation accuracy, with reconstructed 3D BIM models achieving over 98 %correctnessandcompleteness, while the material classification model attains a point-based weightedF1−scoreof 0.973 and an object-based accuracy of 94.70 %. These findings advance automated BIM generation, enhancingbuilding planning, asset management, andsustainable designwhile inspiring further developments in scan-to-BIM automation.",
+    "doi": "https://doi.org/10.1016/j.autcon.2025.106196",
+    "journal": "Automation in Construction",
+    "publication_info": "Automation in ConstructionVolume 175,July 2025, 106196",
+    "year": 2025,
+    "keywords": [
+      "Building information modeling (BIM)",
+      "Material classification",
+      "3D reconstruction",
+      "Point clouds",
+      "Scan-to-BIM",
+      "Deep learning"
+    ],
+    "full_text": {
+      "sections": [
+        {
+          "title": "1. Introduction",
+          "content": [
+            {
+              "type": "list",
+              "items": [
+                "An improved instance segmentation network based on deep learning is presented to enhance the identification of indoor objects for processing the 3D point clouds.",
+                "An accurate and effective workflow is developed to reconstruct precise 3D BIM models of indoor space-forming and space-occupying objects, preserving their geometric and material characteristics.",
+                "An effective material classification deep learning model is introduced based on point cloud coordinates, raw colors, object labels, and intensity features.",
+                "An algorithm for automatic 3D BIM modeling of indoor elements with comprehensive property integration is implemented in the Revit platform."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "2. Literature review",
+          "content": []
+        },
+        {
+          "title": "2.1. Instance segmentation based on deep learning",
+          "content": []
+        },
+        {
+          "title": "2.2. 3D reconstruction from point clouds",
+          "content": []
+        },
+        {
+          "title": "2.3. Element material recognition",
+          "content": []
+        },
+        {
+          "title": "3. Research methodology",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 1",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr1.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (448KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 1. Overview of Proposed Reconstruction and Modeling Framework.",
+            {
+              "type": "figure",
+              "alt": "Fig. 2",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr2.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (143KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 2. Intensity Histograms for Different Indoor Materials: (a) Wood, (b) Metal, (c) Concrete, and (d) Fabric.",
+            {
+              "type": "figure",
+              "alt": "Fig. 3",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr3.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (40KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 3. Illustration of Laser Position for Intensity Feature Calculation.",
+            {
+              "type": "figure",
+              "alt": "Fig. 4",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr4.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (287KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 4. Improved Point Cloud Instance SegmentationDeep LearningStructure Based on TD3D Model.",
+            {
+              "type": "figure",
+              "alt": "Fig. 5",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr5.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (276KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 5. Improved Instance Proposal Formation Module Based on FCAF3D Model.",
+            {
+              "type": "table",
+              "headers": [],
+              "rows": [
+                [
+                  "Input: Test point clouds path:Tpath,Reference point clouds path:Rpath,Subsampling threshold:{s}, Registration iterations number:NOutput: Best reference point cloud name, registration error, and angleRname&RRMSE&Rθ1: Initialize reference store list2: load test point cloud listTpcds3:forTpcdiinTpcdsdo:4: LoadTpcdi5: Initialize variablesRname&RRMSE&Rθ6:forRpcdjinRpcdsdo:7: Load{Rpcdi&Rpcds}8: Subsample{Tpcdi&Rpcdj}with{S}9: Perform scaling for{Tpcdi&Rpcdj}10: Determine the centers11: Implement translations12:fork≤Ndo:13: Apply point feature for{Tpcdi&Rpcdj}14: Conduct RANSAC matching15: Optimize ICP registration16: Calculate and updateRMSEi17:end for18: Save the minimumRMSEi19: CalculateRθi& callRnamei20:end for21: Store listsRname&RRMSE&Rθ22:end for23:return:Rname&RRMSE&Rθ"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 6",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr6.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (431KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 6. ProposedDeep Neural Networkfor Material Classification."
+          ]
+        },
+        {
+          "title": "3.1. Point cloud preprocessing and feature calculation",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 2",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr2.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (143KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 2. Intensity Histograms for Different Indoor Materials: (a) Wood, (b) Metal, (c) Concrete, and (d) Fabric.",
+            {
+              "type": "figure",
+              "alt": "Fig. 3",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr3.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (40KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 3. Illustration of Laser Position for Intensity Feature Calculation."
+          ]
+        },
+        {
+          "title": "3.1.1. Subsampling and filtering",
+          "content": []
+        },
+        {
+          "title": "3.1.2. Features calculation and registration",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 2",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr2.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (143KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 2. Intensity Histograms for Different Indoor Materials: (a) Wood, (b) Metal, (c) Concrete, and (d) Fabric.",
+            {
+              "type": "figure",
+              "alt": "Fig. 3",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr3.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (40KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 3. Illustration of Laser Position for Intensity Feature Calculation."
+          ]
+        },
+        {
+          "title": "3.2. Instance segmentation-based improved deep learning model",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 4",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr4.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (287KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 4. Improved Point Cloud Instance SegmentationDeep LearningStructure Based on TD3D Model.",
+            {
+              "type": "figure",
+              "alt": "Fig. 5",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr5.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (276KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 5. Improved Instance Proposal Formation Module Based on FCAF3D Model."
+          ]
+        },
+        {
+          "title": "3.2.1. Model proposal formation",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 5",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr5.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (276KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 5. Improved Instance Proposal Formation Module Based on FCAF3D Model."
+          ]
+        },
+        {
+          "title": "3.2.2. Model proposal optimization",
+          "content": []
+        },
+        {
+          "title": "3.2.3. Model loss function",
+          "content": []
+        },
+        {
+          "title": "3.3. Reconstruction process of space-forming objects",
+          "content": []
+        },
+        {
+          "title": "3.3.1. Room boundary segment feature recognition",
+          "content": []
+        },
+        {
+          "title": "3.3.2. Wall opening features extraction",
+          "content": []
+        },
+        {
+          "title": "3.4. Reconstruction process of space-occupying objects",
+          "content": [
+            {
+              "type": "table",
+              "headers": [],
+              "rows": [
+                [
+                  "Input: Test point clouds path:Tpath,Reference point clouds path:Rpath,Subsampling threshold:{s}, Registration iterations number:NOutput: Best reference point cloud name, registration error, and angleRname&RRMSE&Rθ1: Initialize reference store list2: load test point cloud listTpcds3:forTpcdiinTpcdsdo:4: LoadTpcdi5: Initialize variablesRname&RRMSE&Rθ6:forRpcdjinRpcdsdo:7: Load{Rpcdi&Rpcds}8: Subsample{Tpcdi&Rpcdj}with{S}9: Perform scaling for{Tpcdi&Rpcdj}10: Determine the centers11: Implement translations12:fork≤Ndo:13: Apply point feature for{Tpcdi&Rpcdj}14: Conduct RANSAC matching15: Optimize ICP registration16: Calculate and updateRMSEi17:end for18: Save the minimumRMSEi19: CalculateRθi& callRnamei20:end for21: Store listsRname&RRMSE&Rθ22:end for23:return:Rname&RRMSE&Rθ"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "3.4.1. Object geometry calculation",
+          "content": []
+        },
+        {
+          "title": "3.4.2. Object shape and rotation determination",
+          "content": [
+            {
+              "type": "table",
+              "headers": [],
+              "rows": [
+                [
+                  "Input: Test point clouds path:Tpath,Reference point clouds path:Rpath,Subsampling threshold:{s}, Registration iterations number:NOutput: Best reference point cloud name, registration error, and angleRname&RRMSE&Rθ1: Initialize reference store list2: load test point cloud listTpcds3:forTpcdiinTpcdsdo:4: LoadTpcdi5: Initialize variablesRname&RRMSE&Rθ6:forRpcdjinRpcdsdo:7: Load{Rpcdi&Rpcds}8: Subsample{Tpcdi&Rpcdj}with{S}9: Perform scaling for{Tpcdi&Rpcdj}10: Determine the centers11: Implement translations12:fork≤Ndo:13: Apply point feature for{Tpcdi&Rpcdj}14: Conduct RANSAC matching15: Optimize ICP registration16: Calculate and updateRMSEi17:end for18: Save the minimumRMSEi19: CalculateRθi& callRnamei20:end for21: Store listsRname&RRMSE&Rθ22:end for23:return:Rname&RRMSE&Rθ"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "3.5. Point cloud material recognition using deep learning model",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 6",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr6.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (431KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 6. ProposedDeep Neural Networkfor Material Classification."
+          ]
+        },
+        {
+          "title": "3.5.1. Point cloud features transfer to clusters",
+          "content": []
+        },
+        {
+          "title": "3.5.2. Material classification deep learning architecture",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 6",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr6.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (431KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 6. ProposedDeep Neural Networkfor Material Classification."
+          ]
+        },
+        {
+          "title": "3.6. Automatic 3D BIM modeling of elements with material attributes",
+          "content": []
+        },
+        {
+          "title": "4. Results and discussion",
+          "content": [
+            {
+              "type": "list",
+              "items": [
+                "a)APrepresents the average precision values across various recall levels, providing an equitable assessment of a model's ability to detect and correctly segment instances. As formulated in Eq.10, this metric summarizes the precision-recall curve into a single value. The higher theAPAP50, the better the model correctly identifies and segments instances."
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "b)AP50refers to the average precision calculated by considering only predictions with anIOUof 50 % or more. As specified by Eq.11,IOUis a standard metric for assessing the overlap between the ground truth and the predicted segmentation bounding boxes."
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "c)Prec50calculates the proportion of true positive predictions among all positive predictions at anIOUthreshold of 50 %, as detailed in Eq.12, indicating the model precision with a 50 % overlap requirement between predicted and actual regions.",
+                "d)Rec50, as defined in Eq.13, measures the proportion of true positive predictions relative to the total number of ground truth instances at anIOUthreshold of 50 %."
+              ]
+            },
+            "Table 1.Quantitative Evaluationof Instance Segmentation Models Based on Standard Metrics.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Standard metrics",
+                "AP(%)",
+                "AP50(%)",
+                "Prec50(%)",
+                "Rec50(%)"
+              ],
+              "rows": [
+                [
+                  "SGPN (2018) [32]",
+                  "–",
+                  "–",
+                  "36.0",
+                  "28.7"
+                ],
+                [
+                  "3D-BoNet (2019) [35]",
+                  "–",
+                  "–",
+                  "57.5",
+                  "40.2"
+                ],
+                [
+                  "ASIS (2019) [58]",
+                  "–",
+                  "–",
+                  "55.3",
+                  "42.4"
+                ],
+                [
+                  "3D-MPA (2020) [33]",
+                  "–",
+                  "–",
+                  "63.1",
+                  "58.0"
+                ],
+                [
+                  "DyCo3D (2021) [59]",
+                  "–",
+                  "–",
+                  "64.3",
+                  "64.2"
+                ],
+                [
+                  "HAIS (2021) [60]",
+                  "–",
+                  "–",
+                  "71.1",
+                  "65.0"
+                ],
+                [
+                  "Point-Group (2020) [61]",
+                  "–",
+                  "57.8",
+                  "61.9",
+                  "62.1"
+                ],
+                [
+                  "SST-Net (2021) [62]",
+                  "42.7",
+                  "59.3",
+                  "65.5",
+                  "64.2"
+                ],
+                [
+                  "Mask-Group (2022) [63]",
+                  "–",
+                  "65.0",
+                  "62.9",
+                  "64.7"
+                ],
+                [
+                  "TD3D (2024) [37]",
+                  "48.6",
+                  "65.1",
+                  "74.4",
+                  "64.8"
+                ],
+                [
+                  "Soft-Group (2022) [34]",
+                  "51.6",
+                  "66.1",
+                  "73.6",
+                  "66.6"
+                ],
+                [
+                  "PB-Net (2023) [64]",
+                  "53.5",
+                  "66.4",
+                  "74.9",
+                  "65.4"
+                ],
+                [
+                  "SP-Former (2023) [65]",
+                  "–",
+                  "66.8",
+                  "72.8",
+                  "67.1"
+                ],
+                [
+                  "Ours",
+                  "56.2",
+                  "69.2",
+                  "77.4",
+                  "70.2"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 7",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr7.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (346KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 7. Comparison of Evaluation Metrics Among Different Instance Segmentation Models.",
+            {
+              "type": "figure",
+              "alt": "Fig. 8",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr8.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (1MB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 8. Qualitative Evaluation of Proposed Instance Segmentation Model Compared to Original Model.",
+            {
+              "type": "figure",
+              "alt": "Fig. 9",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr9.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (194KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 9. Material Recognition-BasedDeep LearningWorkflow.",
+            {
+              "type": "figure",
+              "alt": "Fig. 10",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr10.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (163KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 10. Relationship Between Training Accuracy and Loss with Epochs Across All Cases: (a) Training Accuracy and (b) Training Loss.",
+            "Table 2. Precision, Recall, and F1-Score Evaluation for Different Cases.",
+            {
+              "type": "table",
+              "headers": [
+                "Class\\Case",
+                "1. Intensity plus features",
+                "2. Intensity with no features",
+                "3. No intensity or features",
+                "P",
+                "R",
+                "F1",
+                "P",
+                "R",
+                "F1",
+                "P",
+                "R",
+                "F1"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.91",
+                  "0.94",
+                  "0.92",
+                  "0.90",
+                  "0.91",
+                  "0.90",
+                  "0.86",
+                  "0.75",
+                  "0.80"
+                ],
+                [
+                  "Metal",
+                  "0.92",
+                  "0.98",
+                  "0.95",
+                  "0.89",
+                  "0.97",
+                  "0.93",
+                  "0.65",
+                  "0.93",
+                  "0.77"
+                ],
+                [
+                  "Concrete",
+                  "0.97",
+                  "0.96",
+                  "0.96",
+                  "0.95",
+                  "0.95",
+                  "0.95",
+                  "0.88",
+                  "0.92",
+                  "0.90"
+                ],
+                [
+                  "Fabric",
+                  "0.96",
+                  "0.98",
+                  "0.97",
+                  "0.94",
+                  "0.96",
+                  "0.95",
+                  "0.87",
+                  "0.90",
+                  "0.88"
+                ],
+                [
+                  "Plasterboard",
+                  "0.97",
+                  "0.98",
+                  "0.97",
+                  "0.97",
+                  "0.98",
+                  "0.97",
+                  "0.96",
+                  "0.93",
+                  "0.94"
+                ],
+                [
+                  "Plastic",
+                  "0.96",
+                  "0.92",
+                  "0.95",
+                  "0.97",
+                  "0.91",
+                  "0.95",
+                  "0.93",
+                  "0.86",
+                  "0.89"
+                ],
+                [
+                  "Glass",
+                  "0.94",
+                  "0.96",
+                  "0.95",
+                  "0.92",
+                  "0.94",
+                  "0.93",
+                  "0.88",
+                  "0.82",
+                  "0.85"
+                ],
+                [
+                  "Tile",
+                  "0.78",
+                  "0.88",
+                  "0.83",
+                  "0.65",
+                  "0.67",
+                  "0.66",
+                  "0.53",
+                  "0.60",
+                  "0.56"
+                ],
+                [
+                  "Average",
+                  "0.93",
+                  "0.95",
+                  "0.94",
+                  "0.90",
+                  "0.91",
+                  "0.90",
+                  "0.82",
+                  "0.84",
+                  "0.83"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 11",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr11.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (237KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 11.Confusion Matrixfor the Intensity and Features Consideration Case.",
+            {
+              "type": "figure",
+              "alt": "Fig. 12",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr12.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (557KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 12. Overview of Evaluated Datasets: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            {
+              "type": "figure",
+              "alt": "Fig. 13",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr13.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (691KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 13. Results of the Instance Segmentation for Different Datasets: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            {
+              "type": "figure",
+              "alt": "Fig. 14",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr14.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (336KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 14. Results of Room Boundary Segment and Feature Recognition: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 3. Evaluation of Opening Element Detection Accuracy.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Extracted opening objects count (detected/actual)",
+                "Total detected/ total actual",
+                "Detection Accuracy (%)",
+                "Door",
+                "Window"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "2/2",
+                  "2/2",
+                  "4/4",
+                  "100"
+                ],
+                [
+                  "Data-2",
+                  "2/2",
+                  "2/2",
+                  "4/4",
+                  "100"
+                ],
+                [
+                  "Data-3",
+                  "3/3",
+                  "–",
+                  "3/3",
+                  "100"
+                ]
+              ]
+            },
+            "Table 4. Average Location and Dimension Errors for Opening Elements.",
+            {
+              "type": "table",
+              "headers": [
+                "Dataset",
+                "Door Location Error (m)",
+                "Door Dimension Error (m)",
+                "Window Location Error (m)",
+                "Window Dimension Error (m)"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "0",
+                  "0",
+                  "0",
+                  "0.04"
+                ],
+                [
+                  "Data-2",
+                  "0.03",
+                  "0",
+                  "0",
+                  "0"
+                ],
+                [
+                  "Data-3",
+                  "0",
+                  "0.04",
+                  "–",
+                  "–"
+                ]
+              ]
+            },
+            "Table 5. Evaluation of Clustering and Extraction of Space-Occupying Classes.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Extracted object count (detected/actual)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "5/5",
+                  "1/1",
+                  "2/2",
+                  "2/2"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "4/4",
+                  "5/5"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "1/1",
+                  "16/16",
+                  "79/79"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 15",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr15.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (484KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 15. GeometricBounding Boxesfor Space-occupying Classes: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 6. Object Shape Average Registration RMSE values for Space-Occupying Classes.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Average registration RMSE (m)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "0.025",
+                  "0.067",
+                  "0.048",
+                  "0.040"
+                ],
+                [
+                  "Data-2",
+                  "0.016",
+                  "0.022",
+                  "0.062",
+                  "0.038",
+                  "0.029"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "0.058",
+                  "0.040",
+                  "0.026"
+                ]
+              ]
+            },
+            "Table 7. Point-Based Material Classification Performance Metrics for Data-1.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.94",
+                  "1.00",
+                  "0.97",
+                  "152,188"
+                ],
+                [
+                  "Metal",
+                  "1.00",
+                  "0.65",
+                  "0.79",
+                  "25,446"
+                ],
+                [
+                  "Concrete",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "330,614"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "97,370"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "20,293"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "10,067"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.99",
+                  "0.99",
+                  "0.98",
+                  "–"
+                ]
+              ]
+            },
+            "Table 8. Point-Based Material Classification Performance Metrics for Data-2.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.97",
+                  "1.00",
+                  "0.98",
+                  "239,309"
+                ],
+                [
+                  "Metal",
+                  "1.00",
+                  "0.72",
+                  "0.83",
+                  "29,276"
+                ],
+                [
+                  "Concrete",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "491,354"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "164,160"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "326,596"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "24,448"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.99",
+                  "0.98",
+                  "0.99",
+                  "–"
+                ]
+              ]
+            },
+            "Table 9. Point-Based Material Classification Performance Metrics for Data-3.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.95",
+                  "0.82",
+                  "0.88",
+                  "688,944"
+                ],
+                [
+                  "Concrete",
+                  "0.89",
+                  "1.00",
+                  "0.94",
+                  "773,566"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "663,297"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "614,773"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "0.91",
+                  "0.95",
+                  "353,370"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.96",
+                  "0.95",
+                  "0.95",
+                  "–"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 16",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr16.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (175KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 16.BIMParametric ModelingUsing Dynamo Revit Algorithm on the Left, Alongside the Automatically Generated 3D BIM Models for Data-1 on the Right.",
+            {
+              "type": "figure",
+              "alt": "Fig. 17",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr17.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (335KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 17. Final 3DBIMModels for Space-Forming and Space-Occupying Components Incorporating Geometric and Attribute Information: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 10. Assessment of reconstructed BIM models considering predicted areas.",
+            {
+              "type": "table",
+              "headers": [
+                "Dataset",
+                "Intersection area (m2)",
+                "Predicted area(m2)",
+                "Reference area (m2)",
+                "Correctness(%)",
+                "Completeness(%)"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "17.29",
+                  "17.73",
+                  "17.32",
+                  "97.52",
+                  "99.83"
+                ],
+                [
+                  "Data-2",
+                  "24.56",
+                  "24.84",
+                  "24.82",
+                  "98.87",
+                  "98.95"
+                ],
+                [
+                  "Data-3",
+                  "100.70",
+                  "100.86",
+                  "101.14",
+                  "99.84",
+                  "99.56"
+                ]
+              ]
+            },
+            "Table 11. Accuracy Assessment of Space-Occupying BIM Object Shape Determination.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Unchanged object shape count/actual count",
+                "Total unchanged",
+                "Total actual",
+                "Shape Accuracy (%)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "5/5",
+                  "1/1",
+                  "2/2",
+                  "2/2",
+                  "10",
+                  "10",
+                  "100"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "4/4",
+                  "4/5",
+                  "16",
+                  "17",
+                  "94"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "1/1",
+                  "16/16",
+                  "79/79",
+                  "96",
+                  "96",
+                  "100"
+                ]
+              ]
+            },
+            "Table 12. Accuracy Assessment of Space-Occupying BIM Object Rotation Determination.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Unchanged object rotation count/actual count",
+                "Total unchanged",
+                "Total actual",
+                "RotationAccuracy (%)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "4/5",
+                  "0/1",
+                  "2/2",
+                  "2/2",
+                  "8",
+                  "10",
+                  "80"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "3/4",
+                  "5/5",
+                  "16",
+                  "17",
+                  "94"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "0/1",
+                  "16/16",
+                  "79/79",
+                  "95",
+                  "96",
+                  "99"
+                ]
+              ]
+            },
+            "Table 13. Object-Based Material Classification Evaluation for Data-1.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Beam",
+                  "4",
+                  "Concrete",
+                  "4",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Board",
+                  "1",
+                  "Wood",
+                  "1",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Bookcase",
+                  "4",
+                  "Wood",
+                  "4",
+                  "Wood",
+                  "80"
+                ],
+                [
+                  "1",
+                  "Metal"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "2",
+                  "Plastic",
+                  "2",
+                  "Plastic",
+                  "100"
+                ],
+                [
+                  "Column",
+                  "1",
+                  "Concrete",
+                  "1",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Wall",
+                  "4",
+                  "Concrete",
+                  "4",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Window",
+                  "2",
+                  "Metal",
+                  "2",
+                  "Metal",
+                  "100"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "96.0"
+                ]
+              ]
+            },
+            "Table 14. Object-Based Material Classification Evaluation for Data-2.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Board",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Bookcase",
+                  "3",
+                  "Wood",
+                  "3",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "2",
+                  "Metal",
+                  "2",
+                  "Metal"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "5",
+                  "Plastic",
+                  "5",
+                  "Plastic",
+                  "100"
+                ],
+                [
+                  "Column",
+                  "1",
+                  "Concrete",
+                  "1",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Sofa",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "5",
+                  "Wood",
+                  "5",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Wall",
+                  "5",
+                  "Concrete",
+                  "5",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Window",
+                  "2",
+                  "Metal",
+                  "1",
+                  "Wood",
+                  "50"
+                ],
+                [
+                  "Metal"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "96.7"
+                ]
+              ]
+            },
+            "Table 15. Object-Based Material Classification Evaluation for Data-3.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Board",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "79",
+                  "Plastic",
+                  "71",
+                  "Plastic",
+                  "90"
+                ],
+                [
+                  "Wood"
+                ],
+                [
+                  "Column",
+                  "2",
+                  "Concrete",
+                  "2",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "3",
+                  "Wood",
+                  "3",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "16",
+                  "Wood",
+                  "15",
+                  "Wood",
+                  "94"
+                ],
+                [
+                  "Metal"
+                ],
+                [
+                  "Wall",
+                  "6",
+                  "Concrete",
+                  "6",
+                  "Concrete",
+                  "90"
+                ],
+                [
+                  "4",
+                  "Wood",
+                  "3",
+                  "Wood"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "91.4"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "4.1. Improved instance segmentation model assessment",
+          "content": [
+            {
+              "type": "list",
+              "items": [
+                "a)APrepresents the average precision values across various recall levels, providing an equitable assessment of a model's ability to detect and correctly segment instances. As formulated in Eq.10, this metric summarizes the precision-recall curve into a single value. The higher theAPAP50, the better the model correctly identifies and segments instances."
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "b)AP50refers to the average precision calculated by considering only predictions with anIOUof 50 % or more. As specified by Eq.11,IOUis a standard metric for assessing the overlap between the ground truth and the predicted segmentation bounding boxes."
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "c)Prec50calculates the proportion of true positive predictions among all positive predictions at anIOUthreshold of 50 %, as detailed in Eq.12, indicating the model precision with a 50 % overlap requirement between predicted and actual regions.",
+                "d)Rec50, as defined in Eq.13, measures the proportion of true positive predictions relative to the total number of ground truth instances at anIOUthreshold of 50 %."
+              ]
+            },
+            "Table 1.Quantitative Evaluationof Instance Segmentation Models Based on Standard Metrics.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Standard metrics",
+                "AP(%)",
+                "AP50(%)",
+                "Prec50(%)",
+                "Rec50(%)"
+              ],
+              "rows": [
+                [
+                  "SGPN (2018) [32]",
+                  "–",
+                  "–",
+                  "36.0",
+                  "28.7"
+                ],
+                [
+                  "3D-BoNet (2019) [35]",
+                  "–",
+                  "–",
+                  "57.5",
+                  "40.2"
+                ],
+                [
+                  "ASIS (2019) [58]",
+                  "–",
+                  "–",
+                  "55.3",
+                  "42.4"
+                ],
+                [
+                  "3D-MPA (2020) [33]",
+                  "–",
+                  "–",
+                  "63.1",
+                  "58.0"
+                ],
+                [
+                  "DyCo3D (2021) [59]",
+                  "–",
+                  "–",
+                  "64.3",
+                  "64.2"
+                ],
+                [
+                  "HAIS (2021) [60]",
+                  "–",
+                  "–",
+                  "71.1",
+                  "65.0"
+                ],
+                [
+                  "Point-Group (2020) [61]",
+                  "–",
+                  "57.8",
+                  "61.9",
+                  "62.1"
+                ],
+                [
+                  "SST-Net (2021) [62]",
+                  "42.7",
+                  "59.3",
+                  "65.5",
+                  "64.2"
+                ],
+                [
+                  "Mask-Group (2022) [63]",
+                  "–",
+                  "65.0",
+                  "62.9",
+                  "64.7"
+                ],
+                [
+                  "TD3D (2024) [37]",
+                  "48.6",
+                  "65.1",
+                  "74.4",
+                  "64.8"
+                ],
+                [
+                  "Soft-Group (2022) [34]",
+                  "51.6",
+                  "66.1",
+                  "73.6",
+                  "66.6"
+                ],
+                [
+                  "PB-Net (2023) [64]",
+                  "53.5",
+                  "66.4",
+                  "74.9",
+                  "65.4"
+                ],
+                [
+                  "SP-Former (2023) [65]",
+                  "–",
+                  "66.8",
+                  "72.8",
+                  "67.1"
+                ],
+                [
+                  "Ours",
+                  "56.2",
+                  "69.2",
+                  "77.4",
+                  "70.2"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 7",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr7.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (346KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 7. Comparison of Evaluation Metrics Among Different Instance Segmentation Models.",
+            {
+              "type": "figure",
+              "alt": "Fig. 8",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr8.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (1MB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 8. Qualitative Evaluation of Proposed Instance Segmentation Model Compared to Original Model."
+          ]
+        },
+        {
+          "title": "4.1.1. Segmentation dataset and training technical setup",
+          "content": []
+        },
+        {
+          "title": "4.1.2. Instance segmentation model evaluation",
+          "content": [
+            {
+              "type": "list",
+              "items": [
+                "a)APrepresents the average precision values across various recall levels, providing an equitable assessment of a model's ability to detect and correctly segment instances. As formulated in Eq.10, this metric summarizes the precision-recall curve into a single value. The higher theAPAP50, the better the model correctly identifies and segments instances."
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "b)AP50refers to the average precision calculated by considering only predictions with anIOUof 50 % or more. As specified by Eq.11,IOUis a standard metric for assessing the overlap between the ground truth and the predicted segmentation bounding boxes."
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "c)Prec50calculates the proportion of true positive predictions among all positive predictions at anIOUthreshold of 50 %, as detailed in Eq.12, indicating the model precision with a 50 % overlap requirement between predicted and actual regions.",
+                "d)Rec50, as defined in Eq.13, measures the proportion of true positive predictions relative to the total number of ground truth instances at anIOUthreshold of 50 %."
+              ]
+            },
+            "Table 1.Quantitative Evaluationof Instance Segmentation Models Based on Standard Metrics.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Standard metrics",
+                "AP(%)",
+                "AP50(%)",
+                "Prec50(%)",
+                "Rec50(%)"
+              ],
+              "rows": [
+                [
+                  "SGPN (2018) [32]",
+                  "–",
+                  "–",
+                  "36.0",
+                  "28.7"
+                ],
+                [
+                  "3D-BoNet (2019) [35]",
+                  "–",
+                  "–",
+                  "57.5",
+                  "40.2"
+                ],
+                [
+                  "ASIS (2019) [58]",
+                  "–",
+                  "–",
+                  "55.3",
+                  "42.4"
+                ],
+                [
+                  "3D-MPA (2020) [33]",
+                  "–",
+                  "–",
+                  "63.1",
+                  "58.0"
+                ],
+                [
+                  "DyCo3D (2021) [59]",
+                  "–",
+                  "–",
+                  "64.3",
+                  "64.2"
+                ],
+                [
+                  "HAIS (2021) [60]",
+                  "–",
+                  "–",
+                  "71.1",
+                  "65.0"
+                ],
+                [
+                  "Point-Group (2020) [61]",
+                  "–",
+                  "57.8",
+                  "61.9",
+                  "62.1"
+                ],
+                [
+                  "SST-Net (2021) [62]",
+                  "42.7",
+                  "59.3",
+                  "65.5",
+                  "64.2"
+                ],
+                [
+                  "Mask-Group (2022) [63]",
+                  "–",
+                  "65.0",
+                  "62.9",
+                  "64.7"
+                ],
+                [
+                  "TD3D (2024) [37]",
+                  "48.6",
+                  "65.1",
+                  "74.4",
+                  "64.8"
+                ],
+                [
+                  "Soft-Group (2022) [34]",
+                  "51.6",
+                  "66.1",
+                  "73.6",
+                  "66.6"
+                ],
+                [
+                  "PB-Net (2023) [64]",
+                  "53.5",
+                  "66.4",
+                  "74.9",
+                  "65.4"
+                ],
+                [
+                  "SP-Former (2023) [65]",
+                  "–",
+                  "66.8",
+                  "72.8",
+                  "67.1"
+                ],
+                [
+                  "Ours",
+                  "56.2",
+                  "69.2",
+                  "77.4",
+                  "70.2"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 7",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr7.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (346KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 7. Comparison of Evaluation Metrics Among Different Instance Segmentation Models.",
+            {
+              "type": "figure",
+              "alt": "Fig. 8",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr8.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (1MB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 8. Qualitative Evaluation of Proposed Instance Segmentation Model Compared to Original Model."
+          ]
+        },
+        {
+          "title": "4.2. Material recognition-based deep learning results",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 9",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr9.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (194KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 9. Material Recognition-BasedDeep LearningWorkflow.",
+            {
+              "type": "figure",
+              "alt": "Fig. 10",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr10.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (163KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 10. Relationship Between Training Accuracy and Loss with Epochs Across All Cases: (a) Training Accuracy and (b) Training Loss.",
+            "Table 2. Precision, Recall, and F1-Score Evaluation for Different Cases.",
+            {
+              "type": "table",
+              "headers": [
+                "Class\\Case",
+                "1. Intensity plus features",
+                "2. Intensity with no features",
+                "3. No intensity or features",
+                "P",
+                "R",
+                "F1",
+                "P",
+                "R",
+                "F1",
+                "P",
+                "R",
+                "F1"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.91",
+                  "0.94",
+                  "0.92",
+                  "0.90",
+                  "0.91",
+                  "0.90",
+                  "0.86",
+                  "0.75",
+                  "0.80"
+                ],
+                [
+                  "Metal",
+                  "0.92",
+                  "0.98",
+                  "0.95",
+                  "0.89",
+                  "0.97",
+                  "0.93",
+                  "0.65",
+                  "0.93",
+                  "0.77"
+                ],
+                [
+                  "Concrete",
+                  "0.97",
+                  "0.96",
+                  "0.96",
+                  "0.95",
+                  "0.95",
+                  "0.95",
+                  "0.88",
+                  "0.92",
+                  "0.90"
+                ],
+                [
+                  "Fabric",
+                  "0.96",
+                  "0.98",
+                  "0.97",
+                  "0.94",
+                  "0.96",
+                  "0.95",
+                  "0.87",
+                  "0.90",
+                  "0.88"
+                ],
+                [
+                  "Plasterboard",
+                  "0.97",
+                  "0.98",
+                  "0.97",
+                  "0.97",
+                  "0.98",
+                  "0.97",
+                  "0.96",
+                  "0.93",
+                  "0.94"
+                ],
+                [
+                  "Plastic",
+                  "0.96",
+                  "0.92",
+                  "0.95",
+                  "0.97",
+                  "0.91",
+                  "0.95",
+                  "0.93",
+                  "0.86",
+                  "0.89"
+                ],
+                [
+                  "Glass",
+                  "0.94",
+                  "0.96",
+                  "0.95",
+                  "0.92",
+                  "0.94",
+                  "0.93",
+                  "0.88",
+                  "0.82",
+                  "0.85"
+                ],
+                [
+                  "Tile",
+                  "0.78",
+                  "0.88",
+                  "0.83",
+                  "0.65",
+                  "0.67",
+                  "0.66",
+                  "0.53",
+                  "0.60",
+                  "0.56"
+                ],
+                [
+                  "Average",
+                  "0.93",
+                  "0.95",
+                  "0.94",
+                  "0.90",
+                  "0.91",
+                  "0.90",
+                  "0.82",
+                  "0.84",
+                  "0.83"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 11",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr11.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (237KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 11.Confusion Matrixfor the Intensity and Features Consideration Case."
+          ]
+        },
+        {
+          "title": "4.2.1. Material recognition workflow and training dataset",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 9",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr9.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (194KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 9. Material Recognition-BasedDeep LearningWorkflow."
+          ]
+        },
+        {
+          "title": "4.2.2. Material recognition model training and evaluation",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 10",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr10.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (163KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 10. Relationship Between Training Accuracy and Loss with Epochs Across All Cases: (a) Training Accuracy and (b) Training Loss.",
+            "Table 2. Precision, Recall, and F1-Score Evaluation for Different Cases.",
+            {
+              "type": "table",
+              "headers": [
+                "Class\\Case",
+                "1. Intensity plus features",
+                "2. Intensity with no features",
+                "3. No intensity or features",
+                "P",
+                "R",
+                "F1",
+                "P",
+                "R",
+                "F1",
+                "P",
+                "R",
+                "F1"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.91",
+                  "0.94",
+                  "0.92",
+                  "0.90",
+                  "0.91",
+                  "0.90",
+                  "0.86",
+                  "0.75",
+                  "0.80"
+                ],
+                [
+                  "Metal",
+                  "0.92",
+                  "0.98",
+                  "0.95",
+                  "0.89",
+                  "0.97",
+                  "0.93",
+                  "0.65",
+                  "0.93",
+                  "0.77"
+                ],
+                [
+                  "Concrete",
+                  "0.97",
+                  "0.96",
+                  "0.96",
+                  "0.95",
+                  "0.95",
+                  "0.95",
+                  "0.88",
+                  "0.92",
+                  "0.90"
+                ],
+                [
+                  "Fabric",
+                  "0.96",
+                  "0.98",
+                  "0.97",
+                  "0.94",
+                  "0.96",
+                  "0.95",
+                  "0.87",
+                  "0.90",
+                  "0.88"
+                ],
+                [
+                  "Plasterboard",
+                  "0.97",
+                  "0.98",
+                  "0.97",
+                  "0.97",
+                  "0.98",
+                  "0.97",
+                  "0.96",
+                  "0.93",
+                  "0.94"
+                ],
+                [
+                  "Plastic",
+                  "0.96",
+                  "0.92",
+                  "0.95",
+                  "0.97",
+                  "0.91",
+                  "0.95",
+                  "0.93",
+                  "0.86",
+                  "0.89"
+                ],
+                [
+                  "Glass",
+                  "0.94",
+                  "0.96",
+                  "0.95",
+                  "0.92",
+                  "0.94",
+                  "0.93",
+                  "0.88",
+                  "0.82",
+                  "0.85"
+                ],
+                [
+                  "Tile",
+                  "0.78",
+                  "0.88",
+                  "0.83",
+                  "0.65",
+                  "0.67",
+                  "0.66",
+                  "0.53",
+                  "0.60",
+                  "0.56"
+                ],
+                [
+                  "Average",
+                  "0.93",
+                  "0.95",
+                  "0.94",
+                  "0.90",
+                  "0.91",
+                  "0.90",
+                  "0.82",
+                  "0.84",
+                  "0.83"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 11",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr11.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (237KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 11.Confusion Matrixfor the Intensity and Features Consideration Case."
+          ]
+        },
+        {
+          "title": "4.3. Results and assessment of framework reconstruction and modeling",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 12",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr12.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (557KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 12. Overview of Evaluated Datasets: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            {
+              "type": "figure",
+              "alt": "Fig. 13",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr13.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (691KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 13. Results of the Instance Segmentation for Different Datasets: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            {
+              "type": "figure",
+              "alt": "Fig. 14",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr14.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (336KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 14. Results of Room Boundary Segment and Feature Recognition: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 3. Evaluation of Opening Element Detection Accuracy.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Extracted opening objects count (detected/actual)",
+                "Total detected/ total actual",
+                "Detection Accuracy (%)",
+                "Door",
+                "Window"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "2/2",
+                  "2/2",
+                  "4/4",
+                  "100"
+                ],
+                [
+                  "Data-2",
+                  "2/2",
+                  "2/2",
+                  "4/4",
+                  "100"
+                ],
+                [
+                  "Data-3",
+                  "3/3",
+                  "–",
+                  "3/3",
+                  "100"
+                ]
+              ]
+            },
+            "Table 4. Average Location and Dimension Errors for Opening Elements.",
+            {
+              "type": "table",
+              "headers": [
+                "Dataset",
+                "Door Location Error (m)",
+                "Door Dimension Error (m)",
+                "Window Location Error (m)",
+                "Window Dimension Error (m)"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "0",
+                  "0",
+                  "0",
+                  "0.04"
+                ],
+                [
+                  "Data-2",
+                  "0.03",
+                  "0",
+                  "0",
+                  "0"
+                ],
+                [
+                  "Data-3",
+                  "0",
+                  "0.04",
+                  "–",
+                  "–"
+                ]
+              ]
+            },
+            "Table 5. Evaluation of Clustering and Extraction of Space-Occupying Classes.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Extracted object count (detected/actual)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "5/5",
+                  "1/1",
+                  "2/2",
+                  "2/2"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "4/4",
+                  "5/5"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "1/1",
+                  "16/16",
+                  "79/79"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 15",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr15.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (484KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 15. GeometricBounding Boxesfor Space-occupying Classes: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 6. Object Shape Average Registration RMSE values for Space-Occupying Classes.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Average registration RMSE (m)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "0.025",
+                  "0.067",
+                  "0.048",
+                  "0.040"
+                ],
+                [
+                  "Data-2",
+                  "0.016",
+                  "0.022",
+                  "0.062",
+                  "0.038",
+                  "0.029"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "0.058",
+                  "0.040",
+                  "0.026"
+                ]
+              ]
+            },
+            "Table 7. Point-Based Material Classification Performance Metrics for Data-1.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.94",
+                  "1.00",
+                  "0.97",
+                  "152,188"
+                ],
+                [
+                  "Metal",
+                  "1.00",
+                  "0.65",
+                  "0.79",
+                  "25,446"
+                ],
+                [
+                  "Concrete",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "330,614"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "97,370"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "20,293"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "10,067"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.99",
+                  "0.99",
+                  "0.98",
+                  "–"
+                ]
+              ]
+            },
+            "Table 8. Point-Based Material Classification Performance Metrics for Data-2.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.97",
+                  "1.00",
+                  "0.98",
+                  "239,309"
+                ],
+                [
+                  "Metal",
+                  "1.00",
+                  "0.72",
+                  "0.83",
+                  "29,276"
+                ],
+                [
+                  "Concrete",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "491,354"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "164,160"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "326,596"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "24,448"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.99",
+                  "0.98",
+                  "0.99",
+                  "–"
+                ]
+              ]
+            },
+            "Table 9. Point-Based Material Classification Performance Metrics for Data-3.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.95",
+                  "0.82",
+                  "0.88",
+                  "688,944"
+                ],
+                [
+                  "Concrete",
+                  "0.89",
+                  "1.00",
+                  "0.94",
+                  "773,566"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "663,297"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "614,773"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "0.91",
+                  "0.95",
+                  "353,370"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.96",
+                  "0.95",
+                  "0.95",
+                  "–"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 16",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr16.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (175KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 16.BIMParametric ModelingUsing Dynamo Revit Algorithm on the Left, Alongside the Automatically Generated 3D BIM Models for Data-1 on the Right.",
+            {
+              "type": "figure",
+              "alt": "Fig. 17",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr17.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (335KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 17. Final 3DBIMModels for Space-Forming and Space-Occupying Components Incorporating Geometric and Attribute Information: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 10. Assessment of reconstructed BIM models considering predicted areas.",
+            {
+              "type": "table",
+              "headers": [
+                "Dataset",
+                "Intersection area (m2)",
+                "Predicted area(m2)",
+                "Reference area (m2)",
+                "Correctness(%)",
+                "Completeness(%)"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "17.29",
+                  "17.73",
+                  "17.32",
+                  "97.52",
+                  "99.83"
+                ],
+                [
+                  "Data-2",
+                  "24.56",
+                  "24.84",
+                  "24.82",
+                  "98.87",
+                  "98.95"
+                ],
+                [
+                  "Data-3",
+                  "100.70",
+                  "100.86",
+                  "101.14",
+                  "99.84",
+                  "99.56"
+                ]
+              ]
+            },
+            "Table 11. Accuracy Assessment of Space-Occupying BIM Object Shape Determination.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Unchanged object shape count/actual count",
+                "Total unchanged",
+                "Total actual",
+                "Shape Accuracy (%)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "5/5",
+                  "1/1",
+                  "2/2",
+                  "2/2",
+                  "10",
+                  "10",
+                  "100"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "4/4",
+                  "4/5",
+                  "16",
+                  "17",
+                  "94"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "1/1",
+                  "16/16",
+                  "79/79",
+                  "96",
+                  "96",
+                  "100"
+                ]
+              ]
+            },
+            "Table 12. Accuracy Assessment of Space-Occupying BIM Object Rotation Determination.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Unchanged object rotation count/actual count",
+                "Total unchanged",
+                "Total actual",
+                "RotationAccuracy (%)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "4/5",
+                  "0/1",
+                  "2/2",
+                  "2/2",
+                  "8",
+                  "10",
+                  "80"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "3/4",
+                  "5/5",
+                  "16",
+                  "17",
+                  "94"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "0/1",
+                  "16/16",
+                  "79/79",
+                  "95",
+                  "96",
+                  "99"
+                ]
+              ]
+            },
+            "Table 13. Object-Based Material Classification Evaluation for Data-1.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Beam",
+                  "4",
+                  "Concrete",
+                  "4",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Board",
+                  "1",
+                  "Wood",
+                  "1",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Bookcase",
+                  "4",
+                  "Wood",
+                  "4",
+                  "Wood",
+                  "80"
+                ],
+                [
+                  "1",
+                  "Metal"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "2",
+                  "Plastic",
+                  "2",
+                  "Plastic",
+                  "100"
+                ],
+                [
+                  "Column",
+                  "1",
+                  "Concrete",
+                  "1",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Wall",
+                  "4",
+                  "Concrete",
+                  "4",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Window",
+                  "2",
+                  "Metal",
+                  "2",
+                  "Metal",
+                  "100"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "96.0"
+                ]
+              ]
+            },
+            "Table 14. Object-Based Material Classification Evaluation for Data-2.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Board",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Bookcase",
+                  "3",
+                  "Wood",
+                  "3",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "2",
+                  "Metal",
+                  "2",
+                  "Metal"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "5",
+                  "Plastic",
+                  "5",
+                  "Plastic",
+                  "100"
+                ],
+                [
+                  "Column",
+                  "1",
+                  "Concrete",
+                  "1",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Sofa",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "5",
+                  "Wood",
+                  "5",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Wall",
+                  "5",
+                  "Concrete",
+                  "5",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Window",
+                  "2",
+                  "Metal",
+                  "1",
+                  "Wood",
+                  "50"
+                ],
+                [
+                  "Metal"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "96.7"
+                ]
+              ]
+            },
+            "Table 15. Object-Based Material Classification Evaluation for Data-3.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Board",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "79",
+                  "Plastic",
+                  "71",
+                  "Plastic",
+                  "90"
+                ],
+                [
+                  "Wood"
+                ],
+                [
+                  "Column",
+                  "2",
+                  "Concrete",
+                  "2",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "3",
+                  "Wood",
+                  "3",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "16",
+                  "Wood",
+                  "15",
+                  "Wood",
+                  "94"
+                ],
+                [
+                  "Metal"
+                ],
+                [
+                  "Wall",
+                  "6",
+                  "Concrete",
+                  "6",
+                  "Concrete",
+                  "90"
+                ],
+                [
+                  "4",
+                  "Wood",
+                  "3",
+                  "Wood"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "91.4"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "4.3.1. Dataset description for framework assessment",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 12",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr12.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (557KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 12. Overview of Evaluated Datasets: (a) Data-1, (b) Data-2, and (c) Data-3."
+          ]
+        },
+        {
+          "title": "4.3.2. Results of preprocessing and instance segmentation",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 13",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr13.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (691KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 13. Results of the Instance Segmentation for Different Datasets: (a) Data-1, (b) Data-2, and (c) Data-3."
+          ]
+        },
+        {
+          "title": "4.3.3. Results of space-forming element reconstruction",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 14",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr14.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (336KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 14. Results of Room Boundary Segment and Feature Recognition: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 3. Evaluation of Opening Element Detection Accuracy.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Extracted opening objects count (detected/actual)",
+                "Total detected/ total actual",
+                "Detection Accuracy (%)",
+                "Door",
+                "Window"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "2/2",
+                  "2/2",
+                  "4/4",
+                  "100"
+                ],
+                [
+                  "Data-2",
+                  "2/2",
+                  "2/2",
+                  "4/4",
+                  "100"
+                ],
+                [
+                  "Data-3",
+                  "3/3",
+                  "–",
+                  "3/3",
+                  "100"
+                ]
+              ]
+            },
+            "Table 4. Average Location and Dimension Errors for Opening Elements.",
+            {
+              "type": "table",
+              "headers": [
+                "Dataset",
+                "Door Location Error (m)",
+                "Door Dimension Error (m)",
+                "Window Location Error (m)",
+                "Window Dimension Error (m)"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "0",
+                  "0",
+                  "0",
+                  "0.04"
+                ],
+                [
+                  "Data-2",
+                  "0.03",
+                  "0",
+                  "0",
+                  "0"
+                ],
+                [
+                  "Data-3",
+                  "0",
+                  "0.04",
+                  "–",
+                  "–"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "4.3.4. Results of space-occupying element reconstruction",
+          "content": [
+            "Table 5. Evaluation of Clustering and Extraction of Space-Occupying Classes.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Extracted object count (detected/actual)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "5/5",
+                  "1/1",
+                  "2/2",
+                  "2/2"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "4/4",
+                  "5/5"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "1/1",
+                  "16/16",
+                  "79/79"
+                ]
+              ]
+            },
+            {
+              "type": "figure",
+              "alt": "Fig. 15",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr15.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (484KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 15. GeometricBounding Boxesfor Space-occupying Classes: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 6. Object Shape Average Registration RMSE values for Space-Occupying Classes.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Average registration RMSE (m)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "0.025",
+                  "0.067",
+                  "0.048",
+                  "0.040"
+                ],
+                [
+                  "Data-2",
+                  "0.016",
+                  "0.022",
+                  "0.062",
+                  "0.038",
+                  "0.029"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "0.058",
+                  "0.040",
+                  "0.026"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "4.3.5. Material recognition results for framework dataset",
+          "content": [
+            "Table 7. Point-Based Material Classification Performance Metrics for Data-1.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.94",
+                  "1.00",
+                  "0.97",
+                  "152,188"
+                ],
+                [
+                  "Metal",
+                  "1.00",
+                  "0.65",
+                  "0.79",
+                  "25,446"
+                ],
+                [
+                  "Concrete",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "330,614"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "97,370"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "20,293"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "10,067"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.99",
+                  "0.99",
+                  "0.98",
+                  "–"
+                ]
+              ]
+            },
+            "Table 8. Point-Based Material Classification Performance Metrics for Data-2.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.97",
+                  "1.00",
+                  "0.98",
+                  "239,309"
+                ],
+                [
+                  "Metal",
+                  "1.00",
+                  "0.72",
+                  "0.83",
+                  "29,276"
+                ],
+                [
+                  "Concrete",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "491,354"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "164,160"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "326,596"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "24,448"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.99",
+                  "0.98",
+                  "0.99",
+                  "–"
+                ]
+              ]
+            },
+            "Table 9. Point-Based Material Classification Performance Metrics for Data-3.",
+            {
+              "type": "table",
+              "headers": [
+                "Material Class",
+                "Precision",
+                "Recall",
+                "F1-score",
+                "Instances"
+              ],
+              "rows": [
+                [
+                  "Wood",
+                  "0.95",
+                  "0.82",
+                  "0.88",
+                  "688,944"
+                ],
+                [
+                  "Concrete",
+                  "0.89",
+                  "1.00",
+                  "0.94",
+                  "773,566"
+                ],
+                [
+                  "Fabric",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "663,297"
+                ],
+                [
+                  "Plasterboard",
+                  "1.00",
+                  "1.00",
+                  "1.00",
+                  "614,773"
+                ],
+                [
+                  "Plastic",
+                  "1.00",
+                  "0.91",
+                  "0.95",
+                  "353,370"
+                ],
+                [
+                  "Weighted Avg.",
+                  "0.96",
+                  "0.95",
+                  "0.95",
+                  "–"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "4.3.6. Automatic 3D BIM geometric and attributes modeling results",
+          "content": [
+            {
+              "type": "figure",
+              "alt": "Fig. 16",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr16.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (175KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 16.BIMParametric ModelingUsing Dynamo Revit Algorithm on the Left, Alongside the Automatically Generated 3D BIM Models for Data-1 on the Right.",
+            {
+              "type": "figure",
+              "alt": "Fig. 17",
+              "src": "images/Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect_1-s2.0-S0926580525002365-gr17.jpg",
+              "local_saved": true
+            },
+            {
+              "type": "list",
+              "items": [
+                "Download:Download high-res image (335KB)",
+                "Download:Download full-size image"
+              ]
+            },
+            "Fig. 17. Final 3DBIMModels for Space-Forming and Space-Occupying Components Incorporating Geometric and Attribute Information: (a) Data-1, (b) Data-2, and (c) Data-3.",
+            "Table 10. Assessment of reconstructed BIM models considering predicted areas.",
+            {
+              "type": "table",
+              "headers": [
+                "Dataset",
+                "Intersection area (m2)",
+                "Predicted area(m2)",
+                "Reference area (m2)",
+                "Correctness(%)",
+                "Completeness(%)"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "17.29",
+                  "17.73",
+                  "17.32",
+                  "97.52",
+                  "99.83"
+                ],
+                [
+                  "Data-2",
+                  "24.56",
+                  "24.84",
+                  "24.82",
+                  "98.87",
+                  "98.95"
+                ],
+                [
+                  "Data-3",
+                  "100.70",
+                  "100.86",
+                  "101.14",
+                  "99.84",
+                  "99.56"
+                ]
+              ]
+            },
+            "Table 11. Accuracy Assessment of Space-Occupying BIM Object Shape Determination.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Unchanged object shape count/actual count",
+                "Total unchanged",
+                "Total actual",
+                "Shape Accuracy (%)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "5/5",
+                  "1/1",
+                  "2/2",
+                  "2/2",
+                  "10",
+                  "10",
+                  "100"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "4/4",
+                  "4/5",
+                  "16",
+                  "17",
+                  "94"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "1/1",
+                  "16/16",
+                  "79/79",
+                  "96",
+                  "96",
+                  "100"
+                ]
+              ]
+            },
+            "Table 12. Accuracy Assessment of Space-Occupying BIM Object Rotation Determination.",
+            {
+              "type": "table",
+              "headers": [
+                "Data/Class",
+                "Unchanged object rotation count/actual count",
+                "Total unchanged",
+                "Total actual",
+                "RotationAccuracy (%)",
+                "Sofa",
+                "Bookcase",
+                "Board",
+                "Table",
+                "Chair"
+              ],
+              "rows": [
+                [
+                  "Data-1",
+                  "–",
+                  "4/5",
+                  "0/1",
+                  "2/2",
+                  "2/2",
+                  "8",
+                  "10",
+                  "80"
+                ],
+                [
+                  "Data-2",
+                  "1/1",
+                  "5/5",
+                  "2/2",
+                  "3/4",
+                  "5/5",
+                  "16",
+                  "17",
+                  "94"
+                ],
+                [
+                  "Data-3",
+                  "–",
+                  "–",
+                  "0/1",
+                  "16/16",
+                  "79/79",
+                  "95",
+                  "96",
+                  "99"
+                ]
+              ]
+            },
+            "Table 13. Object-Based Material Classification Evaluation for Data-1.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Beam",
+                  "4",
+                  "Concrete",
+                  "4",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Board",
+                  "1",
+                  "Wood",
+                  "1",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Bookcase",
+                  "4",
+                  "Wood",
+                  "4",
+                  "Wood",
+                  "80"
+                ],
+                [
+                  "1",
+                  "Metal"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "2",
+                  "Plastic",
+                  "2",
+                  "Plastic",
+                  "100"
+                ],
+                [
+                  "Column",
+                  "1",
+                  "Concrete",
+                  "1",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Wall",
+                  "4",
+                  "Concrete",
+                  "4",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Window",
+                  "2",
+                  "Metal",
+                  "2",
+                  "Metal",
+                  "100"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "96.0"
+                ]
+              ]
+            },
+            "Table 14. Object-Based Material Classification Evaluation for Data-2.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Board",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Bookcase",
+                  "3",
+                  "Wood",
+                  "3",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "2",
+                  "Metal",
+                  "2",
+                  "Metal"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "5",
+                  "Plastic",
+                  "5",
+                  "Plastic",
+                  "100"
+                ],
+                [
+                  "Column",
+                  "1",
+                  "Concrete",
+                  "1",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Sofa",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "5",
+                  "Wood",
+                  "5",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Wall",
+                  "5",
+                  "Concrete",
+                  "5",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Window",
+                  "2",
+                  "Metal",
+                  "1",
+                  "Wood",
+                  "50"
+                ],
+                [
+                  "Metal"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "96.7"
+                ]
+              ]
+            },
+            "Table 15. Object-Based Material Classification Evaluation for Data-3.",
+            {
+              "type": "table",
+              "headers": [
+                "Object class",
+                "Actual objects",
+                "Actual material",
+                "Correctly predicted",
+                "Predicted material",
+                "Material accuracy (%)"
+              ],
+              "rows": [
+                [
+                  "Board",
+                  "2",
+                  "Wood",
+                  "2",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Ceiling",
+                  "1",
+                  "Plasterboard",
+                  "1",
+                  "Plasterboard",
+                  "100"
+                ],
+                [
+                  "Chair",
+                  "79",
+                  "Plastic",
+                  "71",
+                  "Plastic",
+                  "90"
+                ],
+                [
+                  "Wood"
+                ],
+                [
+                  "Column",
+                  "2",
+                  "Concrete",
+                  "2",
+                  "Concrete",
+                  "100"
+                ],
+                [
+                  "Door",
+                  "3",
+                  "Wood",
+                  "3",
+                  "Wood",
+                  "100"
+                ],
+                [
+                  "Floor",
+                  "1",
+                  "Fabric",
+                  "1",
+                  "Fabric",
+                  "100"
+                ],
+                [
+                  "Table",
+                  "16",
+                  "Wood",
+                  "15",
+                  "Wood",
+                  "94"
+                ],
+                [
+                  "Metal"
+                ],
+                [
+                  "Wall",
+                  "6",
+                  "Concrete",
+                  "6",
+                  "Concrete",
+                  "90"
+                ],
+                [
+                  "4",
+                  "Wood",
+                  "3",
+                  "Wood"
+                ],
+                [
+                  "Weight. Avg.",
+                  "–",
+                  "–",
+                  "–",
+                  "–",
+                  "91.4"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "5. Conclusions and future work",
+          "content": []
+        },
+        {
+          "title": "CRediT authorship contribution statement",
+          "content": []
+        },
+        {
+          "title": "Declaration of competing interest",
+          "content": []
+        },
+        {
+          "title": "Acknowledgements",
+          "content": []
+        },
+        {
+          "title": "Appendix A. Supplementary data",
+          "content": [
+            "Supplementary material"
+          ]
+        }
+      ],
+      "figures": [],
+      "tables": []
+    },
+    "filename": "Automated material-aware BIM generation using deep learning for comprehensive indoor element reconstruction - ScienceDirect.html",
+    "source": "elsevier"
+  }
+]

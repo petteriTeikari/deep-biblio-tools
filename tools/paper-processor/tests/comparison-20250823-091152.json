@@ -1,0 +1,52 @@
+{
+  "baseline": {
+    "test_date": "2025-08-23T09:08:41.802213",
+    "paper_name": "BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html",
+    "original": {
+      "words": 26259,
+      "sections": 6
+    },
+    "summary": {
+      "words": 2103,
+      "characters": 15509,
+      "compression_ratio": 8.01,
+      "section_headers": 0,
+      "bullet_points": 272
+    },
+    "model_info": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "temperature": 0.3,
+      "max_tokens": 4000
+    }
+  },
+  "current": {
+    "test_date": "2025-08-23T09:11:52.060041",
+    "paper_name": "BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html",
+    "original": {
+      "words": 26259,
+      "sections": 6
+    },
+    "summary": {
+      "words": 2010,
+      "characters": 15210,
+      "compression_ratio": 7.65,
+      "section_headers": 0,
+      "bullet_points": 348
+    },
+    "model_info": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "temperature": 0.3,
+      "max_tokens": 4000
+    }
+  },
+  "comparison": {
+    "word_count_diff": -93,
+    "compression_diff": -0.35999999999999943,
+    "section_headers_diff": 0,
+    "bullet_points_diff": 76,
+    "word_count_pct_change": -4.42225392296719,
+    "compression_pct_change": -4.494382022471903
+  }
+}

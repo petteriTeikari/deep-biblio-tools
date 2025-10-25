@@ -1,0 +1,54 @@
+name: CI
+
+# Primary CI workflow - runs on all PRs for fast feedback
+# For Docker-based validation, see ci-docker.yml
+on:
+  pull_request:
+    branches: [ main, dev ]  # Run on all PRs targeting main or dev
+
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc lyx
+
+    - name: Install dependencies
+      run: |
+        uv sync
+        uv sync --group dev
+
+    - name: Run linting
+      run: |
+        uv run ruff check .
+        uv run ruff format --check .
+
+    - name: Run tests
+      run: |
+        uv run pytest --cov --cov-report=xml
+
+    - name: Run Claude constraints validation
+      run: |
+        uv run python scripts/validate_claude_constraints.py
+
+    - name: Check for emojis
+      run: |
+        find . -name "*.py" -o -name "*.md" -o -name "*.yaml" -o -name "*.yml" | \
+        grep -v ".venv" | grep -v ".git" | grep -v "node_modules" | \
+        xargs uv run python scripts/check_no_emojis.py || true

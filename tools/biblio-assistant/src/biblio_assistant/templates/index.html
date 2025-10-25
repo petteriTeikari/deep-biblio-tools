@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Biblio Assistant{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome to Biblio Assistant</h2>
+    <p>Your comprehensive web interface for academic bibliography management and paper processing.</p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>Citation Validator</h3>
+        <p>Validate citations against multiple databases including CrossRef, PubMed, and arXiv.</p>
+        <a href="/validate" class="btn">Start Validating</a>
+    </div>
+
+    <div class="card">
+        <h3>Paper Processor</h3>
+        <p>Extract content from PDFs, HTML, and LaTeX papers with smart section detection.</p>
+        <a href="/process" class="btn">Process Papers</a>
+    </div>
+
+    <div class="card">
+        <h3>Format Converter</h3>
+        <p>Convert between Markdown, LaTeX, Word, and other formats while preserving citations.</p>
+        <a href="/convert" class="btn">Convert Documents</a>
+    </div>
+
+    <div class="card">
+        <h3>Literature Reviewer</h3>
+        <p>Generate comprehensive literature reviews with AI-powered summarization.</p>
+        <a href="/review" class="btn">Create Reviews</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Quick Upload</h3>
+    <form id="quickUpload" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Select a file to process:</label>
+            <input type="file" id="file" name="file" accept=".pdf,.html,.md,.tex,.bib,.docx" required>
+        </div>
+        <div class="form-group">
+            <label for="action">What would you like to do?</label>
+            <select id="action" name="action">
+                <option value="validate">Validate Citations</option>
+                <option value="process">Extract Content</option>
+                <option value="convert">Convert Format</option>
+                <option value="summarize">Create Summary</option>
+            </select>
+        </div>
+        <button type="submit" class="btn">Process File</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('quickUpload').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const action = formData.get('action');
+
+    // Redirect to appropriate page with file
+    const file = formData.get('file');
+    if (file) {
+        // In a real implementation, would upload file and redirect
+        // For now, just redirect to the appropriate page
+        const actionMap = {
+            'validate': '/validate',
+            'process': '/process',
+            'convert': '/convert',
+            'summarize': '/review'
+        };
+        window.location.href = actionMap[action] || '/';
+    }
+});
+</script>
+{% endblock %}

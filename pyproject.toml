@@ -1,0 +1,139 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "deep-biblio-tools"
+dynamic = ["version"]
+description = "Post-processing of LLM artifacts for scientific text"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+    {name = "Petteri Teikari", email = "petteri.teikari@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "requests>=2.25.1",
+    "beautifulsoup4>=4.9.3",
+    "bibtexparser>=1.4.0",
+    "lxml>=4.6.3",
+    "pypdf2>=3.0.1",
+    "pdfplumber>=0.11.5",
+    "click>=8.0.0",
+    "tqdm>=4.65.0",
+    "streamlit>=1.28.0",
+    "pypandoc>=1.11",
+    "python-dotenv>=1.0.0",
+    "markdown-it-py>=3.0.0",
+    "mistletoe>=1.4.0",
+    "pylatexenc>=2.10",
+    "pyyaml>=6.0.2",
+]
+
+[project.scripts]
+deep-biblio = "src.cli:cli"
+deep-biblio-md2latex = "src.cli_md_to_latex:convert_markdown_to_latex"
+deep-biblio-to-lyx = "src.cli_to_lyx:cli"
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.7.0",
+    "ruff>=0.1.6",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.hatch.version]
+path = "src/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 80
+src = ["src"]
+unsafe-fixes = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]  # Line too long
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]  # Allow assert in tests
+"scripts/convert_drone*.py" = ["E402"]  # Allow module level imports not at top
+"scripts/extract_drone_citations.py" = ["E402"]  # Allow module level imports not at top
+"scripts/archive/*.py" = ["E402"]  # Allow module level imports not at top in archived scripts
+"scripts/convert_markdown_to_latex.py" = ["E402"]  # Allow module level imports not at top
+"scripts/fix_bibliography.py" = ["E402"]  # Allow module level imports not at top
+"scripts/validate_llm_citations.py" = ["E402", "E722"]  # Allow imports and bare except for cache loading
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src"]
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
+
+[dependency-groups]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+]
+dev = [
+    "mypy>=1.7.0",
+    "ruff>=0.1.6",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-xdist>=3.8.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "mypy>=1.7.0",
+    "ruff>=0.1.6",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.uv.sources]
+# Add local package sources here if needed

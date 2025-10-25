@@ -1,0 +1,41 @@
+Could you next compile me an approximately 12-page academic literature reviw  of the .html and .md
+   files in /home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/scene_graphs using the
+  original references in each of source documents, and putting them as hyperlinked inline citations
+  to the generated Markdown document. Cover the history of 3D graphs for scene understamding, what
+  are the knowledge gaps, what are the recent solutions (as talked by the documents, and proposed by
+   the documents), and what are the future avenues. And if you could have a final chapter
+  contextualizing the learnings for scan-to-bim solutions (see
+  /home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/md_context/scan-to-bim-journey-expanded.md).
+  Do you have context length long enough, and can you compete the task at all? Remember the input
+  files in pieces if they are longer than allowed max token limits. Maybe a good intermediate
+  strategy is to first process all the files and save their summarized versions as markdown files
+  with 25% of the original length, saving to disk as markdown files with _summary suffix and then
+  doing the literature review from those _summary files on a second pass?
+
+For example when looking at "3D_Dynamic_Scene_Graphs_summary.md" in                                 │
+│   "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/scene_graphs/summaries" the end result  │
+│   is quite bad to be honest. Like I wanted the original citations from the paper so that I would      │
+│   need the original paper anymore, preferably as hyperlinked linked citations in authoryear format.   │
+│   For example instead of having "- SMPL model: [64]", you should have had "- SMPL model: ([Loper et   │
+│   al. ](url?))" in markdown notation so that I know the name of the author from the cited paper and   │
+│   preferably the hyperlink (but realize that this hyperlink would need some function calling as it    │
+│   is not often available in the original html or markdown document :S So you could do a list of       │
+│   references at the end of each summary: e.g. add "M. Loper, N. Mahmood, J. Romero, G. Pons-Moll,     │
+│   and M. J. Black. SMPL: A skinned multi-person linear model.ACM Trans. Graphics (Proc. SIGGRAPH      │
+│   Asia), 34(6):248:1–248:16, Oct. 2015." now to the end of the summary document. The compression      │
+│   that you used was way too aggressive also, if you simply compare the filesizes of the output        │
+│   summary (4.8 kB) and the input document (68.5 kB) that is hardly 25% of the original size? Could    │
+│   you keep a lot more of the original input content. And you could you create some sort of            │
+│   reproducible script of my request now with these fixes in the system prompt for Claude Code? As in  │
+│   this will be now recurring task that I would like to create summaries from folders of papers and    │
+│   I would not like everytime to write these instructions. I would simply like to run the script for   │
+│   processing the folder? Could we redo this task and let's see how your revised summaries look like?  │
+│   And I don't knwow where you saved the output review actually.
+
+I did forget to mention that I would obviously want the academic hyperlinked inline citations to
+  the final comprehensive literature review of all those 15 papers done, taking the original
+  hyperlinked from the individual paper summaries. And preferably you would simply combine all the
+  references from these invididual papers (and remove duplicates), so that after this process I would
+   only need this one comprehensive review on these topic, and it would have all the cited literature
+   from those papers. It does not seem to be the case now when I look at the .md file in review/, the
+   individual paper summaries look excellent now and as how I wanted them to be

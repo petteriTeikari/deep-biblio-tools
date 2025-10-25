@@ -1,0 +1,55 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-case-conflict  # Important for Windows/Mac compatibility
+
+  # Cross-platform compatibility
+  - repo: local
+    hooks:
+      - id: no-emojis
+        name: No emojis allowed (except in markdown files)
+        entry: uv run python scripts/check_no_emojis.py
+        language: system
+        files: '\.(py|sh|yml|yaml|json|toml|txt|cfg|ini|conf)$'
+        exclude: '^(\.git/|node_modules/|venv/|\.venv/|.*\.md$)'
+
+      - id: check-guardrails
+        name: Check Claude guardrails compliance
+        entry: uv run python scripts/check_guardrails.py
+        language: system
+        always_run: true
+        pass_filenames: false
+
+      # Disabled in favor of the more comprehensive enforce-no-regex-policy
+      # - id: no-regex-parser
+      #   name: No regex for structured parsing
+      #   entry: uv run python scripts/check_no_regex_parsing.py
+      #   language: system
+      #   files: \.py$
+
+      - id: enforce-no-regex-policy
+        name: Comprehensive regex policy enforcement
+        entry: uv run python scripts/enforce_no_regex_policy.py
+        language: system
+        always_run: true
+        pass_filenames: false
+
+      - id: validate-imports
+        name: Validate import structure
+        entry: uv run python scripts/validate_imports.py
+        language: system
+        files: ^src/.*\.py$

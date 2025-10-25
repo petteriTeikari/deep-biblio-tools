@@ -1,0 +1,95 @@
+name: Compression Regression Test
+
+on:
+  # Run on PRs that modify summarization code
+  pull_request:
+    paths:
+      - 'tools/literature-reviewer/src/literature_reviewer/processors/ai_summarizer.py'
+      - 'tools/paper-processor/src/paper_processor/core/processor.py'
+      - 'tools/paper-processor/tests/test_compression_regression.py'
+
+  # Run weekly to detect model drift
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight
+
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      save_baseline:
+        description: 'Save as new baseline'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  regression-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -e ./tools/paper-processor
+        pip install -e ./tools/literature-reviewer
+
+    - name: Download test paper
+      run: |
+        # In a real setup, you'd store this in a test fixtures repo or S3
+        mkdir -p test-fixtures
+        # For now, we'll check if it exists in the expected location
+
+    - name: Run regression test
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      run: |
+        cd tools/paper-processor
+        python tests/test_compression_regression.py ${{ github.event.inputs.save_baseline && '--save-baseline' || '' }}
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: compression-test-results
+        path: |
+          tools/paper-processor/tests/compression_baseline.json
+          tools/paper-processor/tests/comparison_*.json
+
+    - name: Comment on PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const comparisonFiles = fs.readdirSync('tools/paper-processor/tests/')
+            .filter(f => f.startsWith('comparison_'))
+            .sort()
+            .reverse();
+
+          if (comparisonFiles.length > 0) {
+            const latestComparison = JSON.parse(
+              fs.readFileSync(`tools/paper-processor/tests/${comparisonFiles[0]}`, 'utf8')
+            );
+
+            const comment = `## Compression Regression Test Results
+
+            | Metric | Current | Baseline | Change |
+            |--------|---------|----------|--------|
+            | Summary Words | ${latestComparison.current.summary.words} | ${latestComparison.baseline.summary.words} | ${latestComparison.comparison.word_count_diff} |
+            | Compression Ratio | ${latestComparison.current.summary.compression_ratio}% | ${latestComparison.baseline.summary.compression_ratio}% | ${latestComparison.comparison.compression_diff.toFixed(1)}% |
+
+            ${Math.abs(latestComparison.comparison.compression_pct_change) > 25 ? '**WARNING: Significant drift detected!**' : 'No significant drift detected.'}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }

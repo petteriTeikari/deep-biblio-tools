@@ -1,0 +1,10 @@
+# Add this to your .pre-commit-config.yaml file:
+
+  - repo: local
+    hooks:
+      - id: compression-regression-check
+        name: Check summarization compression stability
+        entry: bash -c 'if [[ "$1" =~ "ai_summarizer.py" ]] || [[ "$1" =~ "processor.py" ]]; then echo "WARNING: You modified summarization code. Please run: cd tools/paper-processor && ./run_regression_test.sh"; fi'
+        language: system
+        files: (ai_summarizer\.py|processor\.py)$
+        pass_filenames: true

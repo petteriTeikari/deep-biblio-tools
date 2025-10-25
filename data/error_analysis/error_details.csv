@@ -1,0 +1,99 @@
+Error_Category,Citation_Text,URL,Error_Type,HTTP_Status,Publisher_Domain,Error_Message,Suggested_Fix
+Publisher_Access,Pagourtzi et al. 2003,https://doi.org/10.1108/14635780310483656,403_Forbidden,403,emerald.com,Client Error: Forbidden for url: https://www.emerald.com/jpif/article/21/4/383-401/236553,Add Emerald-specific extractor
+Publisher_Access,Gabrielli and French 2021,https://doi.org/10.1108/JPIF-09-2020-0101,403_Forbidden,403,emerald.com,Client Error: Forbidden for url: https://www.emerald.com/jpif/article/39/5/464-480/450911,Add Emerald-specific extractor
+Publisher_Access,You and Chang 2009,https://doi.org/10.1108/02637470910998465,403_Forbidden,403,emerald.com,Client Error: Forbidden for url: https://www.emerald.com/pm/article/27/5/302-318/322726,Add Emerald-specific extractor
+Publisher_Access,d'Amato & Kauko 2007,https://doi.org/10.1108/14635780710776654,404_Not_Found,404,doi.org,Client Error: Not Found for url: https://doi.org/10.1108/14635780710776654,Verify DOI validity
+Publisher_Access,Polychronis et al. 2024,https://www.mdpi.com/2227-7080/12/8/128,403_Forbidden,403,mdpi.com,Client Error: Forbidden for url: https://www.mdpi.com/2227-7080/12/8/128,Improve MDPI workaround
+Publisher_Access,Agarwal et al. 2021,https://doi.org/10.1073/pnas.2100050118,403_Forbidden,403,pnas.org,Client Error: Forbidden for url: https://pnas.org/doi/full/10.1073/pnas.2100050118,Add PNAS-specific extractor
+Publisher_Access,Polychronis et al. 2024,https://doi.org/10.3390/technologies12080128,403_Forbidden,403,mdpi.com,Client Error: Forbidden for url: https://www.mdpi.com/2227-7080/12/8/128,Improve MDPI workaround
+Publisher_Access,Szumilo & Wiegelmann 2024,https://doi.org/10.1108/jpif-01-2024-0001,403_Forbidden,403,emerald.com,Client Error: Forbidden for url: https://www.emerald.com/jpif/article/42/2/211-217/1227343,Add Emerald-specific extractor
+Publisher_Access,Tagliaro et al. 2024,https://doi.org/10.1108/jerer-05-2024-0035,403_Forbidden,403,emerald.com,Client Error: Forbidden for url: https://www.emerald.com/jerer/article/12/1/148-166/1263733,Add Emerald-specific extractor
+Publisher_Access,2020,https://doi.org/10.1145/3503250,403_Forbidden,403,dl.acm.org,Client Error: Forbidden for url: https://dl.acm.org/doi/10.1145/3503250,Add ACM-specific extractor
+Publisher_Access,Diakopoulos 2016,https://doi.org/10.1080/21670811.2014.976411,403_Forbidden,403,tandfonline.com,Client Error: Forbidden for url: https://www.tandfonline.com/doi/full/10.1080/21670811.2014.976411,Add Taylor&Francis extractor
+Malformed_Citation,[16,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,[37,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,39,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,[59,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,60,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,[62,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,[66,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,67,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,[74,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,75,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,77,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,[80,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,89,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,91,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,94,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,106,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,112,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,114,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,[116,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,117,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,155,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,[158,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,159,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_Citation,[163,Unknown,Invalid_Markdown,N/A,Unknown,Invalid markdown link format,Fix markdown syntax
+Malformed_Citation,185,Unknown,Bare_Number,N/A,Unknown,Bare number used as citation,Use proper citation format
+Malformed_URL,Harnad 1990,https://doi.org/10.1016/0167-2789\(90\,Escaped_Characters,N/A,doi.org,Escaped characters in DOI URL,Clean URL encoding
+Malformed_URL,Acemoglu & Autor 2011,https://doi.org/10.1016/S0169-7218\(11\,Escaped_Characters,N/A,doi.org,Escaped characters in DOI URL,Clean URL encoding
+Institutional_Source,Freddie Mac 2024,Unknown,No_Metadata,N/A,freddiemac.com,No structured academic metadata,Use official publication reference
+Institutional_Source,Freddie Mac 2024,Unknown,No_Metadata,N/A,freddiemac.com,No structured academic metadata,Use official publication reference
+Institutional_Source,Freddie Mac 2024,Unknown,No_Metadata,N/A,freddiemac.com,No structured academic metadata,Use official publication reference
+Institutional_Source,Freddie Mac 2024,Unknown,No_Metadata,N/A,freddiemac.com,No structured academic metadata,Use official publication reference
+Institutional_Source,Freddie Mac 2024,Unknown,No_Metadata,N/A,freddiemac.com,No structured academic metadata,Use official publication reference
+Institutional_Source,Columbia University 2024,Unknown,No_Metadata,N/A,columbia.edu,Generic institutional content,Find specific publication
+Institutional_Source,Brookings Institution 2008,Unknown,No_Metadata,N/A,brookings.edu,Think tank publication,Use specific report reference
+Institutional_Source,DIFI 2025,Unknown,No_Metadata,N/A,Unknown,Government/regulatory body,Use official document reference
+Institutional_Source,MIT News 2025,Unknown,No_Metadata,N/A,news.mit.edu,News article not academic paper,Use underlying research paper
+Institutional_Source,Digital Initiatives at the Grad Center 2025,Unknown,No_Metadata,N/A,gradcenter.cuny.edu,Institutional repository,Find original publication
+Commercial_Source,alphacam.at,Unknown,No_Metadata,N/A,alphacam.at,Commercial website,Not suitable for academic citation
+Platform_Reference,arXiv 2024,Unknown,Platform_Reference,N/A,arxiv.org,Reference to platform not paper,Use specific arXiv paper ID
+Platform_Reference,arXiv 2025,Unknown,Platform_Reference,N/A,arxiv.org,Reference to platform not paper,Use specific arXiv paper ID
+Platform_Reference,CEUR-WS.org 2024,Unknown,Platform_Reference,N/A,ceur-ws.org,Conference proceedings website,Use specific paper reference
+PDF_Processing,GOV.UK 2024,Unknown,Poor_Extraction,N/A,gov.uk,PDF gave generic title Bidanset,Improve PDF title extraction
+PDF_Processing,IAAO 2024,Unknown,Poor_Extraction,N/A,iaao.org,PDF gave generic title Learning,Improve PDF title extraction
+PDF_Processing,The Appraisal of an Appraisal Company 2023,Unknown,Poor_Extraction,N/A,Unknown,PDF gave partial author Pomykacz,Improve PDF author extraction
+PDF_Processing,Garza CAD 2024,Unknown,Poor_Extraction,N/A,Unknown,PDF gave generic title NAPS2,Improve PDF title extraction
+PDF_Processing,Atlantis Press 2022,Unknown,Poor_Extraction,N/A,atlantis-press.com,PDF gave generic title account,Improve PDF title extraction
+PDF_Processing,asc.gov,Unknown,Poor_Extraction,N/A,asc.gov,PDF gave generic title Council,Improve PDF title extraction
+PDF_Processing,AEI Housing Center 2025,Unknown,Poor_Extraction,N/A,aei.org,PDF processing gave generic author,Improve PDF author extraction
+PDF_Processing,AEI Housing Center 2024,Unknown,Poor_Extraction,N/A,aei.org,PDF processing gave generic author,Improve PDF author extraction
+PDF_Processing,MBA 2019,Unknown,Poor_Extraction,N/A,Unknown,PDF processing gave generic author adoan,Improve PDF author extraction
+PDF_Processing,Amorin 2024,Unknown,Poor_Extraction,N/A,Unknown,PDF processing marked as #GUESSED,Improve PDF confidence scoring
+Metadata_Missing,Zhou et al. 2023,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Zhou et al. 2023,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Huang et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Li et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,From NeRFs to Gaussian Splats and Back,Unknown,No_Structured_Data,N/A,Unknown,Appears to be a title not proper citation,Use proper author-year format
+Metadata_Missing,Huang et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Li et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Wang et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Chen et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Wang et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Yang et al. 2025a,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Kotovenko et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Kotovenko et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Kotovenko et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Deng et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Wang et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Sun et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Sun et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Wang et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Wang et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,54,Unknown,No_Structured_Data,N/A,Unknown,Bare number citation with no metadata,Use proper citation format
+Metadata_Missing,Mucsányi et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Andresen et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Liang et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Huang et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Babu et al. 2023,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Liu et al. 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Chen et al. 2012,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Chen et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Wu et al. 2023,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Guo et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Ge et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Cong et al. 2025c,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Chen et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Agrawal et al. 2024,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources
+Metadata_Missing,Azizan 2025,Unknown,No_Structured_Data,N/A,Unknown,Could not extract bibliographic information,Add fallback data sources

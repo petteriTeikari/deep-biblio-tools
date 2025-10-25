@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "biblio-assistant"
+version = "1.0.0"
+description = "Web-based interface for interactive bibliography management"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "Deep Biblio Tools Team", email = "team@deepbiblio.tools"}
+]
+keywords = ["web", "ui", "bibliography", "academic", "assistant", "interactive"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP",
+    "Framework :: FastAPI",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.0",
+    "fastapi>=0.100",
+    "uvicorn>=0.23",
+    "pydantic>=2.0",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.6",
+    "aiofiles>=23.0",
+    "httpx>=0.24",
+    "websockets>=11.0",
+    "rich>=13.0",
+    # Import other tools
+    "biblio-validator>=1.0",
+    "paper-processor>=1.0",
+    "literature-reviewer>=1.0",
+    "format-converter>=1.0",
+    "quality-guardian>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1",
+    "mypy>=1.0",
+]
+
+[project.scripts]
+biblio-assistant = "biblio_assistant.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/deep-biblio-tools/deep-biblio-tools"
+Documentation = "https://deep-biblio-tools.readthedocs.io/tools/biblio-assistant"
+"Bug Tracker" = "https://github.com/deep-biblio-tools/deep-biblio-tools/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/biblio_assistant"]

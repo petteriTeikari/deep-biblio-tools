@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      # Mount source code for live updates during development
+      - ./src:/workspace/src:ro
+      - ./tests:/workspace/tests:ro
+      - ./pyproject.toml:/workspace/pyproject.toml:ro
+      - ./uv.lock:/workspace/uv.lock:ro
+    environment:
+      # Replicate GitHub Actions environment
+      - CI=true
+      - GITHUB_ACTIONS=true
+      - RUNNER_OS=Linux
+      - RUNNER_ARCH=X64
+    command: ["uv", "run", "pytest", "tests/", "-v", "--color=yes"]
+
+  lint:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./src:/workspace/src:ro
+      - ./tests:/workspace/tests:ro
+      - ./pyproject.toml:/workspace/pyproject.toml:ro
+      - ./uv.lock:/workspace/uv.lock:ro
+    command: ["sh", "-c", "uv run ruff check . && uv run ruff format --check ."]
+
+  format:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./src:/workspace/src
+      - ./tests:/workspace/tests
+      - ./pyproject.toml:/workspace/pyproject.toml:ro
+      - ./uv.lock:/workspace/uv.lock:ro
+    command: ["sh", "-c", "uv run ruff check . --fix && uv run ruff format ."]

@@ -1,0 +1,21 @@
+{
+  "test_date": "2025-08-23T09:08:41.802213",
+  "paper_name": "BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html",
+  "original": {
+    "words": 26259,
+    "sections": 6
+  },
+  "summary": {
+    "words": 2103,
+    "characters": 15509,
+    "compression_ratio": 8.01,
+    "section_headers": 0,
+    "bullet_points": 272
+  },
+  "model_info": {
+    "provider": "anthropic",
+    "model": "claude-3-5-sonnet-20241022",
+    "temperature": 0.3,
+    "max_tokens": 4000
+  }
+}

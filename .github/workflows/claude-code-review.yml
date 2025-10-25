@@ -1,0 +1,76 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    paths:
+      - "src/**/*.py"
+      - "tests/**/*.py"
+      - "scripts/**/*.py"
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # Direct prompt for automated review (no @claude mention needed)
+          direct_prompt: |
+            Please review this pull request for the Deep Biblio Tools project and provide feedback on:
+
+            1. **Code Quality & Best Practices**:
+               - Python code style and PEP 8 compliance
+               - Proper use of type hints
+               - Code organization and modularity
+               - Naming conventions
+
+            2. **Potential Bugs or Issues**:
+               - Logic errors
+               - Edge cases not handled
+               - Potential runtime errors
+
+            3. **Performance Considerations**:
+               - Inefficient algorithms
+               - Unnecessary API calls
+               - Memory usage concerns
+
+            4. **Security Concerns**:
+               - Input validation
+               - API key exposure
+               - File system operations
+
+            5. **Test Coverage**:
+               - Missing test cases
+               - Test quality
+               - Edge case coverage
+
+            6. **Bibliography Processing Specific Checks**:
+               - Proper handling of citation formats
+               - Deterministic behavior
+               - LLM hallucination detection effectiveness
+
+            Be constructive and helpful in your feedback. Focus on the most important issues first.
+
+            Note: This project processes LLM-generated bibliographies and must be deterministic to catch hallucinations in author names and other citation details.
+
+          # Use sticky comments to make Claude reuse the same comment on subsequent pushes
+          use_sticky_comment: true
+
+          # Allow Claude to run tests and checks
+          allowed_tools: "Bash(uv run pytest),Bash(uv run ruff check),Bash(uv run ruff format --check)"

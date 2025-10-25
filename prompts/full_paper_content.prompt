@@ -1,0 +1,36 @@
+
+Create a COMPREHENSIVE summary of this academic paper that is EXACTLY 18.3KB in size (25% of the original 73.0KB).
+
+CRITICAL REQUIREMENTS:
+
+1. TARGET SIZE: The summary MUST be approximately 18.3KB
+
+2. CITATION FORMAT: Convert ALL citations from [X] to author-year format
+   - Original: "using SMPL model [64]"
+   - Converted: "using SMPL model ([Loper et al., 2015])"
+
+3. STRUCTURE (with approximate sizes):
+   - Title, Authors, Affiliations (0.5KB)
+   - Comprehensive Abstract (10-15% of summary)
+   - Detailed Key Contributions (20-25% of summary)
+   - Extensive Methodology (30-35% of summary)
+   - Complete Results with numbers (20-25% of summary)
+   - Technical Implementation (10-15% of summary)
+   - Limitations and Future Work (5% of summary)
+   - COMPLETE References (10-15% of summary)
+
+4. CONTENT PRESERVATION:
+   - Include extensive quotes from important sections
+   - Preserve ALL quantitative results and comparisons
+   - Keep all algorithm names and technical details
+   - Maintain equations and mathematical notation
+   - Include all dataset names and evaluation metrics
+
+5. REFERENCES: End with a complete bibliography containing:
+   - Full author names (not just initials)
+   - Complete paper titles
+   - Publication venue, volume, pages
+   - Year and DOI/URL when available
+
+Input file: /home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools/full_paper_content.md
+Target size: 18.3KB

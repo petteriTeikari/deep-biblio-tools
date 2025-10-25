@@ -1,0 +1,228 @@
+# GitHub Actions workflow for regex policy enforcement
+name: Regex Policy Enforcement
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  enforce-no-regex:
+    runs-on: ubuntu-latest
+    name: Enforce No-Regex Policy
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Install dependencies
+      run: |
+        uv sync
+
+    - name: Run comprehensive regex enforcement
+      run: |
+        echo "Running comprehensive regex policy enforcement..."
+        uv run python scripts/enforce_no_regex_policy.py
+
+        echo ""
+        echo "Running regex compliance tests..."
+        if [ -f "tests/test_regex_compliance.py" ]; then
+          PYTHONPATH=. uv run python tests/test_regex_compliance.py
+        else
+          echo "ERROR: test_regex_compliance.py not found at tests/test_regex_compliance.py"
+          ls -la tests/
+          exit 1
+        fi
+
+    - name: Clean test artifacts before checking
+      run: |
+        # Remove any test artifacts that might have been created
+        find . -name "*.pyc" -delete
+        find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+        find . -name ".pytest_cache" -type d -exec rm -rf {} + 2>/dev/null || true
+        find . -name "htmlcov" -type d -exec rm -rf {} + 2>/dev/null || true
+        find . -name ".coverage*" -delete 2>/dev/null || true
+
+    - name: Check for prohibited file naming patterns
+      run: |
+        echo "Checking for prohibited file naming patterns..."
+
+        # Check for version suffixes in filenames
+        echo "Searching for files with version suffixes..."
+        found_files=$(find src/ scripts/ tests/ -path "*/archive" -prune -o \( -name "*_new.*" -o -name "*_v[0-9].*" -o -name "*_final.*" -o -name "*_old.*" -o -name "*_backup.*" \) -type f -print | grep -v __pycache__ | grep -v "\.pyc$" | grep -v ".pytest_cache" | grep -v "htmlcov" | grep -v ".coverage" | head -10)
+
+        if [ -n "$found_files" ]; then
+          echo "ERROR: Found files with prohibited version suffixes:"
+          echo "$found_files"
+          echo ""
+          echo "Use git for version control instead of filename suffixes"
+          exit 1
+        fi
+
+        echo "No prohibited filename patterns found"
+
+    - name: Verify approved parsing methods are used
+      run: |
+        echo "Checking for approved parsing method usage..."
+
+        # Count usage of approved methods
+        approved_count=$(grep -r "startswith\|endswith\|find\|replace\|split\|isdigit" src/ | wc -l)
+        ast_count=$(grep -r "markdown_it\|LatexWalker\|bibtexparser" src/ | wc -l)
+
+        echo "Found $approved_count uses of approved string methods"
+        echo "Found $ast_count uses of approved AST parsers"
+
+        # Should have significant usage
+        if [ "$approved_count" -lt 50 ]; then
+          echo "WARNING: Low usage of approved string methods (expected >50, found $approved_count)"
+        fi
+
+        if [ "$ast_count" -lt 10 ]; then
+          echo "WARNING: Low usage of AST parsers (expected >10, found $ast_count)"
+        fi
+
+        echo "Approved parsing methods verification complete"
+
+  integration-test:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    needs: enforce-no-regex
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Install dependencies
+      run: |
+        uv sync
+
+    - name: Run key functionality tests
+      run: |
+        echo "Testing that regex removal didn't break functionality..."
+
+        # Run core tests that should still work without regex
+        uv run pytest tests/test_filename_conventions.py -v
+        uv run pytest tests/test_bibliography_integrity.py::TestBibliographyIntegrity::test_valid_bibliography -v
+
+        echo "Core functionality tests passed"
+
+  security-check:
+    runs-on: ubuntu-latest
+    name: Security Verification
+    needs: enforce-no-regex
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for potential ReDoS patterns
+      run: |
+        echo "Checking for potential ReDoS vulnerabilities..."
+
+        # Even though we banned regex, check for any sneaky patterns
+        if grep -r ".*\*.*\*\|.+.*+\|(.*)*" src/ scripts/ | grep -v "#" | head -3; then
+          echo "WARNING: Found potential ReDoS patterns"
+          echo "Review these patterns to ensure they're not regex-based"
+        else
+          echo "No ReDoS patterns detected"
+        fi
+
+    - name: Verify no eval/exec usage with regex
+      run: |
+        echo "Checking for dynamic regex compilation..."
+
+        if grep -r "eval.*re\.\|exec.*re\." src/ scripts/; then
+          echo "ERROR: Found dynamic regex compilation"
+          exit 1
+        fi
+
+        echo "No dynamic regex compilation found"
+
+  documentation-check:
+    runs-on: ubuntu-latest
+    name: Documentation Verification
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Verify regex policy documentation exists
+      run: |
+        echo "Checking regex policy documentation..."
+
+        required_files=(
+          ".claude/CLAUDE.md"
+          ".claude/ast-regex-refactoring-guidelines.md"
+          "docs/architecture/regex-to-string-refactoring-lessons.md"
+          "docs/development/regex-removal-best-practices.md"
+        )
+
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "ERROR: Missing required documentation: $file"
+            exit 1
+          else
+            echo "Found: $file"
+          fi
+        done
+
+        echo "All regex policy documentation is present"
+
+  report-status:
+    runs-on: ubuntu-latest
+    name: Report Status
+    needs: [enforce-no-regex, integration-test, security-check, documentation-check]
+    if: always()
+
+    steps:
+    - name: Report final status
+      run: |
+        echo "Regex Policy Enforcement Summary"
+        echo "=================================="
+        echo ""
+
+        if [ "${{ needs.enforce-no-regex.result }}" == "success" ]; then
+          echo "Regex enforcement: PASSED"
+        else
+          echo "Regex enforcement: FAILED"
+        fi
+
+        if [ "${{ needs.integration-test.result }}" == "success" ]; then
+          echo "Integration tests: PASSED"
+        else
+          echo "Integration tests: FAILED"
+        fi
+
+        if [ "${{ needs.security-check.result }}" == "success" ]; then
+          echo "Security check: PASSED"
+        else
+          echo "Security check: FAILED"
+        fi
+
+        if [ "${{ needs.documentation-check.result }}" == "success" ]; then
+          echo "Documentation: PASSED"
+        else
+          echo "Documentation: FAILED"
+        fi
+
+        echo ""
+        echo "All checks completed"

@@ -1,0 +1,500 @@
+#!/usr/bin/env python3
+"""
+AIDEV - Local Anchoring System Management Tool
+
+Manages AIDEV tags for enhanced Claude collaboration with local context anchoring.
+Based on the approach described in https://diwank.space/field-notes-from-shipping-real-code-with-claude
+
+Usage:
+    ./scripts/guardrails/aidev <command> [options]
+
+Commands:
+    scan        - Scan codebase for all AIDEV tags
+    report      - Generate comprehensive AIDEV report
+    cleanup     - Clean up resolved AIDEV-REPLACEMENT-TODO tags
+    questions   - Show all AIDEV-QUESTION/ANSWER pairs
+    validate    - Validate AIDEV tag consistency
+    add         - Add new AIDEV tag to a file
+    examples    - Show usage examples of each tag type
+"""
+
+import argparse
+import json
+import re
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+
+class AidevManager:
+    """Manages AIDEV tags across the codebase."""
+
+    def __init__(self, project_root: Path = None):
+        self.project_root = project_root or Path.cwd()
+        self.primary_language = "python"
+
+        # File extensions to scan based on language
+        self.extensions = self._get_extensions()
+
+        # AIDEV tag patterns
+        self.tag_patterns = {
+            "AIDEV-NOTE": r"AIDEV-NOTE:?\s*(.*?)(?:\n|$)",
+            "AIDEV-TODO": r"AIDEV-TODO:?\s*(.*?)(?:\n|$)",
+            "AIDEV-QUESTION": r"AIDEV-QUESTION:?\s*(.*?)(?:\n|$)",
+            "AIDEV-ANSWER": r"AIDEV-ANSWER:?\s*(.*?)(?:\n|$)",
+            "AIDEV-REPLACEMENT-TODO": r"AIDEV-REPLACEMENT-TODO:?\s*(.*?)(?:\n|$)",
+            "AIDEV-GENERATED-TEST": r"AIDEV-GENERATED-TEST:?\s*(.*?)(?:\n|$)",
+            "AIDEV-IMMUTABLE-START": r"AIDEV-IMMUTABLE-START:?\s*(.*?)(?:\n|$)",
+            "AIDEV-IMMUTABLE-END": r"AIDEV-IMMUTABLE-END:?\s*(.*?)(?:\n|$)",
+        }
+
+    def _get_extensions(self) -> list[str]:
+        """Get file extensions to scan based on primary language."""
+        extension_map = {
+            "python": ["py"],
+            "javascript": ["js", "jsx"],
+            "typescript": ["ts", "tsx"],
+            "go": ["go"],
+            "rust": ["rs"],
+            "java": ["java"],
+            "swift": ["swift"],
+            "cpp": ["cpp", "cc", "cxx", "hpp", "h"],
+            "mixed": ["py", "cpp", "cc", "cxx", "hpp", "h", "rs", "js", "ts"],
+        }
+        return extension_map.get(self.primary_language, ["py", "js", "ts"])
+
+    def scan(self, output_format: str = "table") -> dict:
+        """Scan codebase for all AIDEV tags."""
+        results = defaultdict(list)
+
+        for ext in self.extensions:
+            for file_path in self.project_root.rglob(f"*.{ext}"):
+                # Skip common directories to ignore
+                if any(
+                    skip in str(file_path)
+                    for skip in [
+                        "node_modules",
+                        ".git",
+                        "__pycache__",
+                        "build",
+                        "dist",
+                        ".venv",
+                        "venv",
+                        "target",
+                    ]
+                ):
+                    continue
+
+                file_results = self._scan_file(file_path)
+                for tag_type, tags in file_results.items():
+                    results[tag_type].extend(tags)
+
+        if output_format == "json":
+            print(json.dumps(results, indent=2, default=str))
+        else:
+            self._print_scan_table(results)
+
+        return results
+
+    def _scan_file(self, file_path: Path) -> dict[str, list]:
+        """Scan a single file for AIDEV tags."""
+        results = defaultdict(list)
+
+        try:
+            content = file_path.read_text(encoding="utf-8")
+            lines = content.split("\n")
+
+            for i, line in enumerate(lines, 1):
+                for tag_type, pattern in self.tag_patterns.items():
+                    matches = re.findall(pattern, line, re.IGNORECASE)
+                    for match in matches:
+                        results[tag_type].append(
+                            {
+                                "file": str(
+                                    file_path.relative_to(self.project_root)
+                                ),
+                                "line": i,
+                                "content": match.strip(),
+                                "context": line.strip(),
+                            }
+                        )
+
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}", file=sys.stderr)
+
+        return results
+
+    def _print_scan_table(self, results: dict):
+        """Print scan results in table format."""
+        if not results:
+            print("No AIDEV tags found in codebase")
+            return
+
+        print("[CHART] AIDEV Tags Summary for Deep Biblio Tools")
+        print("=" * 60)
+
+        for tag_type, tags in results.items():
+            if not tags:
+                continue
+
+            print()
+            print(f"{self._get_tag_emoji(tag_type)} {tag_type} ({len(tags)})")
+            print("-" * 40)
+
+            for tag in tags[:5]:  # Show first 5 of each type
+                content = (
+                    tag["content"][:50] + "..."
+                    if len(tag["content"]) > 50
+                    else tag["content"]
+                )
+                print(f"  {tag['file']}:{tag['line']} - {content}")
+
+            if len(tags) > 5:
+                print(f"  ... and {len(tags) - 5} more")
+
+    def _get_tag_emoji(self, tag_type: str) -> str:
+        """Get emoji for tag type."""
+        emoji_map = {
+            "AIDEV-NOTE": "[NOTE]",
+            "AIDEV-TODO": "[TODO]",
+            "AIDEV-QUESTION": "[QUESTION]",
+            "AIDEV-ANSWER": "[INFO]",
+            "AIDEV-REPLACEMENT-TODO": "[WARNING]",
+            "AIDEV-GENERATED-TEST": "[TEST]",
+            "AIDEV-IMMUTABLE-START": "[IMMUTABLE]",
+            "AIDEV-IMMUTABLE-END": "[EMOJI]",
+        }
+        return emoji_map.get(tag_type, "[TAG]")
+
+    def report(self) -> None:
+        """Generate comprehensive AIDEV report."""
+        results = self.scan(output_format="data")
+
+        print("[SEARCH] AIDEV Local Anchoring Report for Deep Biblio Tools")
+        print("=" * 60)
+
+        # Overall statistics
+        total_tags = sum(len(tags) for tags in results.values())
+        print()
+        print("[EMOJI] Overall Statistics:")
+        print(f"   Total AIDEV tags: {total_tags}")
+        print(
+            f"   Files with tags: {len(set(tag['file'] for tags in results.values() for tag in tags))}"
+        )
+
+        # Q&A Analysis
+        questions = results.get("AIDEV-QUESTION", [])
+        answers = results.get("AIDEV-ANSWER", [])
+
+        if questions or answers:
+            print()
+            print("[QUESTION] Q&A Analysis:")
+            print(f"   Questions asked: {len(questions)}")
+            print(f"   Answers provided: {len(answers)}")
+
+            # Find orphaned questions
+            answered_files = set(f"{a['file']}:{a['line']}" for a in answers)
+            orphaned = [
+                q
+                for q in questions
+                if f"{q['file']}:{q['line']}" not in answered_files
+            ]
+
+            if orphaned:
+                print(f"   [SEARCH] Orphaned questions: {len(orphaned)}")
+                for q in orphaned[:3]:
+                    print(
+                        f"      {q['file']}:{q['line']} - {q['content'][:60]}..."
+                    )
+
+        # Replacement TODOs that need attention
+        replacement_todos = results.get("AIDEV-REPLACEMENT-TODO", [])
+        if replacement_todos:
+            print()
+            print(
+                f"[WARNING]  Replacement TODOs requiring attention: {len(replacement_todos)}"
+            )
+            for todo in replacement_todos[:5]:
+                print(
+                    f"   {todo['file']}:{todo['line']} - {todo['content'][:60]}..."
+                )
+
+        # Generated tests requiring review
+        generated_tests = results.get("AIDEV-GENERATED-TEST", [])
+        if generated_tests:
+            print()
+            print(
+                f"[TEST] Generated tests requiring review: {len(generated_tests)}"
+            )
+            for test in generated_tests[:3]:
+                print(
+                    f"   {test['file']}:{test['line']} - {test['content'][:60]}..."
+                )
+
+        # Immutable blocks
+        immutable_starts = len(results.get("AIDEV-IMMUTABLE-START", []))
+        immutable_ends = len(results.get("AIDEV-IMMUTABLE-END", []))
+
+        if immutable_starts or immutable_ends:
+            print()
+            print("[IMMUTABLE] Immutable Blocks:")
+            print(
+                f"   Protected sections: {min(immutable_starts, immutable_ends)}"
+            )
+            if immutable_starts != immutable_ends:
+                print(
+                    f"   [WARNING]  Mismatched markers: {abs(immutable_starts - immutable_ends)}"
+                )
+
+    def cleanup(self, dry_run: bool = True) -> None:
+        """Clean up resolved AIDEV-REPLACEMENT-TODO tags."""
+        results = self.scan(output_format="data")
+        replacement_todos = results.get("AIDEV-REPLACEMENT-TODO", [])
+
+        if not replacement_todos:
+            print("[OK] No AIDEV-REPLACEMENT-TODO markers found to clean up")
+            return
+
+        print(
+            f"[EMOJI] Found {len(replacement_todos)} AIDEV-REPLACEMENT-TODO markers"
+        )
+
+        if dry_run:
+            print()
+            print("[TODO] Dry run - would clean up:")
+            for todo in replacement_todos:
+                print(
+                    f"   {todo['file']}:{todo['line']} - {todo['content'][:60]}..."
+                )
+            print()
+            print("[INFO] Use --no-dry-run to actually remove these markers")
+        else:
+            # Actual cleanup implementation would go here
+            print()
+            print("[WARNING]  Actual cleanup not yet implemented")
+            print(
+                "[INFO] Manually review and remove AIDEV-REPLACEMENT-TODO markers"
+            )
+
+    def questions(self) -> None:
+        """Show all AIDEV-QUESTION/ANSWER pairs."""
+        results = self.scan(output_format="data")
+        questions = results.get("AIDEV-QUESTION", [])
+        answers = results.get("AIDEV-ANSWER", [])
+
+        if not questions and not answers:
+            print("[QUESTION] No AIDEV-QUESTION/ANSWER pairs found")
+            return
+
+        print("[QUESTION] AIDEV Questions & Answers for Deep Biblio Tools")
+        print("=" * 60)
+
+        # Group answers by file for proximity matching
+        answers_by_file = defaultdict(list)
+        for answer in answers:
+            answers_by_file[answer["file"]].append(answer)
+
+        for question in questions:
+            print()
+            print(
+                f"[QUESTION] Question ({question['file']}:{question['line']}):"
+            )
+            print(f"   {question['content']}")
+
+            # Look for nearby answers
+            file_answers = answers_by_file.get(question["file"], [])
+            nearby_answers = [
+                a
+                for a in file_answers
+                if abs(a["line"] - question["line"]) <= 10
+            ]
+
+            if nearby_answers:
+                closest_answer = min(
+                    nearby_answers,
+                    key=lambda a: abs(a["line"] - question["line"]),
+                )
+                print()
+                print(
+                    f"[INFO] Answer ({closest_answer['file']}:{closest_answer['line']}):"
+                )
+                print(f"   {closest_answer['content']}")
+            else:
+                print("   [SEARCH] No answer found nearby")
+
+    def add(
+        self,
+        file_path: str,
+        tag_type: str,
+        content: str,
+        line_number: int | None = None,
+    ) -> None:
+        """Add new AIDEV tag to a file."""
+        valid_tags = [
+            "AIDEV-NOTE",
+            "AIDEV-TODO",
+            "AIDEV-QUESTION",
+            "AIDEV-ANSWER",
+            "AIDEV-REPLACEMENT-TODO",
+            "AIDEV-GENERATED-TEST",
+        ]
+
+        if tag_type not in valid_tags:
+            print(f"[ERROR] Invalid tag type: {tag_type}")
+            print(f"[INFO] Valid tags: {', '.join(valid_tags)}")
+            return
+
+        file_path_obj = Path(file_path)
+        if not file_path_obj.exists():
+            print(f"[ERROR] File not found: {file_path}")
+            return
+
+        # Read current content
+        try:
+            lines = file_path_obj.read_text(encoding="utf-8").split("\n")
+        except Exception as e:
+            print(f"[ERROR] Could not read file: {e}")
+            return
+
+        # Determine comment style based on file extension
+        comment_style = self._get_comment_style(file_path_obj.suffix)
+        tag_line = f"{comment_style} {tag_type}: {content}"
+
+        if line_number is None:
+            # Add at the end
+            lines.append(tag_line)
+        else:
+            # Insert at specific line
+            lines.insert(line_number - 1, tag_line)
+
+        # Write back to file
+        try:
+            # AIDEV-AI-IMMUTABLE: F-string template engine protection - CRITICAL systematic fix
+            # Use newline character concatenation to avoid template engine processing issues
+            newline_char = chr(10)  # ASCII 10 = newline character
+            file_path_obj.write_text(newline_char.join(lines), encoding="utf-8")
+            print(
+                f"[OK] Added {tag_type} tag to {file_path}"
+            )  # AIDEV-AI-NOTE: Single-line f-string is safe
+        except Exception as e:
+            print(
+                f"[ERROR] Could not write file: {e}"
+            )  # AIDEV-AI-NOTE: Single-line f-string is safe
+
+    def _get_comment_style(self, extension: str) -> str:
+        """Get comment style for file extension."""
+        comment_map = {
+            ".py": "#",
+            ".js": "//",
+            ".jsx": "//",
+            ".ts": "//",
+            ".tsx": "//",
+            ".go": "//",
+            ".rs": "//",
+            ".java": "//",
+            ".swift": "//",
+            ".cpp": "//",
+            ".cc": "//",
+            ".cxx": "//",
+            ".hpp": "//",
+            ".h": "//",
+        }
+        return comment_map.get(extension, "#")
+
+    def examples(self) -> None:
+        """Show usage examples of each tag type."""
+        print("[TAG]  AIDEV Tag System Examples")
+        print("=" * 60)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="AIDEV Local Anchoring System Management Tool",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    subparsers = parser.add_subparsers(
+        dest="command", help="Available commands"
+    )
+
+    # Scan command
+    scan_parser = subparsers.add_parser(
+        "scan", help="Scan codebase for AIDEV tags"
+    )
+    scan_parser.add_argument(
+        "--format",
+        choices=["table", "json"],
+        default="table",
+        help="Output format",
+    )
+
+    # Report command
+    subparsers.add_parser("report", help="Generate comprehensive AIDEV report")
+
+    # Cleanup command
+    cleanup_parser = subparsers.add_parser(
+        "cleanup", help="Clean up resolved tags"
+    )
+    cleanup_parser.add_argument(
+        "--no-dry-run",
+        action="store_true",
+        help="Actually perform cleanup (default is dry run)",
+    )
+
+    # Questions command
+    subparsers.add_parser("questions", help="Show Q&A pairs")
+
+    # Validate command
+    subparsers.add_parser("validate", help="Validate tag consistency")
+
+    # Add command
+    add_parser = subparsers.add_parser("add", help="Add new AIDEV tag")
+    add_parser.add_argument("file", help="File to add tag to")
+    add_parser.add_argument("tag_type", help="Type of tag to add")
+    add_parser.add_argument("content", help="Tag content/description")
+    add_parser.add_argument("--line", type=int, help="Line number to insert at")
+
+    # Examples command
+    subparsers.add_parser("examples", help="Show usage examples")
+
+    args = parser.parse_args()
+
+    if not args.command:
+        parser.print_help()
+        return
+
+    manager = AidevManager()
+
+    try:
+        if args.command == "scan":
+            manager.scan(args.format)
+        elif args.command == "report":
+            manager.report()
+        elif args.command == "cleanup":
+            manager.cleanup(dry_run=not args.no_dry_run)
+        elif args.command == "questions":
+            manager.questions()
+        elif args.command == "validate":
+            # For now, just run scan to show current state
+            print("[SEARCH] Running AIDEV tag validation...")
+            manager.scan()
+            print()
+            print(
+                "[INFO] For comprehensive validation, run: python scripts/validate_claude_constraints.py"
+            )
+        elif args.command == "add":
+            manager.add(args.file, args.tag_type, args.content, args.line)
+        elif args.command == "examples":
+            manager.examples()
+
+    except KeyboardInterrupt:
+        print()
+        print("[WARNING]  Operation cancelled by user")
+        sys.exit(1)
+    except Exception as e:
+        print(f"[ERROR] Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
