@@ -1,6 +1,7 @@
 """Main converter class for markdown to LaTeX conversion."""
 
 # Standard library imports
+import csv
 import hashlib
 import json
 import logging
@@ -751,10 +752,11 @@ class MarkdownToLatexConverter:
 
             # Write missing citations report if there are failures
             if failed_citations:
-                report_path = (
+                # Write JSON report
+                json_path = (
                     self.input_file.parent / "missing-citations-report.json"
                 )
-                with open(report_path, "w") as f:
+                with open(json_path, "w") as f:
                     json.dump(
                         {
                             "total_citations": len(citations),
@@ -765,9 +767,44 @@ class MarkdownToLatexConverter:
                         f,
                         indent=2,
                     )
-                logger.warning(
-                    f"Missing citations report written to: {report_path}"
+
+                # Write CSV for human review with supervision columns
+                csv_path = (
+                    self.input_file.parent / "missing-citations-review.csv"
                 )
+                with open(csv_path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.writer(f)
+                    # Header with review columns
+                    writer.writerow(
+                        [
+                            "Citation Text",
+                            "URL",
+                            "Current Authors",
+                            "Current Year",
+                            "Reason",
+                            "Is Real Problem? (YES/NO)",
+                            "Should Be In Zotero? (YES/NO)",
+                            "Notes",
+                        ]
+                    )
+                    # Data rows
+                    for cit in failed_citations:
+                        writer.writerow(
+                            [
+                                cit["text"],
+                                cit["url"],
+                                cit["authors"],
+                                cit["year"],
+                                cit["reason"],
+                                "",  # User fills: Is this a real problem?
+                                "",  # User fills: Should this be in Zotero?
+                                "",  # User fills: Additional notes
+                            ]
+                        )
+
+                logger.warning("Missing citations reports written to:")
+                logger.warning(f"  JSON: {json_path}")
+                logger.warning(f"  CSV for review: {csv_path}")
                 logger.warning(
                     f"{len(failed_citations)}/{len(citations)} citations could not be fully resolved"
                 )
