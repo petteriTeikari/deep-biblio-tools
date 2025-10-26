@@ -319,65 +319,39 @@ class UnifiedCitationExtractor:
         result = []
 
         for citation in citations:
-            # Extract simple author info from text (basic heuristic)
+            # ROBUST APPROACH: Look for ANY 4-digit year (1900-2100) in the text
+            # If found, it's a citation. If not, it's a regular hyperlink.
             authors = "Unknown"
             year = "Unknown"
-            has_year_format = False
+            year_found = False
 
-            # Check for PARENTHESES format: [Author (Year)](URL)
-            if "(" in citation.text and ")" in citation.text:
-                # Find content within parentheses
-                paren_start = citation.text.find("(")
-                paren_end = citation.text.find(")", paren_start)
-                if paren_start != -1 and paren_end != -1:
-                    paren_content = citation.text[paren_start + 1 : paren_end]
-
-                    # Look for 4-digit year
-                    words = paren_content.split()
-                    for word in words:
-                        clean_word = word.strip(".,;:")
-                        if len(clean_word) == 4 and clean_word.isdigit():
-                            year_int = int(clean_word)
-                            if 1900 <= year_int <= 2100:
-                                year = clean_word
-                                has_year_format = True
-                                break
-
-                    # Extract author (text before parentheses)
-                    author_part = citation.text[:paren_start].strip()
-                    if author_part:
-                        # Remove trailing period from author names
-                        authors = author_part.rstrip(".")
-
-            # Check for COMMA format: [Author et al., Year](URL) or [Author, Year](URL)
-            if not has_year_format and "," in citation.text:
-                # Split by comma and look for year in any part
-                parts = citation.text.split(",")
-                for i, part in enumerate(parts):
-                    words = part.strip().split()
-                    for word in words:
-                        clean_word = word.strip(".,;:()")
-                        if len(clean_word) == 4 and clean_word.isdigit():
-                            year_int = int(clean_word)
-                            if 1900 <= year_int <= 2100:
-                                year = clean_word
-                                has_year_format = True
-                                # Extract author (everything before the year part)
-                                author_parts = parts[:i] + [
-                                    part[: part.find(word)]
-                                ]
-                                authors = (
-                                    ",".join(author_parts).strip().rstrip(".")
-                                )
-                                break
-                    if has_year_format:
+            # Search for year anywhere in the text
+            words = (
+                citation.text.replace(",", " ")
+                .replace("(", " ")
+                .replace(")", " ")
+                .split()
+            )
+            for word in words:
+                clean_word = word.strip(".,;:()")
+                if len(clean_word) == 4 and clean_word.isdigit():
+                    year_int = int(clean_word)
+                    if 1900 <= year_int <= 2100:
+                        year = clean_word
+                        year_found = True
+                        # Extract authors (everything before year, cleaned up)
+                        year_pos = citation.text.find(year)
+                        if year_pos > 0:
+                            author_part = citation.text[:year_pos]
+                            # Remove common separators and punctuation
+                            authors = author_part.strip().rstrip(".,;:()")
                         break
 
-            # CRITICAL: Skip links that don't have a year format
+            # CRITICAL: Skip links without a year
             # This prevents regular hyperlinks like [Google Docs](URL) from being treated as citations
-            if not has_year_format:
+            if not year_found:
                 logger.debug(
-                    f"Skipping non-citation hyperlink: [{citation.text}]({citation.url})"
+                    f"Skipping non-citation hyperlink (no year found): [{citation.text}]({citation.url})"
                 )
                 continue
 
