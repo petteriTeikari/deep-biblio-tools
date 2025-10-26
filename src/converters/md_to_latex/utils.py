@@ -345,6 +345,168 @@ def sanitize_bibtex_field(text: str) -> str:
     return text
 
 
+def parse_bibtex_entries(bibtex_content: str) -> dict[str, dict]:
+    """Parse BibTeX content and extract citation keys with metadata.
+
+    Args:
+        bibtex_content: Complete BibTeX file content
+
+    Returns:
+        Dictionary mapping citation keys to metadata dicts containing:
+        - url: URL from the entry
+        - doi: DOI if present
+        - arxiv_id: arXiv ID if present
+        - raw_entry: Complete BibTeX entry text
+    """
+    entries = {}
+
+    # Find all BibTeX entries without regex
+    pos = 0
+    while True:
+        # Find next @entry
+        at_pos = bibtex_content.find("@", pos)
+        if at_pos == -1:
+            break
+
+        # Find opening brace
+        brace_pos = bibtex_content.find("{", at_pos)
+        if brace_pos == -1:
+            break
+
+        # Find citation key (between { and ,)
+        comma_pos = bibtex_content.find(",", brace_pos)
+        if comma_pos == -1:
+            break
+
+        citation_key = bibtex_content[brace_pos + 1 : comma_pos].strip()
+
+        # Find closing brace (matching the opening one)
+        # Count braces to handle nested structures
+        brace_count = 1
+        search_pos = brace_pos + 1
+        while search_pos < len(bibtex_content) and brace_count > 0:
+            if bibtex_content[search_pos] == "{":
+                brace_count += 1
+            elif bibtex_content[search_pos] == "}":
+                brace_count -= 1
+            search_pos += 1
+
+        if brace_count == 0:
+            # Found complete entry
+            entry_end = search_pos
+            raw_entry = bibtex_content[at_pos:entry_end]
+
+            # Extract URL, DOI, arXiv ID
+            metadata = {
+                "raw_entry": raw_entry,
+                "url": None,
+                "doi": None,
+                "arxiv_id": None,
+            }
+
+            # Extract URL
+            url_start = raw_entry.find("url = ")
+            if url_start >= 0:
+                url_start += 6  # Skip "url = "
+                # Find quote or brace
+                if url_start < len(raw_entry):
+                    if raw_entry[url_start] == "{":
+                        url_end = raw_entry.find("}", url_start + 1)
+                        if url_end > url_start:
+                            metadata["url"] = raw_entry[
+                                url_start + 1 : url_end
+                            ].strip()
+                    elif raw_entry[url_start] == '"':
+                        url_end = raw_entry.find('"', url_start + 1)
+                        if url_end > url_start:
+                            metadata["url"] = raw_entry[
+                                url_start + 1 : url_end
+                            ].strip()
+
+            # Extract DOI
+            doi_start = raw_entry.find("doi = ")
+            if doi_start >= 0:
+                doi_start += 6
+                if doi_start < len(raw_entry):
+                    if raw_entry[doi_start] == "{":
+                        doi_end = raw_entry.find("}", doi_start + 1)
+                        if doi_end > doi_start:
+                            metadata["doi"] = raw_entry[
+                                doi_start + 1 : doi_end
+                            ].strip()
+                    elif raw_entry[doi_start] == '"':
+                        doi_end = raw_entry.find('"', doi_start + 1)
+                        if doi_end > doi_start:
+                            metadata["doi"] = raw_entry[
+                                doi_start + 1 : doi_end
+                            ].strip()
+
+            # Extract arXiv ID from URL
+            if metadata["url"] and "arxiv.org" in metadata["url"]:
+                if "arxiv.org/abs/" in metadata["url"]:
+                    abs_pos = metadata["url"].find("arxiv.org/abs/")
+                    arxiv_id_start = abs_pos + 14
+                    remaining = metadata["url"][arxiv_id_start:]
+                    # Extract ID (YYYY.NNNNN or subject/NNNNNNN)
+                    # Stop at ?, /, or end of string
+                    id_end = len(remaining)
+                    for char_pos, char in enumerate(remaining):
+                        if char in ["?", "#"]:
+                            id_end = char_pos
+                            break
+                    metadata["arxiv_id"] = remaining[:id_end]
+
+            entries[citation_key] = metadata
+            pos = entry_end
+        else:
+            # Malformed entry, skip
+            pos = brace_pos + 1
+
+    return entries
+
+
+def normalize_arxiv_url(url: str) -> str:
+    """Normalize arXiv URL by removing version specifiers.
+
+    Converts:
+    - https://arxiv.org/abs/2508.12683v1 -> https://arxiv.org/abs/2508.12683
+    - https://arxiv.org/abs/2508.12683v2 -> https://arxiv.org/abs/2508.12683
+    - https://arxiv.org/html/2410.20199v1 -> https://arxiv.org/abs/2410.20199
+
+    Args:
+        url: Original arXiv URL (may include version)
+
+    Returns:
+        Normalized URL without version, always using /abs/ format
+    """
+    if not url or "arxiv.org" not in url:
+        return url
+
+    # Normalize to use /abs/ instead of /html/ or /pdf/
+    url = url.replace("arxiv.org/html/", "arxiv.org/abs/")
+    url = url.replace("arxiv.org/pdf/", "arxiv.org/abs/")
+
+    # Remove version specifier (vN at the end)
+    if "arxiv.org/abs/" in url:
+        abs_pos = url.find("arxiv.org/abs/")
+        after_abs = url[abs_pos + 14 :]
+
+        # Find where the ID ends (look for v followed by digits)
+        for i in range(len(after_abs)):
+            if after_abs[i] == "v" and i > 0:
+                # Check if followed by digits
+                remaining = after_abs[i + 1 :]
+                if (
+                    remaining
+                    and remaining.split("/")[0].split("?")[0].isdigit()
+                ):
+                    # Found version specifier, remove it
+                    url = url[: abs_pos + 14 + i]
+                    break
+
+    return url
+
+
 def generate_citation_key(
     authors: str, year: str, title: str = "", use_better_bibtex: bool = True
 ) -> str:

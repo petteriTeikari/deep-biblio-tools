@@ -34,6 +34,9 @@ from src.converters.md_to_latex.utils import (
     extract_abstract_from_markdown,
     extract_title_from_markdown,
     generate_citation_key,
+    normalize_arxiv_url,
+    normalize_url,
+    parse_bibtex_entries,
 )
 from src.converters.md_to_latex.zotero_integration import ZoteroClient
 
@@ -260,6 +263,156 @@ class MarkdownToLatexConverter:
         except Exception as e:
             logger.error(f"Failed to load from Zotero API: {e}")
 
+            traceback.print_exc()
+            return 0, len(citations)
+
+    def _populate_from_zotero_bibtex(
+        self, citations: list, collection_name: str = "dpp-fashion"
+    ) -> tuple[int, int]:
+        """Populate citation keys from Zotero BibTeX export with Better BibTeX keys.
+
+        This method fetches the BibTeX export from Zotero, which includes
+        Better BibTeX citation keys if the BBT plugin is installed. It then
+        matches these keys to the citations extracted from markdown and uses
+        the raw BibTeX entries directly, avoiding key generation inconsistencies.
+
+        Args:
+            citations: List of Citation objects extracted from markdown
+            collection_name: Name of Zotero collection to load from
+
+        Returns:
+            Tuple of (matched_count, missing_count)
+        """
+        if not self.zotero_api_key or not self.zotero_library_id:
+            logger.error(
+                "Zotero API credentials not found. Cannot load from API."
+            )
+            logger.error("Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env")
+            return 0, len(citations)
+
+        try:
+            client = ZoteroClient(
+                api_key=self.zotero_api_key, library_id=self.zotero_library_id
+            )
+
+            logger.info(
+                f"Fetching BibTeX export from collection '{collection_name}'..."
+            )
+            bibtex_content = client.get_collection_bibtex(collection_name)
+
+            logger.info(
+                f"Parsing BibTeX export ({len(bibtex_content)} chars)..."
+            )
+            bib_entries = parse_bibtex_entries(bibtex_content)
+            logger.info(f"Parsed {len(bib_entries)} BibTeX entries")
+
+            # Build lookup maps for efficient matching
+            # Map: normalized URL -> (citation_key, raw_entry)
+            url_to_key = {}
+            doi_to_key = {}
+            arxiv_to_key = {}
+
+            for cite_key, metadata in bib_entries.items():
+                # Normalize and index by URL
+                if metadata["url"]:
+                    normalized = normalize_url(
+                        normalize_arxiv_url(metadata["url"])
+                    )
+                    url_to_key[normalized] = (cite_key, metadata["raw_entry"])
+
+                # Index by DOI
+                if metadata["doi"]:
+                    doi_to_key[metadata["doi"].lower()] = (
+                        cite_key,
+                        metadata["raw_entry"],
+                    )
+
+                # Index by arXiv ID
+                if metadata["arxiv_id"]:
+                    arxiv_to_key[metadata["arxiv_id"]] = (
+                        cite_key,
+                        metadata["raw_entry"],
+                    )
+
+            # Match citations
+            matched = 0
+            for citation in citations:
+                matched_key = None
+                matched_entry = None
+
+                # Try URL matching (normalize both sides)
+                normalized_cite_url = normalize_url(
+                    normalize_arxiv_url(citation.url)
+                )
+                if normalized_cite_url in url_to_key:
+                    matched_key, matched_entry = url_to_key[normalized_cite_url]
+                    logger.debug(
+                        f"Matched by URL: {citation.url} -> {matched_key}"
+                    )
+
+                # Try DOI matching
+                elif citation.doi and citation.doi.lower() in doi_to_key:
+                    matched_key, matched_entry = doi_to_key[
+                        citation.doi.lower()
+                    ]
+                    logger.debug(
+                        f"Matched by DOI: {citation.doi} -> {matched_key}"
+                    )
+
+                # Try arXiv ID matching
+                elif "arxiv.org" in citation.url:
+                    # Extract arXiv ID from citation URL
+                    if "arxiv.org/abs/" in citation.url:
+                        abs_pos = citation.url.find("arxiv.org/abs/")
+                        arxiv_id = (
+                            citation.url[abs_pos + 14 :]
+                            .split("?")[0]
+                            .split("#")[0]
+                        )
+                        # Remove version specifier
+                        if "v" in arxiv_id:
+                            for i, char in enumerate(arxiv_id):
+                                if (
+                                    char == "v"
+                                    and i > 0
+                                    and arxiv_id[i + 1 :].isdigit()
+                                ):
+                                    arxiv_id = arxiv_id[:i]
+                                    break
+                        if arxiv_id in arxiv_to_key:
+                            matched_key, matched_entry = arxiv_to_key[arxiv_id]
+                            logger.debug(
+                                f"Matched by arXiv ID: {arxiv_id} -> {matched_key}"
+                            )
+
+                if matched_key and matched_entry:
+                    # Update citation to use the Better BibTeX key
+                    old_key = citation.key
+                    citation.key = matched_key
+                    citation.raw_bibtex = matched_entry
+
+                    # Update citation manager's registry
+                    if old_key in self.citation_manager.citations:
+                        del self.citation_manager.citations[old_key]
+                    self.citation_manager.citations[matched_key] = citation
+
+                    matched += 1
+                else:
+                    logger.debug(f"No match found for: {citation.url}")
+
+            logger.info(
+                f"Matched {matched}/{len(citations)} citations using Better BibTeX keys"
+            )
+            unmatched = len(citations) - matched
+            if unmatched > 0:
+                logger.warning(
+                    f"{unmatched} citations not found in Zotero - will generate keys locally"
+                )
+
+            return matched, unmatched
+
+        except Exception as e:
+            logger.error(f"Failed to load from Zotero BibTeX: {e}")
             traceback.print_exc()
             return 0, len(citations)
 
@@ -578,8 +731,8 @@ class MarkdownToLatexConverter:
 
         # Determine output directory relative to input file if not specified
         if self.output_dir is None:
-            # Save output in the SAME directory as the input file
-            self.output_dir = markdown_file.parent
+            # Save output in an 'output' subdirectory within the input file's directory
+            self.output_dir = markdown_file.parent / "output"
 
         # Ensure output directory exists
         ensure_directory(self.output_dir)
@@ -752,10 +905,8 @@ class MarkdownToLatexConverter:
 
             # Write missing citations report if there are failures
             if failed_citations:
-                # Write JSON report
-                json_path = (
-                    self.input_file.parent / "missing-citations-report.json"
-                )
+                # Write JSON report to output directory
+                json_path = self.output_dir / "missing-citations-report.json"
                 with open(json_path, "w") as f:
                     json.dump(
                         {
@@ -768,10 +919,8 @@ class MarkdownToLatexConverter:
                         indent=2,
                     )
 
-                # Write CSV for human review with supervision columns
-                csv_path = (
-                    self.input_file.parent / "missing-citations-review.csv"
-                )
+                # Write CSV for human review with supervision columns to output directory
+                csv_path = self.output_dir / "missing-citations-review.csv"
                 with open(csv_path, "w", newline="", encoding="utf-8") as f:
                     writer = csv.writer(f)
                     # Header with review columns

@@ -362,13 +362,17 @@ def convert():
 )
 def md2latex(input_file: Path, output: Path | None):
     """Convert Markdown to LaTeX using Zotero Web API."""
-    output_path = output or input_file.with_suffix(".tex")
+    # Determine output directory and name
+    # If user provides explicit output path, use its directory
+    # Otherwise, let converter use default (input_file.parent / "output")
+    if output:
+        output_dir = output.parent
+        output_name = output.stem  # Remove .tex extension
+    else:
+        output_dir = None  # Let converter use default
+        output_name = input_file.stem  # Use input filename
 
     try:
-        # Set up converter with output directory
-        output_dir = output_path.parent
-        output_name = output_path.stem  # Remove .tex extension
-
         # Get Zotero credentials from environment
         zotero_api_key = os.getenv("ZOTERO_API_KEY")
         zotero_library_id = os.getenv("ZOTERO_LIBRARY_ID")

@@ -23,6 +23,8 @@ Deep Biblio Tools is a Python library for processing LLM-generated bibliographie
 - **ALWAYS** place imports at the top in order: stdlib → third-party → local
 - **ALWAYS** check API response success and log failures
 - **ALWAYS** escape dollar signs as `\$` when converting to LaTeX
+- **ALWAYS** verify PDF after conversion - read it with Read tool to check citations
+- **NEVER** claim conversion success without verifying PDF has ZERO (?) citations
 
 ## Architecture Context
 
@@ -240,15 +242,43 @@ ZOTERO_COLLECTION=dpp-fashion  # Default collection name
 - **NEVER** convert "$50-200" to LaTeX math mode
 - **ALWAYS** escape as `\$` when converting to LaTeX
 
-## Development Workflow
+## Conversion Success Criteria - ZERO TOLERANCE
 
-### Before Committing
+### The ONLY measure of success: Working PDF with ALL citations resolved
+
+**BEFORE claiming conversion success, verify ALL of these**:
+1. ✅ PDF generates without LaTeX errors
+2. ✅ PDF has ZERO (?) citations (use Read tool to check PDF visually)
+3. ✅ PDF has ZERO (Unknown) or (Anonymous) citations
+4. ✅ All citations show proper author names and years
+5. ✅ references.bib has ZERO "Unknown" or "Anonymous" entries
+6. ✅ LaTeX log has ZERO compilation errors
+7. ✅ BibTeX log has ZERO fatal errors (warnings OK)
+
+**Intermediate steps do NOT count as success:**
+- ❌ "citations extracted" - meaningless without verification
+- ❌ "BibTeX generated" - meaningless if it contains Unknown entries
+- ❌ "PDF compiled" - meaningless if citations show as (?)
+- ❌ "no LaTeX errors" - meaningless if bibliography is broken
+
+**The WORKFLOW must be:**
+1. Run conversion
+2. Check references.bib for Unknown/Anonymous entries
+3. If found, FIX the root cause (don't just report it)
+4. Re-run conversion
+5. Read the PDF with Read tool
+6. Verify EVERY citation shows author names (not ?)
+7. ONLY THEN claim success
+
+### Development Workflow
+
+#### Before Committing
 1. Run comprehensive validation: `uv run python scripts/validate_claude_constraints.py`
 2. Fix all issues systematically
 3. Run linters and formatters
 4. Ensure all tests pass
 
-### When Creating PRs
+#### When Creating PRs
 1. Write clear, atomic commits
 2. Include test coverage for new features
 3. Update documentation as needed
