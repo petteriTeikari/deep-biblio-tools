@@ -69,6 +69,9 @@ class MarkdownToLatexConverter:
         use_cache: bool = True,
         use_better_bibtex_keys: bool = True,
         font_size: str = "11pt",
+        debug_output_dir: Path
+        | None = None,  # Optional debug artifact directory
+        collection_name: str | None = None,  # Zotero collection name for API
     ):
         """Initialize the converter.
 
@@ -86,6 +89,8 @@ class MarkdownToLatexConverter:
             use_cache: Whether to use SQLite cache for citation metadata (default True)
             use_better_bibtex_keys: Whether to use Better BibTeX key format (default True)
             font_size: Font size for document (default '11pt', can be '10pt' for arXiv)
+            debug_output_dir: Optional directory for debug artifacts (defaults to output_dir/debug)
+            collection_name: Zotero collection name for API fetching
         """
         self.output_dir = (
             output_dir  # Will be set relative to input file if None
@@ -105,6 +110,8 @@ class MarkdownToLatexConverter:
         self.use_cache = use_cache
         self.use_better_bibtex_keys = use_better_bibtex_keys
         self.font_size = font_size
+        self.debug_output_dir = debug_output_dir
+        self.collection_name = collection_name
 
         # Initialize components
         self.citation_manager = CitationManager(
@@ -739,7 +746,11 @@ class MarkdownToLatexConverter:
         ensure_directory(self.output_dir)
 
         # Initialize debug logger for pipeline inspection
-        debug_dir = self.output_dir / "debug"
+        debug_dir = (
+            self.debug_output_dir
+            if self.debug_output_dir
+            else (self.output_dir / "debug")
+        )
         debugger = PipelineDebugger(debug_dir)
         logger.info(f"Debug artifacts will be saved to: {debug_dir}")
 
@@ -1022,9 +1033,11 @@ class MarkdownToLatexConverter:
             failed_citations = []
             for citation in citations:
                 if citation.authors == "Unknown" or citation.year == "Unknown":
+                    # Reconstruct original citation text format: [authors (year)](url)
+                    original_text = f"[{citation.authors} ({citation.year})]({citation.url})"
                     failed_citations.append(
                         {
-                            "text": citation.original_text,
+                            "text": original_text,
                             "url": citation.url,
                             "authors": citation.authors,
                             "year": citation.year,
