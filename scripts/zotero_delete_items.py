@@ -36,8 +36,7 @@ def main():
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        default=True,
-        help="Preview only (default: True)",
+        help="Preview only (dry-run mode)",
     )
     parser.add_argument(
         "--confirm",
@@ -73,20 +72,21 @@ def main():
         logger.info(f"    Key: {s['key']}")
         logger.info("")
 
-    if args.dry_run or not args.confirm:
+    # If --confirm not provided OR --dry-run explicitly set, don't delete
+    if not args.confirm or args.dry_run:
         logger.info(f"{'=' * 80}")
         logger.info("DRY RUN MODE - Nothing will be deleted")
         logger.info(f"{'=' * 80}")
         logger.info("\nTo actually delete, run:")
         logger.info(f"  python3 {sys.argv[0]} --file {args.file} --confirm")
         logger.info(
-            "\n⚠️  This will permanently delete these items from Zotero!"
+            "\n[WARNING] This will permanently delete these items from Zotero!"
         )
         return
 
     # Confirm deletion
     logger.info(f"{'=' * 80}")
-    logger.info("⚠️  DELETION CONFIRMED")
+    logger.info("[WARNING] DELETION CONFIRMED")
     logger.info(f"{'=' * 80}")
 
     # Connect

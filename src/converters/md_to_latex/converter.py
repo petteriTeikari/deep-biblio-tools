@@ -8,12 +8,12 @@ import os
 import shutil
 import subprocess
 import tempfile
+import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pypandoc
-
 # Third-party imports
+import pypandoc
 from markdown_it import MarkdownIt
 from tqdm import tqdm
 
@@ -34,6 +34,7 @@ from src.converters.md_to_latex.utils import (
     extract_title_from_markdown,
     generate_citation_key,
 )
+from src.converters.md_to_latex.zotero_integration import ZoteroClient
 
 if TYPE_CHECKING:
     pass
@@ -195,6 +196,71 @@ class MarkdownToLatexConverter:
         logger.info(f"  Deterministic hash: {stats['deterministic_hash']}")
 
         return matched, len(citations) - matched
+
+    def _populate_from_zotero_api(
+        self, citations: list, collection_name: str = "dpp-fashion"
+    ) -> tuple[int, int]:
+        """Populate citation metadata from Zotero Web API.
+
+        Args:
+            citations: List of Citation objects extracted from markdown
+            collection_name: Name of Zotero collection to load from
+
+        Returns:
+            Tuple of (matched_count, missing_count)
+        """
+        if not self.zotero_api_key or not self.zotero_library_id:
+            logger.error(
+                "Zotero API credentials not found. Cannot load from API."
+            )
+            logger.error("Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env")
+            return 0, len(citations)
+
+        try:
+            client = ZoteroClient(
+                api_key=self.zotero_api_key, library_id=self.zotero_library_id
+            )
+
+            logger.info(
+                f"Loading collection '{collection_name}' from Zotero API..."
+            )
+            zotero_entries = client.get_collection_items(collection_name)
+
+            logger.info(f"Loaded {len(zotero_entries)} entries from Zotero API")
+
+            # Use production CitationMatcher
+            matcher = CitationMatcher(
+                zotero_entries,
+                allow_zotero_write=False,
+            )
+
+            # Match citations using multi-strategy approach
+            matched = 0
+            for citation in citations:
+                entry, strategy = matcher.match(citation.url)
+                if entry:
+                    self._populate_citation_from_csl_json(citation, entry)
+                    matched += 1
+
+            # Log statistics
+            stats = matcher.get_statistics()
+            logger.info("Citation matching statistics:")
+            logger.info(f"  Total: {stats['total_citations']}")
+            logger.info(f"  Matched by DOI: {stats['matched_by_doi']}")
+            logger.info(f"  Matched by ISBN: {stats['matched_by_isbn']}")
+            logger.info(f"  Matched by arXiv: {stats['matched_by_arxiv']}")
+            logger.info(f"  Matched by URL: {stats['matched_by_url']}")
+            logger.info(f"  Unmatched: {stats['unmatched']}")
+            logger.info(f"  Match rate: {stats['match_rate']:.1f}%")
+            logger.info(f"  Deterministic hash: {stats['deterministic_hash']}")
+
+            return matched, len(citations) - matched
+
+        except Exception as e:
+            logger.error(f"Failed to load from Zotero API: {e}")
+
+            traceback.print_exc()
+            return 0, len(citations)
 
     def _populate_citation_from_csl_json(
         self, citation, csl_entry: dict
@@ -615,8 +681,30 @@ class MarkdownToLatexConverter:
                 pbar.set_description("Extracting citations")
             citations = self.citation_manager.extract_citations(content)
 
-            # Step 3.5: Pre-populate from local Zotero JSON if provided
-            if self.zotero_json_path:
+            # Step 3.5: Pre-populate from Zotero (API preferred, fallback to JSON)
+            collection_name = os.getenv("ZOTERO_COLLECTION", "dpp-fashion")
+
+            if self.zotero_api_key and self.zotero_library_id:
+                # PREFERRED: Use Zotero Web API
+                if verbose:
+                    pbar.set_description(
+                        f"Loading from Zotero API ({collection_name})"
+                    )
+                matched, missing = self._populate_from_zotero_api(
+                    citations, collection_name
+                )
+                logger.info(
+                    f"Matched {matched}/{len(citations)} citations from Zotero API"
+                )
+                if missing > 0:
+                    logger.warning(
+                        f"{missing} citations not found in Zotero - will fetch from APIs"
+                    )
+            elif self.zotero_json_path:
+                # FALLBACK: Use local JSON (deprecated)
+                logger.warning(
+                    "Using local CSL JSON - consider migrating to Zotero API"
+                )
                 if verbose:
                     pbar.set_description(
                         f"Loading {self.zotero_json_path.name}"
@@ -629,6 +717,13 @@ class MarkdownToLatexConverter:
                     logger.warning(
                         f"{missing} citations not found in Zotero JSON - will fetch from APIs"
                     )
+            else:
+                logger.warning(
+                    "No Zotero source configured - will fetch all citations from APIs"
+                )
+                logger.warning(
+                    "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env for best results"
+                )
 
             # Pre-fetch metadata for all citations to ensure Better BibTeX keys are generated
             if verbose:

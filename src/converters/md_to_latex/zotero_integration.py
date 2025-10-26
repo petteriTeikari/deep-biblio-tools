@@ -1,6 +1,7 @@
 """Zotero API integration for fetching bibliographic data."""
 
 import logging
+import os
 
 # import re  # Banned - using string methods instead
 from typing import Any
@@ -14,17 +15,159 @@ class ZoteroClient:
     """Client for interacting with Zotero API."""
 
     def __init__(
-        self, api_key: str | None = None, library_id: str | None = None
+        self,
+        api_key: str | None = None,
+        library_id: str | None = None,
+        library_type: str = "user",
     ):
         """Initialize Zotero client.
 
         Args:
             api_key: Zotero API key (optional for public libraries)
             library_id: Zotero library ID (user or group ID)
+            library_type: 'user' or 'group' (default: 'user')
         """
-        self.api_key = api_key
-        self.library_id = library_id
+        self.api_key = api_key or os.getenv("ZOTERO_API_KEY")
+        self.library_id = library_id or os.getenv("ZOTERO_LIBRARY_ID")
+        self.library_type = library_type or os.getenv(
+            "ZOTERO_LIBRARY_TYPE", "user"
+        )
         self.base_url = "https://api.zotero.org"
+
+        if not self.api_key or not self.library_id:
+            logger.warning(
+                "Zotero credentials not found. Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env"
+            )
+
+    def get_collection_items(
+        self, collection_name: str
+    ) -> list[dict[str, Any]]:
+        """Load all items from a Zotero collection in CSL JSON format.
+
+        Args:
+            collection_name: Name of the collection (e.g., 'dpp-fashion')
+
+        Returns:
+            List of items in CSL JSON format
+
+        Raises:
+            ValueError: If credentials are missing or collection not found
+        """
+        if not self.api_key or not self.library_id:
+            raise ValueError(
+                "Zotero credentials required. Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env"
+            )
+
+        # Step 1: Find collection ID by name
+        collection_id = self._find_collection_id(collection_name)
+        if not collection_id:
+            raise ValueError(
+                f"Collection '{collection_name}' not found in Zotero library"
+            )
+
+        logger.info(
+            f"Found collection '{collection_name}' with ID: {collection_id}"
+        )
+
+        # Step 2: Fetch all items from collection
+        items = self._fetch_all_collection_items(collection_id)
+
+        logger.info(
+            f"Loaded {len(items)} items from collection '{collection_name}'"
+        )
+        return items
+
+    def _find_collection_id(self, collection_name: str) -> str | None:
+        """Find collection ID by name.
+
+        Args:
+            collection_name: Name of the collection
+
+        Returns:
+            Collection ID (key) if found, None otherwise
+        """
+        url = f"{self.base_url}/{self.library_type}s/{self.library_id}/collections"
+
+        headers = {"Zotero-API-Key": self.api_key}
+
+        try:
+            response = requests.get(url, headers=headers, timeout=30)
+            response.raise_for_status()
+
+            collections = response.json()
+
+            for coll in collections:
+                if coll.get("data", {}).get("name") == collection_name:
+                    return coll["key"]
+
+            logger.warning(
+                f"Collection '{collection_name}' not found. Available collections:"
+            )
+            for coll in collections[:10]:
+                logger.warning(f"  - {coll.get('data', {}).get('name')}")
+
+            return None
+
+        except Exception as e:
+            logger.error(f"Failed to fetch collections: {e}")
+            raise
+
+    def _fetch_all_collection_items(
+        self, collection_id: str
+    ) -> list[dict[str, Any]]:
+        """Fetch all items from a collection, handling pagination.
+
+        Args:
+            collection_id: Zotero collection key
+
+        Returns:
+            List of items in CSL JSON format
+        """
+        url = f"{self.base_url}/{self.library_type}s/{self.library_id}/collections/{collection_id}/items"
+
+        headers = {
+            "Zotero-API-Key": self.api_key,
+        }
+
+        params = {
+            "format": "csljson",
+            "limit": 100,
+            "start": 0,
+        }
+
+        all_items = []
+
+        while True:
+            try:
+                response = requests.get(
+                    url, headers=headers, params=params, timeout=30
+                )
+                response.raise_for_status()
+
+                batch = response.json()
+
+                if not batch or not batch.get("items"):
+                    break
+
+                items = batch["items"]
+                all_items.extend(items)
+
+                logger.debug(
+                    f"Fetched {len(items)} items (total: {len(all_items)})"
+                )
+
+                if len(items) < params["limit"]:
+                    break
+
+                params["start"] += params["limit"]
+
+            except Exception as e:
+                logger.error(
+                    f"Failed to fetch items at start={params['start']}: {e}"
+                )
+                raise
+
+        return all_items
 
     def search_by_identifier(self, identifier: str) -> dict[str, Any] | None:
         """Search for an item by DOI, ISBN, arXiv ID, etc.

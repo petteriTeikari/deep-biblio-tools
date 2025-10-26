@@ -141,6 +141,59 @@ Deep Biblio Tools addresses the critical problem of LLM citation hallucinations 
 - **ORDER**: stdlib → third-party → local imports
 - **NEVER** import after sys.path modifications
 
+## Bibliography Workflow - SINGLE SOURCE OF TRUTH
+
+### Zotero Web API Only
+
+**CRITICAL RULE**: The ONLY source of bibliography data is the Zotero Web API. Period.
+
+**FORBIDDEN** - NEVER use these:
+- ❌ Manual CSL JSON exports (`.json` files) - they get stale immediately
+- ❌ Manual BibTeX files (`.bib`, `.bibtex`) - they are GENERATED only
+- ❌ RDF exports (`.rdf`) - never use these
+- ❌ `LOCAL_BIBTEX_PATH` environment variable - OBSOLETE, delete it
+- ❌ Any local snapshot/export of bibliography data
+
+**REQUIRED** - ALWAYS do this:
+- ✅ Load bibliography from Zotero Web API using `pyzotero`
+- ✅ Auto-add missing citations to Zotero collection
+- ✅ Generate `references.bib` fresh from Zotero data during each conversion
+- ✅ Delete `references.bib` before each conversion (it's regenerated)
+- ✅ Trust Zotero as single source of truth
+
+### Environment Configuration
+
+```bash
+# Required Zotero credentials in .env
+ZOTERO_API_KEY=your_key_here
+ZOTERO_LIBRARY_ID=your_id_here
+ZOTERO_LIBRARY_TYPE=user
+ZOTERO_COLLECTION=dpp-fashion  # Default collection name
+```
+
+### Conversion Workflow
+
+1. **User updates Zotero** (web or desktop app)
+2. **Converter fetches from API** - always fresh, no manual export
+3. **Missing citations added** - automatically via Zotero API
+4. **BibTeX generated** - from Zotero data, written to `references.bib`
+5. **LaTeX compilation** - uses the generated `references.bib`
+
+### Generated vs Source Files
+
+| File | Type | Source | Action |
+|------|------|--------|--------|
+| `references.bib` | **GENERATED** | Converted from Zotero API | Delete before each conversion |
+| Zotero collection | **SOURCE** | Zotero Web API | Always trust this |
+| `*.json` CSL exports | **FORBIDDEN** | Manual export | Never use, never create |
+| `dpp-fashion.bib` | **FORBIDDEN** | Old workflow | Delete entirely |
+
+### Why This Matters
+
+**The Problem**: Manual exports create stale data the moment they're saved. Any changes in Zotero require re-export. Multiple copies cause confusion and errors.
+
+**The Solution**: Direct Zotero API access means always-current data, automatic sync, and zero manual file management.
+
 ## Citation Processing Rules
 
 ### Author Name Handling

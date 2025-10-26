@@ -1,11 +1,13 @@
 """Unified CLI for Deep Biblio Tools."""
 
 # Standard library imports
+import os
 import sys
 from pathlib import Path
 
 # Third-party imports
 import click
+from dotenv import load_dotenv
 
 # Local imports
 from .bibliography import (
@@ -17,6 +19,9 @@ from .bibliography import (
 )
 from .bibliography.validator import LLMCitationValidator
 from .converters.md_to_latex.converter import MarkdownToLatexConverter
+
+# Load environment variables after imports
+load_dotenv()
 
 
 @click.group()
@@ -356,7 +361,7 @@ def convert():
     "-o", "--output", type=click.Path(path_type=Path), help="Output file"
 )
 def md2latex(input_file: Path, output: Path | None):
-    """Convert Markdown to LaTeX."""
+    """Convert Markdown to LaTeX using Zotero Web API."""
     output_path = output or input_file.with_suffix(".tex")
 
     try:
@@ -364,7 +369,15 @@ def md2latex(input_file: Path, output: Path | None):
         output_dir = output_path.parent
         output_name = output_path.stem  # Remove .tex extension
 
-        converter = MarkdownToLatexConverter(output_dir=output_dir)
+        # Get Zotero credentials from environment
+        zotero_api_key = os.getenv("ZOTERO_API_KEY")
+        zotero_library_id = os.getenv("ZOTERO_LIBRARY_ID")
+
+        converter = MarkdownToLatexConverter(
+            output_dir=output_dir,
+            zotero_api_key=zotero_api_key,
+            zotero_library_id=zotero_library_id,
+        )
         result_path = converter.convert(input_file, output_name)
 
         click.echo(f"Converting markdown to LaTeX: {input_file}")
