@@ -1,9 +1,10 @@
 # BibTeX Key Mismatch Bug: Citations vs Generated Keys
 
-**Status**: PARTIALLY FIXED - arXiv URL normalization completed, key mapping remains
+**Status**: ✅ FIXED - Zotero BibTeX key integration complete
 **Date Identified**: 2025-10-26
 **Date Fixed (Part 1)**: 2025-10-26 (arXiv URL deduplication)
-**Impact**: Multiple citations appear as "undefined" in LaTeX despite being in Zotero
+**Date Fixed (Part 2)**: 2025-10-27 (Zotero BibTeX key integration)
+**Impact**: Reduced undefined citations from 3 to 1 (remaining is user typo in markdown)
 
 ---
 
@@ -314,3 +315,107 @@ This requires mapping Zotero's generated keys to our simpler keys. Options:
 3. Implement Better BibTeX integration for stable, simple keys
 
 **Recommendation**: Option 1 is simplest and most robust. Extract the actual key from Zotero's BibTeX output and use that in the LaTeX \citep commands.
+
+---
+
+## Phase 3 Part 2: FIXED - Zotero BibTeX Key Integration (2025-10-27)
+
+**Date**: 2025-10-27
+**Commit**: fix: Use Zotero BibTeX keys instead of generated keys
+
+### The One-Line Fix
+
+Changed converter.py line 896:
+```python
+# BEFORE (WRONG):
+matched, missing = self._populate_from_zotero_api(citations, collection_name)
+
+# AFTER (CORRECT):
+matched, missing = self._populate_from_zotero_bibtex(citations, collection_name)
+```
+
+### Why This Worked
+
+The infrastructure to use Zotero's Better BibTeX keys **already existed** at line 277-419!
+The `_populate_from_zotero_bibtex()` method:
+1. Fetches BibTeX export from Zotero (includes actual citation keys)
+2. Parses BibTeX entries to extract `cite_key` (e.g., `moorePreprintPdf2025`)
+3. Builds lookup maps (URL→key, DOI→key, arXiv→key)
+4. Matches citations and sets `citation.key = matched_key`
+
+This method was **written but never called**. We were calling `_populate_from_zotero_api()` instead, which generates simple keys.
+
+### Results
+
+**Before (using _populate_from_zotero_api)**:
+- Missing entries: `song2024`, `beigl2024`, `nafar2025` (3 total)
+- LaTeX: `\citep{moore2025}`
+- BibTeX: `@article{moorePreprintPdf2025,`
+- Result: ❌ Undefined citations
+
+**After (using _populate_from_zotero_bibtex)**:
+- Missing entries: `beigl2024` (1 total - user typo in markdown)
+- LaTeX: `\citep{moorePreprintPdf2025}`
+- BibTeX: `@article{moorePreprintPdf2025,`
+- Result: ✅ Citations resolve correctly
+
+### Remaining Issue: User Typo (Not a Bug)
+
+The markdown file has inconsistent spelling of the same author:
+- Lines 314, 340, 344: `[Beigi et al., 2024]` ✅ Correct
+- Lines 336, 538 (twice): `[Beigl et al., 2024]` ❌ Typo (extra 'l')
+
+The converter correctly generated two different keys:
+- `beigi2024` → matches Zotero entry ✅
+- `beigl2024` → no matching entry in Zotero ❌
+
+**This is not a converter bug** - it's working exactly as designed. The user needs to fix the markdown typo.
+
+### Test Coverage
+
+Regression test in `tests/test_citation_pipeline.py::test_pdf_validation_artifact` now uses:
+- Debug artifact: `tests/fixtures/debug-runs/mcp-draft-refined-v4-20251027-000434/`
+- Shows 1 missing entry (beigl2024) which is expected user typo
+- Test will fail if missing entries increase (regression detection working!)
+
+### Verification
+
+PDF validation from debug-06-pdf-validation.json:
+```json
+{
+  "pdf_exists": true,
+  "pdf_size": 376058,
+  "missing_entries": ["beigl2024"],
+  "has_unresolved": true
+}
+```
+
+Success metrics:
+- ✅ PDF generated successfully (376KB)
+- ✅ 365 citations extracted
+- ✅ Only 1 missing entry (known user typo)
+- ✅ All Zotero-matched citations resolve correctly
+- ✅ No undefined (?) citations except for the typo
+
+### User Action Required
+
+Fix the markdown typo by changing all "Beigl" to "Beigi" in lines 336 and 538:
+```bash
+# In the mcp-draft-refined-v4.md file:
+s/Beigl et al., 2024/Beigi et al., 2024/g
+```
+
+After this fix, the PDF will have **ZERO** missing citations.
+
+---
+
+## Summary: Bug Status
+
+| Phase | Date | Action | Missing Citations |
+|-------|------|--------|-------------------|
+| Initial | 2025-10-26 | Discovered bug | 3 (song2024, beigl2024, nafar2025) |
+| Part 1 | 2025-10-26 | arXiv URL normalization | Still 3 |
+| Part 2 | 2025-10-27 | Zotero BibTeX key integration | 1 (beigl2024 - user typo) |
+| Future | TBD | User fixes markdown typo | 0 ✅ |
+
+**Conclusion**: The BibTeX key mismatch bug is **FIXED**. The converter now correctly uses Zotero's Better BibTeX keys. The remaining missing entry is a user typo in the source markdown, not a converter issue.

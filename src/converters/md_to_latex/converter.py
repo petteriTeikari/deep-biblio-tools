@@ -892,8 +892,8 @@ class MarkdownToLatexConverter:
                     )
 
                 # STAGE 2: Zotero Matching Debug (CRITICAL)
-                debugger.log_stage(2, "Zotero Matching via API")
-                matched, missing = self._populate_from_zotero_api(
+                debugger.log_stage(2, "Zotero Matching via BibTeX Export")
+                matched, missing = self._populate_from_zotero_bibtex(
                     citations, collection_name
                 )
 

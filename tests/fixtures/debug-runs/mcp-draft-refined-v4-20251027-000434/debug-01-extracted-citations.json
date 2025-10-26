@@ -1,0 +1,2557 @@
+[
+  {
+    "url": "https://doi.org/10.1038/s43017-020-0039-9",
+    "authors": "Niinimäki et al",
+    "year": "2020",
+    "title": "",
+    "key": "niinimaki2020"
+  },
+  {
+    "url": "https://www.amazon.de/-/en/Craft-Use-Post-Growth-Kate-Fletcher/dp/1138021016",
+    "authors": "Fletcher",
+    "year": "2016",
+    "title": "",
+    "key": "fletcher2016"
+  },
+  {
+    "url": "https://doi.org/10.1007/978-3-031-70262-4_5",
+    "authors": "Mayer and Tama Birkocak",
+    "year": "2024",
+    "title": "",
+    "key": "mayer2024"
+  },
+  {
+    "url": "https://doi.org/10.3390/su9010039",
+    "authors": "Köksal et al",
+    "year": "2017",
+    "title": "",
+    "key": "koksal2017"
+  },
+  {
+    "url": "https://www.bbc.com/news/business-44885983",
+    "authors": "BBC",
+    "year": "2018",
+    "title": "",
+    "key": "bbc2018"
+  },
+  {
+    "url": "https://www.bloomberg.com/news/articles/2018-03-27/h-m-profit-plunges-to-16-year-low-as-clothing-chain-loses-allure",
+    "authors": "Bloomberg",
+    "year": "2018",
+    "title": "",
+    "key": "bloomberg2018"
+  },
+  {
+    "url": "https://commission.europa.eu/energy-climate-change-environment/standards-tools-and-labels/products-labelling-rules-and-requirements/ecodesign-sustainable-products-regulation_en",
+    "authors": "European Commission",
+    "year": "2024",
+    "title": "",
+    "key": "commission2024"
+  },
+  {
+    "url": "https://doi.org/10.3390/en14082289",
+    "authors": "Adisorn et al",
+    "year": "2021",
+    "title": "",
+    "key": "adisorn2021"
+  },
+  {
+    "url": "https://www.europarl.europa.eu/news/en/press-room",
+    "authors": "European Parliament",
+    "year": "2023",
+    "title": "",
+    "key": "parliament2023"
+  },
+  {
+    "url": "https://spec-untp-fbb45f.opensource.unicc.org/",
+    "authors": "UN/CEFACT",
+    "year": "2024",
+    "title": "",
+    "key": "uncefact2024"
+  },
+  {
+    "url": "https://www.wbcsd.org/",
+    "authors": "WBCSD",
+    "year": "2023",
+    "title": "",
+    "key": "wbcsd2023"
+  },
+  {
+    "url": "https://gs1.eu/wp-content/uploads/2020/04/Circular-Economy-Plan-1.pdf",
+    "authors": "GS1",
+    "year": "2020",
+    "title": "",
+    "key": "gs2020"
+  },
+  {
+    "url": "https://hmfoundation.com/2025/10/22/from-signals-to-systems-change/",
+    "authors": "H&M Foundation",
+    "year": "2025",
+    "title": "",
+    "key": "foundation2025"
+  },
+  {
+    "url": "https://doi.org/10.1108/SCM-10-2017-0336",
+    "authors": "Kumar et al",
+    "year": "2018",
+    "title": "",
+    "key": "kumar2018"
+  },
+  {
+    "url": "https://www.bangladeshworkersafety.org",
+    "authors": "Alliance for Bangladesh Worker Safety",
+    "year": "2024",
+    "title": "",
+    "key": "safety2024"
+  },
+  {
+    "url": "https://asiagarmenthub.net",
+    "authors": "Asia Garment Hub",
+    "year": "2024",
+    "title": "",
+    "key": "hub2024"
+  },
+  {
+    "url": "https://bhr.stern.nyu.edu/rana-plaza",
+    "authors": "NYU Stern Center for Business and Human Rights",
+    "year": "2015",
+    "title": "",
+    "key": "business2015"
+  },
+  {
+    "url": "https://www.fashionrevolution.org/about/transparency/",
+    "authors": "Fashion Revolution",
+    "year": "2023",
+    "title": "",
+    "key": "revolution2023"
+  },
+  {
+    "url": "https://doi.org/10.1108/SCM-04-2018-0152",
+    "authors": "Garcia-Torres et al",
+    "year": "2019",
+    "title": "",
+    "key": "garciatorres2019"
+  },
+  {
+    "url": "https://doi.org/10.1145/3567582",
+    "authors": "Pasdar et al",
+    "year": "2023",
+    "title": "",
+    "key": "pasdar2023"
+  },
+  {
+    "url": "https://www.standardsmap.org",
+    "authors": "ITC",
+    "year": "2024",
+    "title": "",
+    "key": "itc2024"
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=lXUZvyajciY",
+    "authors": "Karpathy",
+    "year": "2025",
+    "title": "",
+    "key": "karpathy2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.25370",
+    "authors": "Song et al",
+    "year": "2025",
+    "title": "",
+    "key": "song2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2503.13657",
+    "authors": "Cemri et al",
+    "year": "2025",
+    "title": "",
+    "key": "cemri2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.19504",
+    "authors": "Song et al",
+    "year": "2025",
+    "title": "",
+    "key": "song2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.24272",
+    "authors": "Zhao et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhao2025"
+  },
+  {
+    "url": "https://modelcontextprotocol.io/docs/concepts/architecture",
+    "authors": "Anthropic",
+    "year": "2024",
+    "title": "",
+    "key": "anthropic2024"
+  },
+  {
+    "url": "https://developers.google.com/agent-to-agent",
+    "authors": "Google",
+    "year": "2024",
+    "title": "",
+    "key": "google2024"
+  },
+  {
+    "url": "https://developer.okta.com/blog/2025/09/03/cross-app-access",
+    "authors": "Okta",
+    "year": "2025",
+    "title": "",
+    "key": "okta2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2401.13178",
+    "authors": "Wang et al",
+    "year": "2024",
+    "title": "",
+    "key": "wang2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2410.10762",
+    "authors": "Zhang et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhang2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2304.03442",
+    "authors": "Park et al",
+    "year": "2023",
+    "title": "",
+    "key": "park2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.04618",
+    "authors": "Zhang et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhang2025a"
+  },
+  {
+    "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+    "authors": "Anthropic",
+    "year": "2025",
+    "title": "",
+    "key": "anthropic2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.12538",
+    "authors": "Guo et al",
+    "year": "2025",
+    "title": "",
+    "key": "guo2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.10991",
+    "authors": "Xing et al",
+    "year": "2025",
+    "title": "",
+    "key": "xing2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.03858",
+    "authors": "Wang et al",
+    "year": "2025",
+    "title": "",
+    "key": "wang2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.13220",
+    "authors": "Yang et al",
+    "year": "2025",
+    "title": "",
+    "key": "yang2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.22852",
+    "authors": "Tallam & Miller",
+    "year": "2025",
+    "title": "",
+    "key": "miller2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2107.07511",
+    "authors": "Angelopoulos & Bates",
+    "year": "2023",
+    "title": "",
+    "key": "bates2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2412.02646",
+    "authors": "McTavish et al",
+    "year": "2024",
+    "title": "",
+    "key": "mctavish2024"
+  },
+  {
+    "url": "https://doi.org/10.1007/978-3-030-01614-2_19",
+    "authors": "Durão et al",
+    "year": "2018",
+    "title": "",
+    "key": "durao2018"
+  },
+  {
+    "url": "https://doi.org/10.1002/sd.2474",
+    "authors": "Wagner and Kabalska",
+    "year": "2023",
+    "title": "",
+    "key": "wagner2023"
+  },
+  {
+    "url": "https://doi.org/10.1080/00405000.2025.2496840",
+    "authors": "Bi et al",
+    "year": "2025",
+    "title": "",
+    "key": "bi2025"
+  },
+  {
+    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1542",
+    "authors": "European Commission",
+    "year": "2023",
+    "title": "",
+    "key": "commission2023"
+  },
+  {
+    "url": "https://hdl.handle.net/10589/239975",
+    "authors": "Pistoia",
+    "year": "2025",
+    "title": "",
+    "key": "pistoia2025"
+  },
+  {
+    "url": "https://www.europarl.europa.eu/RegData/etudes",
+    "authors": "European Parliament",
+    "year": "2024",
+    "title": "",
+    "key": "parliament2024"
+  },
+  {
+    "url": "https://cirpassproject.eu/results/",
+    "authors": "CIRPASS",
+    "year": "2024",
+    "title": "",
+    "key": "cirpass2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2410.15758",
+    "authors": "García et al",
+    "year": "2024",
+    "title": "",
+    "key": "garcia2024"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.procir.2024.12.030",
+    "authors": "Paolucci et al",
+    "year": "2025",
+    "title": "",
+    "key": "paolucci2025"
+  },
+  {
+    "url": "https://doi.org/10.1109/NTMS65597.2025.11076730",
+    "authors": "Kannappan et al",
+    "year": "2025",
+    "title": "",
+    "key": "kannappan2025"
+  },
+  {
+    "url": "https://sigmatechnology.com/dpp-analysis",
+    "authors": "Sigma Technology",
+    "year": "2024",
+    "title": "",
+    "key": "technology2024"
+  },
+  {
+    "url": "https://fashionunited.com/news/business/h-m-zalando-join-eu-digital-product-passport-pilot",
+    "authors": "Fashion United",
+    "year": "2024",
+    "title": "",
+    "key": "united2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2309.07864",
+    "authors": "Xi et al",
+    "year": "2023",
+    "title": "",
+    "key": "xi2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2504.18875",
+    "authors": "Schneider",
+    "year": "2025",
+    "title": "",
+    "key": "schneider2025"
+  },
+  {
+    "url": "http://arxiv.org/abs/2510.10991",
+    "authors": "Yao et al",
+    "year": "2025",
+    "title": "",
+    "key": "yao2025"
+  },
+  {
+    "url": "https://doi.org/10.1007/s10479-025-06534-7",
+    "authors": "Vann Yaroson et al",
+    "year": "2025",
+    "title": "",
+    "key": "yaroson2025"
+  },
+  {
+    "url": "https://www.ibm.com/thought-leadership/institute-business-value/en-us/report/supply-chain-ai-automation-oracle",
+    "authors": "IBM Institute for Business Value",
+    "year": "2025",
+    "title": "",
+    "key": "value2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.17536",
+    "authors": "Choi et al",
+    "year": "2025",
+    "title": "",
+    "key": "choi2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.01499",
+    "authors": "Rui Ai et al",
+    "year": "2025",
+    "title": "",
+    "key": "ai2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2005.00039",
+    "authors": "Meyen et al",
+    "year": "2021",
+    "title": "",
+    "key": "meyen2021"
+  },
+  {
+    "url": "https://arxiv.org/abs/2401.09379",
+    "authors": "Gasparin and Ramdas",
+    "year": "2024",
+    "title": "",
+    "key": "gasparin2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.10609",
+    "authors": "Huang et al",
+    "year": "2025",
+    "title": "",
+    "key": "huang2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.13590",
+    "authors": "Huang et al",
+    "year": "2025",
+    "title": "",
+    "key": "huang2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2507.10644",
+    "authors": "Petrova et al",
+    "year": "2025",
+    "title": "",
+    "key": "petrova2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2507.21105",
+    "authors": "Liao et al",
+    "year": "2025",
+    "title": "",
+    "key": "liao2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.bcra.2024.100266",
+    "authors": "Qiao et al",
+    "year": "2025",
+    "title": "",
+    "key": "qiao2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jii.2022.100345",
+    "authors": "Hader et al",
+    "year": "2022",
+    "title": "",
+    "key": "hader2022"
+  },
+  {
+    "url": "https://doi.org/10.3389/fbloc.2025.1503595",
+    "authors": "Najat",
+    "year": "2025",
+    "title": "",
+    "key": "najat2025"
+  },
+  {
+    "url": "https://doi.org/10.1063/5.0123942",
+    "authors": "Teoh",
+    "year": "2023",
+    "title": "",
+    "key": "teoh2023"
+  },
+  {
+    "url": "https://doi.org/10.1108/JOCM-09-2020-0299",
+    "authors": "Caldarelli et al",
+    "year": "2021",
+    "title": "",
+    "key": "caldarelli2021"
+  },
+  {
+    "url": "http://doi.org/10.1257/aer.104.1.183",
+    "authors": "Jack and Suri",
+    "year": "2014",
+    "title": "",
+    "key": "jack2014"
+  },
+  {
+    "url": "https://doi.org/10.1108/SCM-03-2024-0192",
+    "authors": "Lustenberger and Spychiger",
+    "year": "2025",
+    "title": "",
+    "key": "lustenberger2025"
+  },
+  {
+    "url": "https://fibretrace.io",
+    "authors": "FibreTrace",
+    "year": "2024",
+    "title": "",
+    "key": "fibretrace2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2412.01719",
+    "authors": "Iuliano and Di Nucci",
+    "year": "2025",
+    "title": "",
+    "key": "iuliano2025"
+  },
+  {
+    "url": "https://doi.org/10.1007/s10664-025-10646-w",
+    "authors": "Sadaf et al",
+    "year": "2025",
+    "title": "",
+    "key": "sadaf2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2307.10222",
+    "authors": "Winecoff and Lenhard",
+    "year": "2023",
+    "title": "",
+    "key": "winecoff2023"
+  },
+  {
+    "url": "https://dx.doi.org/10.2139/ssrn.5227972",
+    "authors": "Calzada",
+    "year": "2025",
+    "title": "",
+    "key": "calzada2025"
+  },
+  {
+    "url": "https://doi.org/10.1109/JIOT.2024.3407584",
+    "authors": "Yao et al",
+    "year": "2024",
+    "title": "",
+    "key": "yao2024"
+  },
+  {
+    "url": "https://doi.org/10.1109/TIV.2023.3332675",
+    "authors": "Zhang et al",
+    "year": "2023",
+    "title": "",
+    "key": "zhang2023"
+  },
+  {
+    "url": "https://doi.org/10.1080/00207543.2024.2432469",
+    "authors": "Li et al",
+    "year": "2024",
+    "title": "",
+    "key": "li2024"
+  },
+  {
+    "url": "https://link.springer.com/article/10.1007/s10479-023-05477-1",
+    "authors": "Zhou et al",
+    "year": "2023",
+    "title": "",
+    "key": "zhou2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.10691",
+    "authors": "Song et al",
+    "year": "2024",
+    "title": "",
+    "key": "song2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2503.07231",
+    "authors": "Chen et al",
+    "year": "2025",
+    "title": "",
+    "key": "chen2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.aei.2025.103179",
+    "authors": "Wang et al",
+    "year": "2025",
+    "title": "",
+    "key": "wang2025a"
+  },
+  {
+    "url": "https://doi.org/10.1145/3690624.3709346",
+    "authors": "Zhang et al",
+    "year": "2024",
+    "title": "",
+    "key": "zhang2024"
+  },
+  {
+    "url": "https://www.ellenmacarthurfoundation.org/our-vision-of-a-circular-economy-for-fashion",
+    "authors": "Ellen MacArthur Foundation",
+    "year": "2021",
+    "title": "",
+    "key": "foundation2021"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jclepro.2018.02.001",
+    "authors": "Pal and Gander",
+    "year": "2018",
+    "title": "",
+    "key": "pal2018"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jclepro.2020.122596",
+    "authors": "Konietzko et al",
+    "year": "2020",
+    "title": "",
+    "key": "konietzko2020"
+  },
+  {
+    "url": "https://doi.org/10.1007/s10668-023-03943-1",
+    "authors": "Fu et al",
+    "year": "2025",
+    "title": "",
+    "key": "fu2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jclepro.2019.02.085",
+    "authors": "Alcayaga et al",
+    "year": "2019",
+    "title": "",
+    "key": "alcayaga2019"
+  },
+  {
+    "url": "https://doi.org/10.1007/s11747-018-0608-3",
+    "authors": "Novak and Hoffman",
+    "year": "2019",
+    "title": "",
+    "key": "novak2019"
+  },
+  {
+    "url": "https://doi.org/10.1111/jpim.12544",
+    "authors": "Raff et al",
+    "year": "2020",
+    "title": "",
+    "key": "raff2020"
+  },
+  {
+    "url": "https://doi.org/10.1007/s11747-012-0308-3",
+    "authors": "Grönroos and Voima",
+    "year": "2013",
+    "title": "",
+    "key": "gronroos2013"
+  },
+  {
+    "url": "https://doi.org/10.1007/s11356-022-19255-2",
+    "authors": "D'Adamo et al",
+    "year": "2022",
+    "title": "",
+    "key": "dadamo2022"
+  },
+  {
+    "url": "https://doi.org/10.1007/s43615-024-00351-z",
+    "authors": "Petäinen et al",
+    "year": "2024",
+    "title": "",
+    "key": "petainen2024"
+  },
+  {
+    "url": "https://doi.org/10.1080/00207543.2025.2456991",
+    "authors": "Wang et al",
+    "year": "2025",
+    "title": "",
+    "key": "wang2025b"
+  },
+  {
+    "url": "https://doi.org/10.1007/s12599-024-00893-4",
+    "authors": "Opriel et al",
+    "year": "2024",
+    "title": "",
+    "key": "opriel2024"
+  },
+  {
+    "url": "https://doi.org/10.1007/978-3-030-63076-8_11",
+    "authors": "Wang et al",
+    "year": "2020",
+    "title": "",
+    "key": "wang2020"
+  },
+  {
+    "url": "https://arxiv.org/abs/2406.04845",
+    "authors": "Ye et al",
+    "year": "2024",
+    "title": "",
+    "key": "ye2024"
+  },
+  {
+    "url": "https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/",
+    "authors": "Newman",
+    "year": "2021",
+    "title": "",
+    "key": "newman2021"
+  },
+  {
+    "url": "https://www.amazon.com/Patterns-API-Design-Simplifying-Addison-Wesley/dp/0137670109",
+    "authors": "Zimmermann et al",
+    "year": "2022",
+    "title": "",
+    "key": "zimmermann2022"
+  },
+  {
+    "url": "https://doi.org/10.1145/3589334.3645678",
+    "authors": "Zhang et al",
+    "year": "2024",
+    "title": "",
+    "key": "zhang2024a"
+  },
+  {
+    "url": "https://www.arxiv.org/abs/2408.10434",
+    "authors": "Nogueira et al",
+    "year": "2024",
+    "title": "",
+    "key": "nogueira2024"
+  },
+  {
+    "url": "https://doi.org/10.1109/ICSA59870.2024.00023",
+    "authors": "Bogner et al",
+    "year": "2024",
+    "title": "",
+    "key": "bogner2024"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jss.2024.112232",
+    "authors": "Hui et al",
+    "year": "2024",
+    "title": "",
+    "key": "hui2024"
+  },
+  {
+    "url": "https://doi.org/10.1145/3053600.3053653",
+    "authors": "Heinrich et al",
+    "year": "2017",
+    "title": "",
+    "key": "heinrich2017"
+  },
+  {
+    "url": "https://doi.org/10.1145/1168092.1168097",
+    "authors": "Choi et al",
+    "year": "2006",
+    "title": "",
+    "key": "choi2006"
+  },
+  {
+    "url": "https://doi.org/10.1145/2843043.2843048",
+    "authors": "Anam et al",
+    "year": "2016",
+    "title": "",
+    "key": "anam2016"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.24716",
+    "authors": "Buss et al",
+    "year": "2025",
+    "title": "",
+    "key": "buss2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2410.24105",
+    "authors": "Seedat & van der Schaar",
+    "year": "2024",
+    "title": "",
+    "key": "vanderschaar2024"
+  },
+  {
+    "url": "https://doi.org/10.1134/S1054661825010145",
+    "authors": "Sobolev & Stupnikov",
+    "year": "2024",
+    "title": "",
+    "key": "stupnikov2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2501.08686",
+    "authors": "Ma et al",
+    "year": "2025",
+    "title": "",
+    "key": "ma2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2402.08088",
+    "authors": "Zamzmi et al",
+    "year": "2024",
+    "title": "",
+    "key": "zamzmi2024"
+  },
+  {
+    "url": "https://doi.org/10.1002/widm.1555",
+    "authors": "Arora et al",
+    "year": "2024",
+    "title": "",
+    "key": "arora2024"
+  },
+  {
+    "url": "https://www.researchgate.net/publication/220381679_An_ontology-based_architecture_for_implementing_semantic_integration_of_supply_chain_management",
+    "authors": "Ye et al.",
+    "year": "2008",
+    "title": "",
+    "key": "ye2008"
+  },
+  {
+    "url": "https://www.nist.gov/publications/modeling-supply-chain-reference-ontology-based-top-level-ontology",
+    "authors": "Kulvatunyou & Ameri",
+    "year": "2019",
+    "title": "",
+    "key": "ameri2019"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.20020",
+    "authors": "Kokash et al",
+    "year": "2025",
+    "title": "",
+    "key": "kokash2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2403.14442",
+    "authors": "Chen et al",
+    "year": "2024",
+    "title": "",
+    "key": "chen2024"
+  },
+  {
+    "url": "https://aclanthology.org/2025.coling-main.533/",
+    "authors": "Sha et al",
+    "year": "2025",
+    "title": "",
+    "key": "sha2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jclepro.2013.11.012",
+    "authors": "Mol",
+    "year": "2015",
+    "title": "",
+    "key": "mol2015"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.worlddev.2018.05.025",
+    "authors": "Gardner et al",
+    "year": "2019",
+    "title": "",
+    "key": "gardner2019"
+  },
+  {
+    "url": "https://doi.org/10.1080/17543266.2025.2529158",
+    "authors": "Bari et al",
+    "year": "2025",
+    "title": "",
+    "key": "bari2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jclepro.2016.05.144",
+    "authors": "Islam et al",
+    "year": "2016",
+    "title": "",
+    "key": "islam2016"
+  },
+  {
+    "url": "https://doi.org/10.1038/s41561-018-0113-9",
+    "authors": "Wiedmann and Lenzen",
+    "year": "2018",
+    "title": "",
+    "key": "wiedmann2018"
+  },
+  {
+    "url": "#orphan-sodhi-and-wang-2019",
+    "authors": "Sodhi and Wang",
+    "year": "2019",
+    "title": "",
+    "key": "sodhi2019"
+  },
+  {
+    "url": "https://arxiv.org/abs/2502.02533",
+    "authors": "Zhou et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhou2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.12508",
+    "authors": "Zhang et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhang2025b"
+  },
+  {
+    "url": "https://venturebeat.com/ai/beyond-single-model-ai-how-architectural-design-drives-reliable-multi-agent-orchestration",
+    "authors": "Gupta",
+    "year": "2025",
+    "title": "",
+    "key": "gupta2025"
+  },
+  {
+    "url": "https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/",
+    "authors": "Google",
+    "year": "2025",
+    "title": "",
+    "key": "google2025"
+  },
+  {
+    "url": "https://www.amazon.de/-/en/Introduction-MultiAgent-Systems-Second/dp/0470519460",
+    "authors": "Wooldridge",
+    "year": "2009",
+    "title": "",
+    "key": "wooldridge2009"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.12683",
+    "authors": "Moore",
+    "year": "2025",
+    "title": "",
+    "key": "moore2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2025.mcp.taxonomy",
+    "authors": "Zhao et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhao2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2025.mcp.privilege",
+    "authors": "Li et al",
+    "year": "2025",
+    "title": "",
+    "key": "li2025"
+  },
+  {
+    "url": "https://www.darkreading.com/vulnerabilities-threats/figma-mcp-server-agentic-ai-compromise",
+    "authors": "DarkReading",
+    "year": "2025",
+    "title": "",
+    "key": "darkreading2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2025.mpma",
+    "authors": "Wang et al",
+    "year": "2025",
+    "title": "",
+    "key": "wang2025c"
+  },
+  {
+    "url": "https://doi.org/10.1162/tacl_a_00638",
+    "authors": "Liu et al",
+    "year": "2024",
+    "title": "",
+    "key": "liu2024"
+  },
+  {
+    "url": "https://github.com/EvanZhuang/knowledge_flow",
+    "authors": "Zhuang",
+    "year": "2025",
+    "title": "",
+    "key": "zhuang2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.04851",
+    "authors": "Han et al",
+    "year": "2025",
+    "title": "",
+    "key": "han2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.11914",
+    "authors": "Yao et al",
+    "year": "2025",
+    "title": "",
+    "key": "yao2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.04439",
+    "authors": "Ho et al",
+    "year": "2025",
+    "title": "",
+    "key": "ho2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2410.20199",
+    "authors": "Beigi et al",
+    "year": "2024",
+    "title": "",
+    "key": "beigi2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2412.05563",
+    "authors": "Shorinwa et al",
+    "year": "2024",
+    "title": "",
+    "key": "shorinwa2024"
+  },
+  {
+    "url": "https://doi.org/10.1561/2200000101",
+    "authors": "Angelopoulos & Bates",
+    "year": "2023",
+    "title": "",
+    "key": "bates2023a"
+  },
+  {
+    "url": "https://doi.org/10.1007/b106715",
+    "authors": "Vovk et al",
+    "year": "2005",
+    "title": "",
+    "key": "vovk2005"
+  },
+  {
+    "url": "https://arxiv.org/abs/2009.14193",
+    "authors": "Angelopoulos et al",
+    "year": "2020",
+    "title": "",
+    "key": "angelopoulos2020"
+  },
+  {
+    "url": "https://arxiv.org/abs/1905.03222",
+    "authors": "Romano et al",
+    "year": "2019",
+    "title": "",
+    "key": "romano2019"
+  },
+  {
+    "url": "https://arxiv.org/abs/1904.06019",
+    "authors": "Tibshirani et al",
+    "year": "2019",
+    "title": "",
+    "key": "tibshirani2019"
+  },
+  {
+    "url": "https://doi.org/10.1214/23-AOS2276",
+    "authors": "Barber et al",
+    "year": "2023",
+    "title": "",
+    "key": "barber2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2305.18404",
+    "authors": "Kumar et al",
+    "year": "2023",
+    "title": "",
+    "key": "kumar2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2401.12794",
+    "authors": "Ye et al",
+    "year": "2024",
+    "title": "",
+    "key": "ye2024a"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.patcog.2011.06.019",
+    "authors": "Moreno-Torres et al",
+    "year": "2012",
+    "title": "",
+    "key": "morenotorres2012"
+  },
+  {
+    "url": "https://proceedings.mlr.press/v97/recht19a.html",
+    "authors": "Recht et al",
+    "year": "2019",
+    "title": "",
+    "key": "recht2019"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.23464",
+    "authors": "Tripathi et al",
+    "year": "2025",
+    "title": "",
+    "key": "tripathi2025"
+  },
+  {
+    "url": "https://doi.org/10.1145/3736575",
+    "authors": "Gendler et al",
+    "year": "2024",
+    "title": "",
+    "key": "gendler2024"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.compind.2021.107130",
+    "authors": "Agrawal et al",
+    "year": "2021",
+    "title": "",
+    "key": "agrawal2021"
+  },
+  {
+    "url": "https://doi.org/10.1371/journal.pone.0121221",
+    "authors": "Henriksson et al",
+    "year": "2015",
+    "title": "",
+    "key": "henriksson2015"
+  },
+  {
+    "url": "https://sustainability.aboutamazon.com",
+    "authors": "Amazon",
+    "year": "2024",
+    "title": "",
+    "key": "amazon2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/1705.08500",
+    "authors": "Geifman & El-Yaniv",
+    "year": "2017",
+    "title": "",
+    "key": "elyaniv2017"
+  },
+  {
+    "url": "https://arxiv.org/abs/2310.11689",
+    "authors": "Chen et al",
+    "year": "2023",
+    "title": "",
+    "key": "chen2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2409.18645",
+    "authors": "Santosh et al",
+    "year": "2024",
+    "title": "",
+    "key": "santosh2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2502.06884",
+    "authors": "Ferrando et al",
+    "year": "2025",
+    "title": "",
+    "key": "ferrando2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2402.15610",
+    "authors": "Kumar et al",
+    "year": "2024",
+    "title": "",
+    "key": "kumar2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.12527",
+    "authors": "Fisch et al",
+    "year": "2024",
+    "title": "",
+    "key": "fisch2024"
+  },
+  {
+    "url": "https://interpret.ml/",
+    "authors": "Nori et al",
+    "year": "2019",
+    "title": "",
+    "key": "nori2019"
+  },
+  {
+    "url": "https://arxiv.org/abs/2004.13912",
+    "authors": "Agarwal et al",
+    "year": "2021",
+    "title": "",
+    "key": "agarwal2021"
+  },
+  {
+    "url": "https://doi.org/10.1146/annurev-statistics-040720-031104",
+    "authors": "Little",
+    "year": "2021",
+    "title": "",
+    "key": "little2021"
+  },
+  {
+    "url": "https://doi.org/10.1108/IMDS-08-2022-0468",
+    "authors": "Zhang et al",
+    "year": "2023",
+    "title": "",
+    "key": "zhang2023a"
+  },
+  {
+    "url": "https://doi.org/10.1111/jiec.13305",
+    "authors": "Zargar et al",
+    "year": "2022",
+    "title": "",
+    "key": "zargar2022"
+  },
+  {
+    "url": "https://arxiv.org/abs/1703.04977",
+    "authors": "Kendall & Gal",
+    "year": "2017",
+    "title": "",
+    "key": "gal2017"
+  },
+  {
+    "url": "https://openreview.net/forum?id=9Jq7wNrpUI",
+    "authors": "Hamidieh et al",
+    "year": "2025",
+    "title": "",
+    "key": "hamidieh2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2311.08718",
+    "authors": "Kuhn et al",
+    "year": "2023",
+    "title": "",
+    "key": "kuhn2023"
+  },
+  {
+    "url": "https://arxiv.org/abs/2402.10189",
+    "authors": "Ling et al",
+    "year": "2024",
+    "title": "",
+    "key": "ling2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2412.20892",
+    "authors": "Osband et al",
+    "year": "2024",
+    "title": "",
+    "key": "osband2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.22272",
+    "authors": "Walha et al",
+    "year": "2025",
+    "title": "",
+    "key": "walha2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.20295",
+    "authors": "Kirchhof et al",
+    "year": "2025",
+    "title": "",
+    "key": "kirchhof2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2402.19460",
+    "authors": "Mucsányi et al",
+    "year": "2024",
+    "title": "",
+    "key": "mucsanyi2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2503.15850",
+    "authors": "Liu et al",
+    "year": "2025",
+    "title": "",
+    "key": "liu2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.08204",
+    "authors": "Moore et al",
+    "year": "2025",
+    "title": "",
+    "key": "moore2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2503.00172",
+    "authors": "Xia et al",
+    "year": "2025",
+    "title": "",
+    "key": "xia2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.13813",
+    "authors": "Phillips et al",
+    "year": "2025",
+    "title": "",
+    "key": "phillips2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.10409",
+    "authors": "Devic et al",
+    "year": "2025",
+    "title": "",
+    "key": "devic2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.24202",
+    "authors": "Tao et al",
+    "year": "2025",
+    "title": "",
+    "key": "tao2025"
+  },
+  {
+    "url": "https://doi.org/10.1145/3287560.3287596",
+    "authors": "Mitchell et al",
+    "year": "2019",
+    "title": "",
+    "key": "mitchell2019"
+  },
+  {
+    "url": "https://doi.org/10.1038/s42256-024-00857-z",
+    "authors": "Liang et al",
+    "year": "2024",
+    "title": "",
+    "key": "liang2024"
+  },
+  {
+    "url": "https://doi.org/10.1145/3531146.3533231",
+    "authors": "Pushkarna et al",
+    "year": "2022",
+    "title": "",
+    "key": "pushkarna2022"
+  },
+  {
+    "url": "https://arxiv.org/abs/1803.09010",
+    "authors": "Gebru et al",
+    "year": "2021",
+    "title": "",
+    "key": "gebru2021"
+  },
+  {
+    "url": "https://arxiv.org/abs/2303.08774",
+    "authors": "OpenAI",
+    "year": "2023",
+    "title": "",
+    "key": "openai2023"
+  },
+  {
+    "url": "https://link.springer.com/article/10.1007/s10676-024-09757-7",
+    "authors": "Luccioni et al",
+    "year": "2024",
+    "title": "",
+    "key": "luccioni2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2307.15475",
+    "authors": "Zhou et al",
+    "year": "2023",
+    "title": "",
+    "key": "zhou2023a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2406.14758",
+    "authors": "Marino et al",
+    "year": "2024",
+    "title": "",
+    "key": "marino2024"
+  },
+  {
+    "url": "https://doi.org/10.1007/s10676-024-09757-7",
+    "authors": "Hupont et al",
+    "year": "2024",
+    "title": "",
+    "key": "hupont2024"
+  },
+  {
+    "url": "https://doi.org/10.1007/s43681-025-00725-5",
+    "authors": "Cousineau et al",
+    "year": "2025",
+    "title": "",
+    "key": "cousineau2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2405.06258",
+    "authors": "Liu et al",
+    "year": "2024",
+    "title": "",
+    "key": "liu2024a"
+  },
+  {
+    "url": "https://doi.org/10.3390/info11110509",
+    "authors": "Caldarelli & Higgins",
+    "year": "2020",
+    "title": "",
+    "key": "higgins2020"
+  },
+  {
+    "url": "https://doi.org/10.3390/su12062391",
+    "authors": "Pasdar et al",
+    "year": "2021",
+    "title": "",
+    "key": "pasdar2021"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jnca.2023.103672",
+    "authors": "Egbertsen et al",
+    "year": "2019",
+    "title": "",
+    "key": "egbertsen2019"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.15918",
+    "authors": "Nafar et al",
+    "year": "2025",
+    "title": "",
+    "key": "nafar2025"
+  },
+  {
+    "url": "https://doi.org/10.1609/aaai.v38i18.30040",
+    "authors": "Toroghi & Sanner",
+    "year": "2024",
+    "title": "",
+    "key": "sanner2024"
+  },
+  {
+    "url": "https://openreview.net/forum?id=2GEipEDZB0",
+    "authors": "Seedat et al",
+    "year": "2025",
+    "title": "",
+    "key": "seedat2025"
+  },
+  {
+    "url": "https://www.oecd.org/en/publications/trends-in-trade-in-counterfeit-and-pirated-goods_g2g9f533-en.html",
+    "authors": "OECD",
+    "year": "2019",
+    "title": "",
+    "key": "oecd2019"
+  },
+  {
+    "url": "https://doi.org/10.1108/SCM-10-2018-0357",
+    "authors": "Ghadge et al",
+    "year": "2020",
+    "title": "",
+    "key": "ghadge2020"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jik.2025.100764",
+    "authors": "Schiaroli et al",
+    "year": "2025",
+    "title": "",
+    "key": "schiaroli2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jretai.2014.03.004",
+    "authors": "Tully and Winer",
+    "year": "2014",
+    "title": "",
+    "key": "tully2014"
+  },
+  {
+    "url": "https://doi.org/10.1002/bse.4269",
+    "authors": "Toth-Peter et al",
+    "year": "2025",
+    "title": "",
+    "key": "tothpeter2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.spc.2025.03.020",
+    "authors": "Hunka et al",
+    "year": "2025",
+    "title": "",
+    "key": "hunka2025"
+  },
+  {
+    "url": "https://urn.kb.se/resolve?urn=urn%3Anbn%3Ase%3Aumu%3Adiva-197002",
+    "authors": "Arnesson and Westman",
+    "year": "2022",
+    "title": "",
+    "key": "arnesson2022"
+  },
+  {
+    "url": "https://doi.org/10.3390/su15065398",
+    "authors": "Alves et al",
+    "year": "2023",
+    "title": "",
+    "key": "alves2023"
+  },
+  {
+    "url": "https://www.proquest.com/openview/3de02f26fd7ba740b9ec9a5bc194603f/1?pq-origsite=gscholar&cbl=18750&diss=y",
+    "authors": "Bouchillon",
+    "year": "2025",
+    "title": "",
+    "key": "bouchillon2025"
+  },
+  {
+    "url": "https://doi.org/10.1007/978-3-030-22018-1_14",
+    "authors": "Morris et al",
+    "year": "2021",
+    "title": "",
+    "key": "morris2021"
+  },
+  {
+    "url": "https://doi.org/10.1108/JFMM-07-2024-0275",
+    "authors": "Mellick et al",
+    "year": "2025",
+    "title": "",
+    "key": "mellick2025"
+  },
+  {
+    "url": "https://doi.org/10.1007/978-3-319-38756-7_4",
+    "authors": "Grieves and Vickers",
+    "year": "2017",
+    "title": "",
+    "key": "grieves2017"
+  },
+  {
+    "url": "https://doi.org/10.3390/machines13020109",
+    "authors": "Kim et al",
+    "year": "2025",
+    "title": "",
+    "key": "kim2025"
+  },
+  {
+    "url": "https://doi.org/10.3390/logistics9010022",
+    "authors": "Roman et al",
+    "year": "2025",
+    "title": "",
+    "key": "roman2025"
+  },
+  {
+    "url": "https://doi.org/10.1080/00207543.2025.2507112",
+    "authors": "Badakhshan & Ivanov",
+    "year": "2025",
+    "title": "",
+    "key": "ivanov2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.sca.2024.100075",
+    "authors": "Zaidi et al",
+    "year": "2024",
+    "title": "",
+    "key": "zaidi2024"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.cie.2023.109768",
+    "authors": "Le and Fan",
+    "year": "2024",
+    "title": "",
+    "key": "le2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2504.03692",
+    "authors": "Wasi et al",
+    "year": "2025",
+    "title": "",
+    "key": "wasi2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.hcc.2025.100303",
+    "authors": "Zia et al",
+    "year": "2025",
+    "title": "",
+    "key": "zia2025"
+  },
+  {
+    "url": "https://doi.org/10.1186/s41072-022-00110-z",
+    "authors": "Cil et al",
+    "year": "2022",
+    "title": "",
+    "key": "cil2022"
+  },
+  {
+    "url": "https://doi.org/10.1111/exsy.13467",
+    "authors": "Rehman et al",
+    "year": "2024",
+    "title": "",
+    "key": "rehman2024"
+  },
+  {
+    "url": "https://doi.org/10.1109/IS61756.2024.10705183",
+    "authors": "Hrischev and Shakev",
+    "year": "2024",
+    "title": "",
+    "key": "hrischev2024"
+  },
+  {
+    "url": "https://doi.org/10.1007/978-981-96-7734-4",
+    "authors": "Anjaria",
+    "year": "2025",
+    "title": "",
+    "key": "anjaria2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2204.06972",
+    "authors": "Skenderi et al",
+    "year": "2022",
+    "title": "",
+    "key": "skenderi2022"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.03811",
+    "authors": "Qi et al",
+    "year": "2025",
+    "title": "",
+    "key": "qi2025"
+  },
+  {
+    "url": "https://doi.org/10.1002/bse.70038",
+    "authors": "Polimetla et al",
+    "year": "2025",
+    "title": "",
+    "key": "polimetla2025"
+  },
+  {
+    "url": "https://doi.org/10.7717/peerj-cs.1943",
+    "authors": "Wahab et al",
+    "year": "2024",
+    "title": "",
+    "key": "wahab2024"
+  },
+  {
+    "url": "https://doi.org/10.1007/s10207-025-01043-x",
+    "authors": "Erceylan et al",
+    "year": "2025",
+    "title": "",
+    "key": "erceylan2025"
+  },
+  {
+    "url": "https://doi.org/10.1080/13675567.2024.2324895",
+    "authors": "Freese and Ludwig",
+    "year": "2024",
+    "title": "",
+    "key": "freese2024"
+  },
+  {
+    "url": "https://oneclicklca.com/en/resources/articles/ecodesign-sustainable-products-regulation-guide",
+    "authors": "Zacharia",
+    "year": "2025",
+    "title": "",
+    "key": "zacharia2025"
+  },
+  {
+    "url": "https://ssrn.com/abstract=2847806",
+    "authors": "Arner et al",
+    "year": "2016",
+    "title": "",
+    "key": "arner2016"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jfineco.2024.103792",
+    "authors": "Charoenwong et al",
+    "year": "2024",
+    "title": "",
+    "key": "charoenwong2024"
+  },
+  {
+    "url": "https://doi.org/10.2308/HORIZONS-2023-060",
+    "authors": "Eulerich et al",
+    "year": "2025",
+    "title": "",
+    "key": "eulerich2025"
+  },
+  {
+    "url": "https://doi.org/10.1145/3707640.3731929",
+    "authors": "Sekwenz et al",
+    "year": "2025",
+    "title": "",
+    "key": "sekwenz2025"
+  },
+  {
+    "url": "https://doi.org/10.1007/s11095-007-9511-1",
+    "authors": "Yu et al",
+    "year": "2008",
+    "title": "",
+    "key": "yu2008"
+  },
+  {
+    "url": "https://arxiv.org/abs/2409.08006",
+    "authors": "Granlund et al",
+    "year": "2024",
+    "title": "",
+    "key": "granlund2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2311.14570",
+    "authors": "Cardoso et al",
+    "year": "2024",
+    "title": "",
+    "key": "cardoso2024"
+  },
+  {
+    "url": "https://www.carbonfact.com/blog/policy/espr-textile",
+    "authors": "Lüttin",
+    "year": "2024",
+    "title": "",
+    "key": "luttin2024"
+  },
+  {
+    "url": "https://doi.org/10.1038/s41746-024-01085-w",
+    "authors": "Koch et al",
+    "year": "2024",
+    "title": "",
+    "key": "koch2024"
+  },
+  {
+    "url": "https://doi.org/10.1038/s41598-025-85457-6",
+    "authors": "Shen et al",
+    "year": "2025",
+    "title": "",
+    "key": "shen2025"
+  },
+  {
+    "url": "#orphan-zhang-et-al-2024",
+    "authors": "Zhang et al",
+    "year": "2024",
+    "title": "",
+    "key": "zhang2024b"
+  },
+  {
+    "url": "https://doi.org/10.1007/s42979-024-03413-z",
+    "authors": "Bäumer et al",
+    "year": "2024",
+    "title": "",
+    "key": "baumer2024"
+  },
+  {
+    "url": "https://doi.org/10.7717/peerj-cs.2877",
+    "authors": "Li and Wang",
+    "year": "2025",
+    "title": "",
+    "key": "li2025a"
+  },
+  {
+    "url": "https://doi.org/10.2196/41588",
+    "authors": "Brauneck et al",
+    "year": "2023",
+    "title": "",
+    "key": "brauneck2023"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.cose.2021.102402",
+    "authors": "Truong et al",
+    "year": "2021",
+    "title": "",
+    "key": "truong2021"
+  },
+  {
+    "url": "http://arxiv.org/abs/2508.18765",
+    "authors": "Gaurav et al",
+    "year": "2025",
+    "title": "",
+    "key": "gaurav2025"
+  },
+  {
+    "url": "https://www.nist.gov/publications/interoperability-digital-twins-challenges-success-factors-and-future-research",
+    "authors": "David et al",
+    "year": "2024",
+    "title": "",
+    "key": "david2024"
+  },
+  {
+    "url": "https://www.nist.gov/publications/use-case-scenarios-digital-twin-implementation-based-iso-23247",
+    "authors": "Shao",
+    "year": "2021",
+    "title": "",
+    "key": "shao2021"
+  },
+  {
+    "url": "https://doi.org/10.1038/s43588-024-00603-w",
+    "authors": "Tao et al",
+    "year": "2025",
+    "title": "",
+    "key": "tao2025a"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jclepro.2019.119299",
+    "authors": "Wang et al",
+    "year": "2020",
+    "title": "",
+    "key": "wang2020a"
+  },
+  {
+    "url": "https://doi.org/10.1109/ICMC60390.2024.00014",
+    "authors": "Li et al",
+    "year": "2024",
+    "title": "",
+    "key": "li2024a"
+  },
+  {
+    "url": "https://doi.org/10.1007/s10845-024-02424-0",
+    "authors": "Li et al",
+    "year": "2025",
+    "title": "",
+    "key": "li2025b"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.18725",
+    "authors": "Zhang et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhang2025c"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.23864",
+    "authors": "Koohestani",
+    "year": "2025",
+    "title": "",
+    "key": "koohestani2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.03469",
+    "authors": "Ramani et al",
+    "year": "2024",
+    "title": "",
+    "key": "ramani2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.05156",
+    "authors": "Miculicich et al",
+    "year": "2025",
+    "title": "",
+    "key": "miculicich2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.18934",
+    "authors": "Liu et al",
+    "year": "2025",
+    "title": "",
+    "key": "liu2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.24698",
+    "authors": "Sun et al",
+    "year": "2025",
+    "title": "",
+    "key": "sun2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2405.02580",
+    "authors": "Liu et al",
+    "year": "2024",
+    "title": "",
+    "key": "liu2024b"
+  },
+  {
+    "url": "http://arxiv.org/abs/2412.08603",
+    "authors": "Zhou et al",
+    "year": "2025",
+    "title": "",
+    "key": "zhou2025a"
+  },
+  {
+    "url": "https://doi.org/10.1109/BIGCOMP.2016.7425981",
+    "authors": "Lim et al",
+    "year": "2016",
+    "title": "",
+    "key": "lim2016"
+  },
+  {
+    "url": "https://doi.org/10.4204/EPTCS.362.5",
+    "authors": "Engelmann et al",
+    "year": "2022",
+    "title": "",
+    "key": "engelmann2022"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.08997",
+    "authors": "Yuen et al",
+    "year": "2025",
+    "title": "",
+    "key": "yuen2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.04133",
+    "authors": "Raza et al",
+    "year": "2025",
+    "title": "",
+    "key": "raza2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.15103",
+    "authors": "Lin et al",
+    "year": "2025",
+    "title": "",
+    "key": "lin2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.03320",
+    "authors": "Bell et al",
+    "year": "2025",
+    "title": "",
+    "key": "bell2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.07407",
+    "authors": "Fang et al",
+    "year": "2025",
+    "title": "",
+    "key": "fang2025"
+  },
+  {
+    "url": "https://doi.org/10.1186/s40537-025-01099-5",
+    "authors": "Orabi et al",
+    "year": "2025",
+    "title": "",
+    "key": "orabi2025"
+  },
+  {
+    "url": "http://arxiv.org/abs/2410.01767",
+    "authors": "Cortes-Gomez et al",
+    "year": "2025",
+    "title": "",
+    "key": "cortesgomez2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.05566",
+    "authors": "Lin et al",
+    "year": "2025",
+    "title": "",
+    "key": "lin2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.15233",
+    "authors": "Badkul and Xie",
+    "year": "2025",
+    "title": "",
+    "key": "badkul2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.13297",
+    "authors": "Xu et al",
+    "year": "2025",
+    "title": "",
+    "key": "xu2025"
+  },
+  {
+    "url": "http://arxiv.org/abs/2508.07556",
+    "authors": "Rabanser",
+    "year": "2025",
+    "title": "",
+    "key": "rabanser2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2504.15722",
+    "authors": "Huang et al",
+    "year": "2025",
+    "title": "",
+    "key": "huang2025b"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.17419",
+    "authors": "Duan et al",
+    "year": "2025",
+    "title": "",
+    "key": "duan2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.02401",
+    "authors": "Stoisser et all",
+    "year": "2025",
+    "title": "",
+    "key": "stoisser2025"
+  },
+  {
+    "url": "https://www.fda.gov/about-fda/center-drug-evaluation-and-research-cder/artificial-intelligence-drug-development",
+    "authors": "FDA AI Drug Development Guidance",
+    "year": "2025",
+    "title": "",
+    "key": "guidance2025"
+  },
+  {
+    "url": "https://doi.org/10.1109/MC.2024.3414368",
+    "authors": "Granlund et al",
+    "year": "2024",
+    "title": "",
+    "key": "granlund2024a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2402.00809",
+    "authors": "Papamarkou et al",
+    "year": "2024",
+    "title": "",
+    "key": "papamarkou2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2507.15439",
+    "authors": "Protte et al",
+    "year": "2025",
+    "title": "",
+    "key": "protte2025"
+  },
+  {
+    "url": "https://openreview.net/forum?id=sLQb8q0sUi",
+    "authors": "Fan et al",
+    "year": "2024",
+    "title": "",
+    "key": "fan2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2311.05304",
+    "authors": "Li et al",
+    "year": "2024",
+    "title": "",
+    "key": "li2024b"
+  },
+  {
+    "url": "https://doi.org/10.1002/mar.22048",
+    "authors": "Montecchi et al",
+    "year": "2024",
+    "title": "",
+    "key": "montecchi2024"
+  },
+  {
+    "url": "https://doi.org/10.1108/jcm-07-2024-7005",
+    "authors": "Nguyen and Bguyen",
+    "year": "2025",
+    "title": "",
+    "key": "nguyen2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2504.00587",
+    "authors": "Yang et al",
+    "year": "2025",
+    "title": "",
+    "key": "yang2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2502.14743",
+    "authors": "Sun et al",
+    "year": "2025",
+    "title": "",
+    "key": "sun2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2504.09772",
+    "authors": "Jin et al",
+    "year": "2025",
+    "title": "",
+    "key": "jin2025"
+  },
+  {
+    "url": "https://doi.org/10.1145/3643915.3644090",
+    "authors": "Chu et al",
+    "year": "2004",
+    "title": "",
+    "key": "chu2004"
+  },
+  {
+    "url": "https://doi.org/10.1145/3686803",
+    "authors": "Li et al",
+    "year": "2024",
+    "title": "",
+    "key": "li2024c"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.10468",
+    "authors": "Sapkota et al",
+    "year": "2025",
+    "title": "",
+    "key": "sapkota2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.asoc.2024.112475",
+    "authors": "Tang et al",
+    "year": "2025",
+    "title": "",
+    "key": "tang2025"
+  },
+  {
+    "url": "https://doi.org/10.14778/3659437.3659459",
+    "authors": "Chen et al",
+    "year": "2024",
+    "title": "",
+    "key": "chen2024a"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.future.2024.107639",
+    "authors": "Al-Saedi et al",
+    "year": "2025",
+    "title": "",
+    "key": "alsaedi2025"
+  },
+  {
+    "url": "https://openreview.net/forum?id=G89r8Mgi5r",
+    "authors": "Chen et al",
+    "year": "2024",
+    "title": "",
+    "key": "chen2024b"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.jbi.2024.104661",
+    "authors": "Mateus et al",
+    "year": "2024",
+    "title": "",
+    "key": "mateus2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2507.07957",
+    "authors": "Wang & Chen",
+    "year": "2025",
+    "title": "",
+    "key": "chen2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2502.12110",
+    "authors": "Xu et al",
+    "year": "2025",
+    "title": "",
+    "key": "xu2025a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.09038",
+    "authors": "Kirichenko et al",
+    "year": "2025",
+    "title": "",
+    "key": "kirichenko2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2407.18418",
+    "authors": "Wen et al",
+    "year": "2024",
+    "title": "",
+    "key": "wen2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.01333",
+    "authors": "Bhatt et al",
+    "year": "2025",
+    "title": "",
+    "key": "bhatt2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.10390",
+    "authors": "Muhamed et al",
+    "year": "2025",
+    "title": "",
+    "key": "muhamed2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2410.15393",
+    "authors": "Li et al",
+    "year": "2024",
+    "title": "",
+    "key": "li2024d"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.06225",
+    "authors": "Tian et al",
+    "year": "2025",
+    "title": "",
+    "key": "tian2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2510.15186",
+    "authors": "Juneja et al",
+    "year": "2025",
+    "title": "",
+    "key": "juneja2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2411.15594",
+    "authors": "Gu et al",
+    "year": "2024",
+    "title": "",
+    "key": "gu2024"
+  },
+  {
+    "url": "https://www.gs1.org/standards/epcis",
+    "authors": "GS1",
+    "year": "2024",
+    "title": "",
+    "key": "gs2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.02279",
+    "authors": "Ehtesham et al",
+    "year": "2025",
+    "title": "",
+    "key": "ehtesham2025"
+  },
+  {
+    "url": "https://doi.org/10.1007/978-3-031-84628-1_12",
+    "authors": "Ayob & Hattingh",
+    "year": "2025",
+    "title": "",
+    "key": "hattingh2025"
+  },
+  {
+    "url": "https://www.nber.org/system/files/chapters/c15309/c15309.pdf",
+    "authors": "Shahidi et al",
+    "year": "2025",
+    "title": "",
+    "key": "shahidi2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.01063",
+    "authors": "Hadfield & Koh",
+    "year": "2025",
+    "title": "",
+    "key": "koh2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2501.07913",
+    "authors": "Kolt",
+    "year": "2025",
+    "title": "",
+    "key": "kolt2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.08544",
+    "authors": "Ibrahim et al",
+    "year": "2025",
+    "title": "",
+    "key": "ibrahim2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2504.03255",
+    "authors": "Chen et al",
+    "year": "2025",
+    "title": "",
+    "key": "chen2025b"
+  },
+  {
+    "url": "https://doi.org/10.1145/3706598.3713663",
+    "authors": "Wanitsch et al",
+    "year": "2025",
+    "title": "",
+    "key": "wanitsch2025"
+  },
+  {
+    "url": "https://doi.org/10.1145/3706598.3714001",
+    "authors": "Eggeling et al",
+    "year": "2025",
+    "title": "",
+    "key": "eggeling2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.15799",
+    "authors": "Rothschild et al",
+    "year": "2025",
+    "title": "",
+    "key": "rothschild2025"
+  },
+  {
+    "url": "https://www.sciencedirect.com/science/article/abs/pii/S1544612325004738",
+    "authors": "Yang et al",
+    "year": "2025",
+    "title": "",
+    "key": "yang2025b"
+  },
+  {
+    "url": "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
+    "authors": "European Union",
+    "year": "2024",
+    "title": "",
+    "key": "union2024"
+  },
+  {
+    "url": "https://simonwillison.net/2025/Oct/16/claude-skills/",
+    "authors": "Willison",
+    "year": "2025",
+    "title": "",
+    "key": "willison2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.joi.2020.101094",
+    "authors": "Tang et al",
+    "year": "2020",
+    "title": "",
+    "key": "tang2020"
+  },
+  {
+    "url": "https://www.insurancetimes.co.uk/news/technology-obsolescence-is-biggest-digital-threat-in-2024-beazley/1452976.article",
+    "authors": "Beazley",
+    "year": "2024",
+    "title": "",
+    "key": "beazley2024"
+  },
+  {
+    "url": "https://ourworldindata.org/artificial-intelligence",
+    "authors": "Giattino et al",
+    "year": "2024",
+    "title": "",
+    "key": "giattino2024"
+  },
+  {
+    "url": "https://www.axios.com/2025/02/20/ai-agi-timeline-promises-openai-anthropic-deepmind",
+    "authors": "Axios",
+    "year": "2025",
+    "title": "",
+    "key": "axios2025"
+  },
+  {
+    "url": "https://www.sec.gov/rules/final/2012/34-67716.pdf",
+    "authors": "Conflict Minerals Rule",
+    "year": "2012",
+    "title": "",
+    "key": "rule2012"
+  },
+  {
+    "url": "https://doi.org/10.1007/s10551-023-05569-9",
+    "authors": "Marikyan & Papagiannidis",
+    "year": "2024",
+    "title": "",
+    "key": "papagiannidis2024"
+  },
+  {
+    "url": "https://www.circularise.com/blogs/eu-battery-passport-regulation-requirements",
+    "authors": "Circularise",
+    "year": "2025",
+    "title": "",
+    "key": "circularise2025"
+  },
+  {
+    "url": "https://fsc.org/en/chain-of-custody",
+    "authors": "FSC",
+    "year": "2025",
+    "title": "",
+    "key": "fsc2025"
+  },
+  {
+    "url": "https://www.federalregister.gov/documents/2023/02/21/2023-03444/voluntary-consensus-standards-update-formaldehyde-emission-standards-for-composite-wood-products",
+    "authors": "EPA",
+    "year": "2023",
+    "title": "",
+    "key": "epa2023"
+  },
+  {
+    "url": "https://www.whitecase.com/insight-alert/eight-key-aspects-know-about-eu-ecodesign-sustainable-products-regulation",
+    "authors": "White & Case",
+    "year": "2024",
+    "title": "",
+    "key": "case2024"
+  },
+  {
+    "url": "https://doi.org/10.1007/s43621-025-01466-5",
+    "authors": "Arab et al",
+    "year": "2025",
+    "title": "",
+    "key": "arab2025"
+  },
+  {
+    "url": "https://doi.org/10.1016/j.buildenv.2023.110432",
+    "authors": "Greer & Horvath",
+    "year": "2023",
+    "title": "",
+    "key": "horvath2023"
+  },
+  {
+    "url": "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/13682-Ecodesign-for-sustainable-products-working-plan_en",
+    "authors": "European Commission",
+    "year": "2025",
+    "title": "",
+    "key": "commission2025"
+  },
+  {
+    "url": "https://www.intertek.com/blog/2025/05-28-eu-ecodesign-digital-product-passport/",
+    "authors": "Intertek",
+    "year": "2025",
+    "title": "",
+    "key": "intertek2025"
+  },
+  {
+    "url": "https://oneclicklca.com/en/resources/articles/first-espr-working-plan",
+    "authors": "One Click LCA",
+    "year": "2025",
+    "title": "",
+    "key": "lca2025"
+  },
+  {
+    "url": "https://medium.com/@piconext/ecodesign-for-sustainable-products-regulation-espr-timeline-f4e2e2ba9dbd",
+    "authors": "PicoNext",
+    "year": "2024",
+    "title": "",
+    "key": "piconext2024"
+  },
+  {
+    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1781",
+    "authors": "EU Regulation",
+    "year": "2024",
+    "title": "",
+    "key": "regulation2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2401.10895",
+    "authors": "Jahin et al",
+    "year": "2025",
+    "title": "",
+    "key": "jahin2025"
+  },
+  {
+    "url": "https://doi.org/10.1080/21681015.2016.1172124",
+    "authors": "Bocken et al",
+    "year": "2016",
+    "title": "",
+    "key": "bocken2016"
+  },
+  {
+    "url": "https://arxiv.org/abs/2502.17125",
+    "authors": "Kovács & Recski",
+    "year": "2025",
+    "title": "",
+    "key": "recski2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2409.00088",
+    "authors": "Xu et al",
+    "year": "2024",
+    "title": "",
+    "key": "xu2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2508.06760",
+    "authors": "Tran et al",
+    "year": "2025",
+    "title": "",
+    "key": "tran2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2501.10685",
+    "authors": "Aghaei et al",
+    "year": "2025",
+    "title": "",
+    "key": "aghaei2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2410.05613",
+    "authors": "Kantharuban et al",
+    "year": "2024",
+    "title": "",
+    "key": "kantharuban2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2501.11549",
+    "authors": "Balepur et al",
+    "year": "2025",
+    "title": "",
+    "key": "balepur2025"
+  },
+  {
+    "url": "https://cirpassproject.eu/",
+    "authors": "CIRPASS",
+    "year": "2024",
+    "title": "",
+    "key": "cirpass2024a"
+  },
+  {
+    "url": "https://arxiv.org/abs/2507.02648",
+    "authors": "Hopkins et al",
+    "year": "2025",
+    "title": "",
+    "key": "hopkins2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2406.08695",
+    "authors": "Chakraborty et al",
+    "year": "2024",
+    "title": "",
+    "key": "chakraborty2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2509.05985",
+    "authors": "Ahern",
+    "year": "2025",
+    "title": "",
+    "key": "ahern2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.05428",
+    "authors": "Pauloski et al",
+    "year": "2025",
+    "title": "",
+    "key": "pauloski2025"
+  },
+  {
+    "url": "https://www.intracen.org/resources/tools/standards-map",
+    "authors": "ITC",
+    "year": "2024",
+    "title": "",
+    "key": "itc2024a"
+  },
+  {
+    "url": "https://textileexchange.org/knowledge-center/documents/materials-processes-products-classification/",
+    "authors": "Textile Exchange",
+    "year": "2024",
+    "title": "",
+    "key": "exchange2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.02861",
+    "authors": "Agrawal & Nargund",
+    "year": "2025",
+    "title": "",
+    "key": "nargund2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2507.12311",
+    "authors": "Qiang et al",
+    "year": "2025",
+    "title": "",
+    "key": "qiang2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.19591",
+    "authors": "Dang et al",
+    "year": "2025",
+    "title": "",
+    "key": "dang2025"
+  },
+  {
+    "url": "https://www.ellenmacarthurfoundation.org/the-fashion-remodel/overview",
+    "authors": "Ellen MacArthur Foundation",
+    "year": "2024",
+    "title": "",
+    "key": "foundation2024"
+  },
+  {
+    "url": "https://www.ellenmacarthurfoundation.org/transforming-fashion-for-a-nature-positive-impact-gucci",
+    "authors": "Gucci",
+    "year": "2024",
+    "title": "",
+    "key": "gucci2024"
+  },
+  {
+    "url": "https://sbs-sme.eu/publication/sbs-study-digital-product-passport-sme-requirements-and-recommendations/",
+    "authors": "SBS",
+    "year": "2024",
+    "title": "",
+    "key": "sbs2024"
+  },
+  {
+    "url": "https://www.oecd.org/en/publications/sme-digitalisation-to-manage-shocks-and-transitions_eb4ec9ac-en.html",
+    "authors": "OECD",
+    "year": "2024",
+    "title": "",
+    "key": "oecd2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2505.21594",
+    "authors": "Venkatesha et al",
+    "year": "2025",
+    "title": "",
+    "key": "venkatesha2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2506.24045",
+    "authors": "Wei et al",
+    "year": "2025",
+    "title": "",
+    "key": "wei2025"
+  },
+  {
+    "url": "https://globalfashionagenda.org/resource/mapping-of-global-extended-producer-responsibility-for-textiles-epr/",
+    "authors": "Global Fashion Agenda",
+    "year": "2025",
+    "title": "",
+    "key": "agenda2025"
+  },
+  {
+    "url": "https://www.oecd.org/en/publications/extended-producer-responsibility-in-the-garments-sector_8ee5adb2-en.html",
+    "authors": "Brown & Börkey",
+    "year": "2024",
+    "title": "",
+    "key": "borkey2024"
+  },
+  {
+    "url": "https://www.fashionrevolution.org/wff-2024/",
+    "authors": "Fashion Revolution",
+    "year": "2024",
+    "title": "",
+    "key": "revolution2024"
+  },
+  {
+    "url": "https://arxiv.org/abs/2507.19550",
+    "authors": "Vaziry et al",
+    "year": "2025",
+    "title": "",
+    "key": "vaziry2025"
+  },
+  {
+    "url": "https://arxiv.org/abs/2504.06418",
+    "authors": "Wangelik et al",
+    "year": "2025",
+    "title": "",
+    "key": "wangelik2025"
+  }
+]
