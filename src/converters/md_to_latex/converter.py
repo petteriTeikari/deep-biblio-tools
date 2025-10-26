@@ -847,7 +847,6 @@ class MarkdownToLatexConverter:
             debugger.log_sample(
                 [
                     {
-                        "text": c.original_text,
                         "url": c.url,
                         "authors": c.authors,
                         "year": c.year,
@@ -860,11 +859,11 @@ class MarkdownToLatexConverter:
             debugger.dump_json(
                 [
                     {
-                        "original_text": c.original_text,
                         "url": c.url,
                         "authors": c.authors,
                         "year": c.year,
                         "title": c.title,
+                        "key": c.key,
                     }
                     for c in citations
                 ],
@@ -902,7 +901,6 @@ class MarkdownToLatexConverter:
                 debugger.log_sample(
                     [
                         {
-                            "text": c.original_text,
                             "url": c.url,
                             "key": c.key,
                             "authors": c.authors,
@@ -921,7 +919,7 @@ class MarkdownToLatexConverter:
                 if unmatched_citations:
                     debugger.log_sample(
                         [
-                            {"text": c.original_text, "url": c.url}
+                            {"url": c.url, "authors": c.authors, "year": c.year}
                             for c in unmatched_citations[:5]
                         ],
                         label="unmatched citations",
@@ -937,7 +935,6 @@ class MarkdownToLatexConverter:
                         "match_rate": f"{100 * matched / len(citations):.1f}%",
                         "matched_citations": [
                             {
-                                "text": c.original_text,
                                 "url": c.url,
                                 "key": c.key,
                                 "authors": c.authors,
@@ -946,7 +943,7 @@ class MarkdownToLatexConverter:
                             for c in matched_citations
                         ],
                         "unmatched_citations": [
-                            {"text": c.original_text, "url": c.url}
+                            {"url": c.url, "authors": c.authors, "year": c.year}
                             for c in unmatched_citations
                         ],
                     },
@@ -1010,7 +1007,6 @@ class MarkdownToLatexConverter:
             debugger.dump_json(
                 [
                     {
-                        "text": c.original_text,
                         "url": c.url,
                         "key": c.key,
                         "authors": c.authors,
