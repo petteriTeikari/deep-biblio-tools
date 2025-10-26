@@ -734,6 +734,44 @@ class MarkdownToLatexConverter:
             for citation in citations:
                 self.citation_manager.fetch_citation_metadata(citation)
 
+            # Collect failed citations for report
+            failed_citations = []
+            for citation in citations:
+                if citation.authors == "Unknown" or citation.year == "Unknown":
+                    failed_citations.append(
+                        {
+                            "text": citation.original_text,
+                            "url": citation.url,
+                            "authors": citation.authors,
+                            "year": citation.year,
+                            "reason": "Not found in Zotero collection, external API fetch failed or returned incomplete data",
+                            "action": "Verify URL is correct, check if item exists in Zotero, or add manually to dpp-fashion collection",
+                        }
+                    )
+
+            # Write missing citations report if there are failures
+            if failed_citations:
+                report_path = (
+                    self.input_file.parent / "missing-citations-report.json"
+                )
+                with open(report_path, "w") as f:
+                    json.dump(
+                        {
+                            "total_citations": len(citations),
+                            "missing_count": len(failed_citations),
+                            "match_rate": f"{100 * (len(citations) - len(failed_citations)) / len(citations):.1f}%",
+                            "missing_citations": failed_citations,
+                        },
+                        f,
+                        indent=2,
+                    )
+                logger.warning(
+                    f"Missing citations report written to: {report_path}"
+                )
+                logger.warning(
+                    f"{len(failed_citations)}/{len(citations)} citations could not be fully resolved"
+                )
+
             if verbose:
                 pbar.set_description(f"Processing {len(citations)} citations")
             content = self.citation_manager.replace_citations_in_text(content)

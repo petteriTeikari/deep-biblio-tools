@@ -196,6 +196,26 @@ ZOTERO_COLLECTION=dpp-fashion  # Default collection name
 
 ## Citation Processing Rules
 
+### Hyperlink vs Citation Format (CRITICAL)
+
+**MUST distinguish between citations and regular hyperlinks:**
+
+- **Citations**: `[Author (Year)](URL)` or `[Author et al., Year](URL)`
+  - Has author name AND year in brackets
+  - Should be processed for bibliography
+  - Examples:
+    - `[Smith (2020)](https://arxiv.org/abs/2020.12345)` ✅
+    - `[Wang et al., 2023](https://doi.org/10.1234/example)` ✅
+- **Regular Hyperlinks**: `[Text](URL)` - NO year in brackets
+  - Just descriptive text, no author/year
+  - Should be left as plain hyperlinks in LaTeX (NOT bibliography entries)
+  - Examples:
+    - `[Google Docs](https://docs.google.com)` ✅ Regular link
+    - `[EON](https://www.eon.xyz/)` ✅ Regular link
+    - `[GitHub repo](https://github.com/user/repo)` ✅ Regular link
+
+**Implementation**: `citation_extractor_unified.py` MUST skip links without year format. This prevents creating false "Unknown, Unknown" citations from regular hyperlinks.
+
 ### Author Name Handling
 - **TREAT** all "et al" as requiring full author lookup
 - **VALIDATE** every author name against DOI/CrossRef/arXiv metadata

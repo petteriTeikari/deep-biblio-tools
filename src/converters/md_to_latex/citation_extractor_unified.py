@@ -306,6 +306,9 @@ class UnifiedCitationExtractor:
         """
         Extract citations in legacy dictionary format for backward compatibility.
 
+        IMPORTANT: Only extracts links that follow citation format [Author (Year)](URL).
+        Regular hyperlinks like [Text](URL) without a year are skipped.
+
         Args:
             content: Markdown content to parse
 
@@ -319,6 +322,7 @@ class UnifiedCitationExtractor:
             # Extract simple author info from text (basic heuristic)
             authors = "Unknown"
             year = "Unknown"
+            has_year_format = False
 
             # Simple heuristic: if text contains parentheses with year, extract it using string methods
             if "(" in citation.text and ")" in citation.text:
@@ -336,6 +340,7 @@ class UnifiedCitationExtractor:
                             year_int = int(clean_word)
                             if 1900 <= year_int <= 2100:
                                 year = clean_word
+                                has_year_format = True
                                 break
 
                     # Extract author (text before parentheses)
@@ -343,6 +348,14 @@ class UnifiedCitationExtractor:
                     if author_part:
                         # Remove trailing period from author names
                         authors = author_part.rstrip(".")
+
+            # CRITICAL: Skip links that don't have a year format
+            # This prevents regular hyperlinks like [Google Docs](URL) from being treated as citations
+            if not has_year_format:
+                logger.debug(
+                    f"Skipping non-citation hyperlink: [{citation.text}]({citation.url})"
+                )
+                continue
 
             result.append(
                 {
