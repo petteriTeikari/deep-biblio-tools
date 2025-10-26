@@ -35,6 +35,7 @@ class LatexPostProcessor:
         content = self._fix_nested_emphasis(content)
         content = self._fix_href_in_tables(content)
         content = self._fix_href_citations(content)
+        content = self._consolidate_citations(content)
         content = self._convert_horizontal_rules_to_boxes(content)
         content = self._clean_excessive_line_breaks(content)
 
@@ -776,6 +777,115 @@ class LatexPostProcessor:
                             )
 
         return content
+
+    def _consolidate_citations(self, content: str) -> str:
+        """Consolidate consecutive citep commands into single commands.
+
+        Converts patterns like:
+        - (\\citep{key1}, \\citep{key2}, \\citep{key3}) → \\citep{key1, key2, key3}
+        - \\citep{key1}; \\citep{key2} → \\citep{key1, key2}
+
+        Also sorts citation keys chronologically by extracting year from the key.
+        """
+        lines = content.split("\n")
+        result = []
+
+        for line in lines:
+            # Skip if no citep commands
+            if "\\citep{" not in line:
+                result.append(line)
+                continue
+
+            # Process line character by character to find citation groups
+            processed_line = ""
+            i = 0
+            while i < len(line):
+                # Check if we're at the start of a citation pattern
+                if i + 7 <= len(line) and line[i : i + 7] == "\\citep{":
+                    # Find all consecutive citations
+                    citations = []
+                    start_pos = i
+
+                    while i < len(line):
+                        # Found a \citep{
+                        if i + 7 <= len(line) and line[i : i + 7] == "\\citep{":
+                            # Extract the citation key
+                            brace_start = i + 7
+                            brace_count = 1
+                            j = brace_start
+
+                            while j < len(line) and brace_count > 0:
+                                if line[j] == "{":
+                                    brace_count += 1
+                                elif line[j] == "}":
+                                    brace_count -= 1
+                                j += 1
+
+                            if brace_count == 0:
+                                cite_key = line[brace_start : j - 1]
+                                citations.append(cite_key)
+                                i = j
+
+                                # Check what comes after the citation
+                                # Skip whitespace
+                                while i < len(line) and line[i] in " \t":
+                                    i += 1
+
+                                # Check for separators (;, comma, closing paren)
+                                if i < len(line) and line[i] in ";,)":
+                                    i += 1  # Skip separator
+                                    # Skip more whitespace
+                                    while i < len(line) and line[i] in " \t":
+                                        i += 1
+
+                                    # Check if there's a paren
+                                    if i < len(line) and line[i] == "(":
+                                        i += 1
+                                        while (
+                                            i < len(line) and line[i] in " \t"
+                                        ):
+                                            i += 1
+                                    # Continue looking for more citations
+                                    continue
+                                else:
+                                    # No separator, end of citation group
+                                    break
+                            else:
+                                # Malformed citation, skip
+                                break
+                        else:
+                            # Not a citation, end of group
+                            break
+
+                    # If we found multiple citations, consolidate them
+                    if len(citations) > 1:
+                        # Sort by year (extract from citation key)
+                        def extract_year(key):
+                            # Try to find 4-digit year in the key
+                            for i in range(len(key) - 3):
+                                if key[i : i + 4].isdigit():
+                                    return int(key[i : i + 4])
+                            return 9999  # Unknown year goes last
+
+                        citations.sort(key=extract_year)
+
+                        # Add consolidated citation
+                        processed_line += f"\\citep{{{', '.join(citations)}}}"
+                        self.fixes_applied.append(
+                            f"Consolidated {len(citations)} citations: "
+                            f"{citations[0]}...{citations[-1]}"
+                        )
+                    else:
+                        # Single citation, keep as-is
+                        processed_line += line[start_pos:i]
+                else:
+                    # Not a citation command, copy character
+                    processed_line += line[i]
+                    i += 1
+
+            result.append(processed_line)
+
+        return "\n".join(result)
 
 
 def post_process_latex_file(latex_file: Path) -> None:
