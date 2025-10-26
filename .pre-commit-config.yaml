@@ -53,3 +53,10 @@ repos:
         entry: uv run python scripts/validate_imports.py
         language: system
         files: ^src/.*\.py$
+
+      - id: citation-pipeline-tests
+        name: Citation pipeline regression tests
+        entry: uv run python -m pytest tests/test_citation_pipeline.py -v
+        language: system
+        always_run: true
+        pass_filenames: false
