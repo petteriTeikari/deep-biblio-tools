@@ -19,6 +19,7 @@ from tqdm import tqdm
 
 # Local imports
 from src.converters.md_to_latex.citation_manager import CitationManager
+from src.converters.md_to_latex.citation_matcher import CitationMatcher
 from src.converters.md_to_latex.concept_boxes import (
     ConceptBoxConverter,
     ConceptBoxStyle,
@@ -30,12 +31,8 @@ from src.converters.md_to_latex.utils import (
     convert_html_entities,
     ensure_directory,
     extract_abstract_from_markdown,
-    extract_arxiv_id,
-    extract_doi_from_url,
-    extract_isbn_from_url,
     extract_title_from_markdown,
     generate_citation_key,
-    normalize_url,
 )
 
 if TYPE_CHECKING:
@@ -171,123 +168,31 @@ class MarkdownToLatexConverter:
             f"Loaded {len(zotero_entries)} entries from {self.zotero_json_path}"
         )
 
-        # Build lookup indices with URL normalization
-        url_index = {}
-        doi_index = {}
-        isbn_index = {}
-        arxiv_index = {}
-
-        for entry in zotero_entries:
-            url = entry.get("URL", "")
-            if url:
-                # Normalize URL for reliable matching
-                normalized_url = normalize_url(url)
-                url_index[normalized_url] = entry
-                # Debug: log first few URLs
-                if len(url_index) <= 5:
-                    logger.info(f"  Indexed URL: {normalized_url}")
-
-            doi = entry.get("DOI", "")
-            if doi:
-                doi_index[doi.lower()] = entry
-
-            # Index ISBN (can be ISBN-10 or ISBN-13)
-            isbn = entry.get("ISBN", "")
-            if isbn:
-                # Normalize ISBN (remove hyphens, keep only digits)
-                isbn_normalized = "".join(c for c in isbn if c.isdigit())
-                isbn_index[isbn_normalized] = entry
-
-            # Index arXiv ID
-            # arXiv can be in archiveID field or extracted from URL
-            archive_id = entry.get("archiveID", "")
-            if archive_id and "arXiv" in entry.get("archive", ""):
-                # Remove "arXiv:" prefix if present
-                if archive_id.startswith("arXiv:"):
-                    archive_id = archive_id[6:]
-                arxiv_index[archive_id] = entry
-            elif url and "arxiv.org" in url.lower():
-                arxiv_id = extract_arxiv_id(url)
-                if arxiv_id:
-                    arxiv_index[arxiv_id] = entry
-
-        logger.info(
-            f"Built index with {len(url_index)} URLs, {len(doi_index)} DOIs, "
-            f"{len(isbn_index)} ISBNs, {len(arxiv_index)} arXiv IDs"
+        # Use production CitationMatcher
+        matcher = CitationMatcher(
+            zotero_entries,
+            allow_zotero_write=False,  # Read-only for now
         )
 
-        # Match citations
+        # Match citations using multi-strategy approach
         matched = 0
-        ellen_matches = []
         for citation in citations:
-            # Debug: track ALL Ellen MacArthur citations
-            if "ellenmacarthur" in citation.url.lower():
-                ellen_matches.append(
-                    {
-                        "authors": citation.authors,
-                        "url": citation.url,
-                        "normalized": normalize_url(citation.url),
-                        "matched": False,
-                    }
-                )
-
-            # Try URL match first (with normalization)
-            normalized_citation_url = normalize_url(citation.url)
-            if normalized_citation_url in url_index:
-                self._populate_citation_from_csl_json(
-                    citation, url_index[normalized_citation_url]
-                )
+            entry, strategy = matcher.match(citation.url)
+            if entry:
+                self._populate_citation_from_csl_json(citation, entry)
                 matched += 1
-                # Mark Ellen MacArthur as matched
-                if ellen_matches and ellen_matches[-1]["url"] == citation.url:
-                    ellen_matches[-1]["matched"] = True
-                continue
 
-            # Try DOI match
-            doi = extract_doi_from_url(citation.url)
-            if doi and doi.lower() in doi_index:
-                self._populate_citation_from_csl_json(
-                    citation, doi_index[doi.lower()]
-                )
-                matched += 1
-                continue
-
-            # Try ISBN match (for books, especially Amazon links)
-            isbn = extract_isbn_from_url(citation.url)
-            if isbn and isbn in isbn_index:
-                self._populate_citation_from_csl_json(
-                    citation, isbn_index[isbn]
-                )
-                matched += 1
-                logger.info(f"Matched by ISBN: {isbn} -> {citation.authors}")
-                continue
-
-            # Try arXiv match
-            arxiv_id = extract_arxiv_id(citation.url)
-            if arxiv_id and arxiv_id in arxiv_index:
-                self._populate_citation_from_csl_json(
-                    citation, arxiv_index[arxiv_id]
-                )
-                matched += 1
-                logger.info(
-                    f"Matched by arXiv: {arxiv_id} -> {citation.authors}"
-                )
-                continue
-
-        # Debug: log ALL Ellen MacArthur citations
-        if ellen_matches:
-            logger.warning(
-                f"DEBUG: ALL Ellen MacArthur citations ({len(ellen_matches)}):"
-            )
-            for em in ellen_matches:
-                status = "MATCHED" if em["matched"] else "FAILED"
-                logger.warning(f"  {status} - {em['authors']}: {em['url']}")
-                if not em["matched"]:
-                    # Check if it's in the index
-                    if em["normalized"] in url_index:
-                        logger.warning("    ERROR: IN INDEX BUT DIDN'T MATCH!")
-                    else:
-                        logger.warning("    (Not in index - expected)")
+        # Log statistics
+        stats = matcher.get_statistics()
+        logger.info("Citation matching statistics:")
+        logger.info(f"  Total: {stats['total_citations']}")
+        logger.info(f"  Matched by DOI: {stats['matched_by_doi']}")
+        logger.info(f"  Matched by ISBN: {stats['matched_by_isbn']}")
+        logger.info(f"  Matched by arXiv: {stats['matched_by_arxiv']}")
+        logger.info(f"  Matched by URL: {stats['matched_by_url']}")
+        logger.info(f"  Unmatched: {stats['unmatched']}")
+        logger.info(f"  Match rate: {stats['match_rate']:.1f}%")
+        logger.info(f"  Deterministic hash: {stats['deterministic_hash']}")
 
         return matched, len(citations) - matched
 
