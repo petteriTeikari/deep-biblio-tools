@@ -27,8 +27,83 @@ def convert_unicode_to_latex(text: str) -> str:
     if not text:
         return text
 
-    # Greek letters (most common in scientific text)
+    # Accented characters (for BibTeX sortify compatibility - must be ASCII-only)
+    # For BibTeX: transliterate to plain ASCII (sortify only accepts ASCII)
+    # LaTeX rendering will be handled separately
     unicode_map = {
+        # Special characters and punctuation
+        "\u00a0": " ",  # Non-breaking space → regular space
+        "\u00ae": "(R)",  # ®
+        "\u2013": "--",  # en dash
+        "\u2014": "---",  # em dash
+        "\u2019": "'",  # right single quote
+        "\u201c": '"',  # left double quote
+        "\u201d": '"',  # right double quote
+        # Latin accents - lowercase (transliterate to base letter for BibTeX)
+        "à": "a",
+        "á": "a",
+        "â": "a",
+        "ä": "a",
+        "ã": "a",
+        "å": "a",
+        "æ": "ae",
+        "ç": "c",
+        "è": "e",
+        "é": "e",
+        "ê": "e",
+        "ë": "e",
+        "ì": "i",
+        "í": "i",
+        "î": "i",
+        "ï": "i",
+        "ñ": "n",
+        "ò": "o",
+        "ó": "o",
+        "ô": "o",
+        "ö": "o",
+        "õ": "o",
+        "ø": "o",
+        "ù": "u",
+        "ú": "u",
+        "û": "u",
+        "ü": "u",
+        "ý": "y",
+        "ÿ": "y",
+        "ß": "ss",  # German sharp s
+        "š": "s",  # s with caron
+        "ș": "s",  # s with comma below
+        # Latin accents - uppercase
+        "À": "A",
+        "Á": "A",
+        "Â": "A",
+        "Ä": "A",
+        "Ã": "A",
+        "Å": "A",
+        "Æ": "AE",
+        "Ç": "C",
+        "È": "E",
+        "É": "E",
+        "Ê": "E",
+        "Ë": "E",
+        "Ì": "I",
+        "Í": "I",
+        "Î": "I",
+        "Ï": "I",
+        "Ñ": "N",
+        "Ò": "O",
+        "Ó": "O",
+        "Ô": "O",
+        "Ö": "O",
+        "Õ": "O",
+        "Ø": "O",
+        "Ù": "U",
+        "Ú": "U",
+        "Û": "U",
+        "Ü": "U",
+        "Ý": "Y",
+        "Ż": "Z",  # Z with dot above
+        "Ž": "Z",  # Z with caron
+        # Greek letters (most common in scientific text)
         "α": r"$\alpha$",
         "β": r"$\beta$",
         "γ": r"$\gamma$",

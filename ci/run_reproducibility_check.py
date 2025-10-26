@@ -101,9 +101,9 @@ def run_validation_pipeline(cfg):
     cmds = cfg["ci_pipeline"]["commands"]
 
     for stage in stages:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"  Stage: {stage}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         cmd = cmds.get(stage)
         if not cmd:
             print(
@@ -115,9 +115,9 @@ def run_validation_pipeline(cfg):
 
 def post_validation_checks(cfg):
     """Perform generic validation checks based on log or output files."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("  Post-Validation Checks")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     latex_log = Path("manuscript.log")
     pdf_file = Path("manuscript.pdf")

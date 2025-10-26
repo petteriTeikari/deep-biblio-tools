@@ -577,29 +577,36 @@ class LatexBuilder:
                 continue
 
             # Look for unescaped currency patterns
-            # Find all dollar signs and check if they're followed by numbers
+            # Track math mode to avoid escaping $ that close math mode
             i = 0
             new_line = []
+            in_math_mode = False
             while i < len(line):
                 if line[i] == "$" and (i == 0 or line[i - 1] != "\\"):
-                    # Found unescaped dollar sign, check if it's followed by a number
-                    if i + 1 < len(line) and line[i + 1].isdigit():
-                        # This looks like currency
-                        # Check if we're in verbatim environment (already handled above)
+                    # Found unescaped dollar sign
+                    # If we're in math mode, this closes it - don't escape
+                    if in_math_mode:
+                        new_line.append(line[i])
+                        in_math_mode = False
+                        i += 1
+                    # If not in math mode, check if it's currency or opening math
+                    elif i + 1 < len(line) and line[i + 1].isdigit():
+                        # This looks like currency ($50)
+                        new_line.append("\\$")
+                        i += 1
+                    elif (
+                        i + 2 < len(line)
+                        and line[i + 1] == " "
+                        and line[i + 2].isdigit()
+                    ):
+                        # Currency pattern like "$ 50" with space
                         new_line.append("\\$")
                         i += 1
                     else:
-                        # Check for currency patterns like "$ 50" with space
-                        if (
-                            i + 2 < len(line)
-                            and line[i + 1] == " "
-                            and line[i + 2].isdigit()
-                        ):
-                            new_line.append("\\$")
-                            i += 1
-                        else:
-                            new_line.append(line[i])
-                            i += 1
+                        # Opening math mode
+                        new_line.append(line[i])
+                        in_math_mode = True
+                        i += 1
                 else:
                     new_line.append(line[i])
                     i += 1

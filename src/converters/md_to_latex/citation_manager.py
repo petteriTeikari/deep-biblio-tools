@@ -144,11 +144,11 @@ class Citation:
                 # Add "and others" to indicate multiple authors
                 authors_to_use = f"{first_author} and others"
             else:
-                # Fallback if extraction fails - use "{Anonymous}" to avoid BibTeX style issues
-                authors_to_use = "{Anonymous}"
+                # Fallback if extraction fails
+                authors_to_use = "Anonymous"
         elif not authors_to_use or authors_to_use.strip() == "":
-            # Empty author field - use "{Anonymous}" (curly braces prevent case changes)
-            authors_to_use = "{Anonymous}"
+            # Empty author field
+            authors_to_use = "Anonymous"
 
         clean_authors = self._escape_bibtex(authors_to_use)
         # Limit author field length to prevent malformed entries
