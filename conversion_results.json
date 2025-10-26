@@ -1,0 +1,113 @@
+{
+  "timestamp": "2025-10-26T10:03:54.531735Z",
+  "commit_hash": "19c70f6",
+  "unknown_authors_count": 46,
+  "unknown_authors": [
+    {
+      "key": "unknownOurVisionCircular2023",
+      "url": "https://www.ellenmacarthurfoundation.org/our-vision-of-a-circular-economy-for-fashion"
+    },
+    {
+      "key": "unknownUnknowna",
+      "url": "https://www.amazon.de/-/en/Craft-Use-Post-Growth-Kate-Fletcher/dp/1138021016"
+    },
+    {
+      "key": "unknownUnknownaf",
+      "url": "https://arxiv.org/abs/2410.10762"
+    },
+    {
+      "key": "unknownUnknownag",
+      "url": "https://arxiv.org/abs/2304.03442"
+    },
+    {
+      "key": "unknownUnknownas",
+      "url": "https://doi.org/10.1002/sd.2474"
+    },
+    {
+      "key": "unknownUnknownbg",
+      "url": "https://arxiv.org/abs/2508.17536"
+    },
+    {
+      "key": "unknownUnknownbu",
+      "url": "https://doi.org/10.1108/SCM-03-2024-0192"
+    },
+    {
+      "key": "unknownUnknownbz",
+      "url": "https://dx.doi.org/10.2139/ssrn.5227972"
+    },
+    {
+      "key": "unknownUnknownce",
+      "url": "https://arxiv.org/html/2509.10691v1"
+    },
+    {
+      "key": "unknownUnknowncf",
+      "url": "https://arxiv.org/html/2503.07231v1"
+    },
+    {
+      "key": "unknownUnknowncm",
+      "url": "https://www.eon.xyz/"
+    },
+    {
+      "key": "unknownUnknowndb",
+      "url": "https://www.arxiv.org/abs/2408.10434"
+    },
+    {
+      "key": "unknownUnknowndq",
+      "url": "https://github.com/rednote-hilab/dots.ocr"
+    },
+    {
+      "key": "unknownUnknowndr",
+      "url": "https://doi.org/10.1016/j.jclepro.2013.11.012"
+    },
+    {
+      "key": "unknownUnknowndw",
+      "url": "#orphan-unknown-Unknown"
+    },
+    {
+      "key": "unknownUnknowned",
+      "url": "https://arxiv.org/abs/2025.mcp.taxonomy"
+    },
+    {
+      "key": "unknownUnknownee",
+      "url": "https://arxiv.org/abs/2025.mcp.privilege"
+    },
+    {
+      "key": "unknownUnknowneg",
+      "url": "https://arxiv.org/abs/2025.mpma"
+    },
+    {
+      "key": "unknownUnknowneh",
+      "url": "https://docs.google.com/presentation/d/1acexbPG2b39_DYkr7TJ0EyKuysmEBorGmWkvThatgPw/edit?slide=id.g368c521baae_0_560#slide=id.g368c521baae_0_560"
+    },
+    {
+      "key": "unknownUnknownej",
+      "url": "https://arxiv.org/abs/2507.06323"
+    }
+  ],
+  "internal_ref_citations_count": 1,
+  "internal_ref_citations": [
+    {
+      "key": "unknownUnknowndw",
+      "url": "#orphan-unknown-Unknown"
+    }
+  ],
+  "pdf_generated": true,
+  "pdf_size_bytes": 225330,
+  "latex_errors_count": 1,
+  "latex_warnings_count": 382,
+  "latex_error_snippets": [
+    "! Paragraph ended before \\@lbibitem was complete."
+  ],
+  "latex_warning_snippets": [
+    "Package inputenc Warning: inputenc package ignored with utf8 based engines.",
+    "LaTeX Warning: No \\author given.",
+    "LaTeX Warning: Hyper reference `abstract' on page 1 undefined on input line 58.",
+    "LaTeX Warning: Hyper reference `1.-introduction' on page 1 undefined on input l",
+    "LaTeX Warning: Hyper reference `1.1-the-magnitude-of-the-crisis' on page 1 unde"
+  ],
+  "environment": {
+    "python": "3.14.0",
+    "pandoc": "pandoc 3.8.2.1",
+    "pdflatex": "pdfTeX 3.141592653-2.6-1.40.27 (TeX Live 2025)"
+  }
+}
