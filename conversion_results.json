@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-10-26T10:03:54.531735Z",
-  "commit_hash": "19c70f6",
-  "unknown_authors_count": 46,
+  "timestamp": "2025-10-26T10:21:41.300876Z",
+  "commit_hash": "abd8cdc",
+  "unknown_authors_count": 34,
   "unknown_authors": [
     {
       "key": "unknownOurVisionCircular2023",
@@ -34,10 +34,6 @@
     {
       "key": "unknownUnknownbz",
       "url": "https://dx.doi.org/10.2139/ssrn.5227972"
-    },
-    {
-      "key": "unknownUnknownce",
-      "url": "https://arxiv.org/html/2509.10691v1"
     },
     {
       "key": "unknownUnknowncf",
@@ -82,6 +78,10 @@
     {
       "key": "unknownUnknownej",
       "url": "https://arxiv.org/abs/2507.06323"
+    },
+    {
+      "key": "unknownUnknownel",
+      "url": "https://arxiv.org/abs/2504.16902"
     }
   ],
   "internal_ref_citations_count": 1,
@@ -92,9 +92,9 @@
     }
   ],
   "pdf_generated": true,
-  "pdf_size_bytes": 225330,
+  "pdf_size_bytes": 223252,
   "latex_errors_count": 1,
-  "latex_warnings_count": 382,
+  "latex_warnings_count": 403,
   "latex_error_snippets": [
     "! Paragraph ended before \\@lbibitem was complete."
   ],
@@ -106,7 +106,7 @@
     "LaTeX Warning: Hyper reference `1.1-the-magnitude-of-the-crisis' on page 1 unde"
   ],
   "environment": {
-    "python": "3.14.0",
+    "python": "3.12.9",
     "pandoc": "pandoc 3.8.2.1",
     "pdflatex": "pdfTeX 3.141592653-2.6-1.40.27 (TeX Live 2025)"
   }

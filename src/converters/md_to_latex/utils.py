@@ -615,6 +615,88 @@ def extract_doi_from_url(url: str) -> str | None:
 
         return doi
 
+
+def extract_isbn_from_url(url: str) -> str | None:
+    """Extract ISBN from URL if present (e.g., Amazon, Google Books)."""
+    url_lower = url.lower()
+
+    # Amazon pattern: /dp/{ISBN}
+    if "/dp/" in url_lower:
+        start = url_lower.find("/dp/") + 4
+        rest = url[start:]
+        # ISBN is next segment (10 or 13 digits)
+        end = rest.find("/")
+        if end == -1:
+            end = rest.find("?")
+        if end == -1:
+            end = len(rest)
+        isbn = rest[:end].strip()
+
+        # Validate ISBN length (10 or 13 digits, possibly with hyphens)
+        digits_only = "".join(c for c in isbn if c.isdigit())
+        if len(digits_only) in [10, 13]:
+            return digits_only
+
+    # Google Books pattern: /books?id=...&isbn=...
+    if "books.google" in url_lower and "isbn=" in url_lower:
+        start = url_lower.find("isbn=") + 5
+        rest = url[start:]
+        end = rest.find("&")
+        if end == -1:
+            end = len(rest)
+        isbn = rest[:end].strip()
+        digits_only = "".join(c for c in isbn if c.isdigit())
+        if len(digits_only) in [10, 13]:
+            return digits_only
+
+    return None
+
+
+def extract_arxiv_id(url: str) -> str | None:
+    """Extract arXiv ID from URL if present."""
+    url_lower = url.lower()
+
+    if "arxiv.org" not in url_lower:
+        return None
+
+    # Pattern: arxiv.org/abs/2410.10762 or arxiv.org/html/2509.10691v1
+    for pattern in ["/abs/", "/html/", "/pdf/"]:
+        if pattern in url_lower:
+            start = url_lower.find(pattern) + len(pattern)
+            rest = url[start:]
+
+            # arXiv ID is next segment
+            end = rest.find("/")
+            if end == -1:
+                end = rest.find("?")
+            if end == -1:
+                end = rest.find("#")
+            if end == -1:
+                end = len(rest)
+
+            arxiv_id = rest[:end].strip()
+
+            # Remove version suffix if present (e.g., "v1")
+            if "v" in arxiv_id:
+                v_pos = arxiv_id.rfind("v")
+                # Check if everything after 'v' is digits
+                version_part = arxiv_id[v_pos + 1 :]
+                if version_part.isdigit():
+                    arxiv_id = arxiv_id[:v_pos]
+
+            # Validate format: YYMM.NNNNN or YYMM.NNNN
+            if "." in arxiv_id:
+                left, right = arxiv_id.split(".", 1)
+                if (
+                    len(left) == 4
+                    and left.isdigit()
+                    and len(right) in [4, 5]
+                    and right.isdigit()
+                ):
+                    return arxiv_id
+
+    return None
+
     # Check for doi: pattern
     if "doi:" in url_lower:
         start = url_lower.find("doi:") + 4
