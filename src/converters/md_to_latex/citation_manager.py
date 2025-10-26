@@ -372,10 +372,17 @@ class CitationManager:
         )
         key = base_key
 
-        # Handle duplicate keys
+        # Handle duplicate keys with alphabetic suffixes (a, b, c, ..., z, aa, ab, ...)
         counter = 1
         while key in self.citations:
-            key = f"{base_key}{chr(96 + counter)}"  # a, b, c, etc.
+            # Generate alphabetic suffix: 1→a, 2→b, ..., 26→z, 27→aa, 28→ab, etc.
+            suffix = ""
+            temp = counter
+            while temp > 0:
+                temp -= 1  # Make it 0-indexed
+                suffix = chr(ord("a") + (temp % 26)) + suffix
+                temp //= 26
+            key = f"{base_key}{suffix}"
             counter += 1
 
         citation = Citation(
