@@ -324,7 +324,7 @@ class UnifiedCitationExtractor:
             year = "Unknown"
             has_year_format = False
 
-            # Simple heuristic: if text contains parentheses with year, extract it using string methods
+            # Check for PARENTHESES format: [Author (Year)](URL)
             if "(" in citation.text and ")" in citation.text:
                 # Find content within parentheses
                 paren_start = citation.text.find("(")
@@ -348,6 +348,30 @@ class UnifiedCitationExtractor:
                     if author_part:
                         # Remove trailing period from author names
                         authors = author_part.rstrip(".")
+
+            # Check for COMMA format: [Author et al., Year](URL) or [Author, Year](URL)
+            if not has_year_format and "," in citation.text:
+                # Split by comma and look for year in any part
+                parts = citation.text.split(",")
+                for i, part in enumerate(parts):
+                    words = part.strip().split()
+                    for word in words:
+                        clean_word = word.strip(".,;:()")
+                        if len(clean_word) == 4 and clean_word.isdigit():
+                            year_int = int(clean_word)
+                            if 1900 <= year_int <= 2100:
+                                year = clean_word
+                                has_year_format = True
+                                # Extract author (everything before the year part)
+                                author_parts = parts[:i] + [
+                                    part[: part.find(word)]
+                                ]
+                                authors = (
+                                    ",".join(author_parts).strip().rstrip(".")
+                                )
+                                break
+                    if has_year_format:
+                        break
 
             # CRITICAL: Skip links that don't have a year format
             # This prevents regular hyperlinks like [Google Docs](URL) from being treated as citations
