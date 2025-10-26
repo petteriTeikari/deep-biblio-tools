@@ -33,6 +33,7 @@ from src.converters.md_to_latex.utils import (
     extract_doi_from_url,
     extract_title_from_markdown,
     generate_citation_key,
+    normalize_url,
 )
 
 if TYPE_CHECKING:
@@ -168,27 +169,52 @@ class MarkdownToLatexConverter:
             f"Loaded {len(zotero_entries)} entries from {self.zotero_json_path}"
         )
 
-        # Build lookup indices
+        # Build lookup indices with URL normalization
         url_index = {}
         doi_index = {}
         for entry in zotero_entries:
             url = entry.get("URL", "")
             if url:
-                url_index[url] = entry
+                # Normalize URL for reliable matching
+                normalized_url = normalize_url(url)
+                url_index[normalized_url] = entry
+                # Debug: log first few URLs
+                if len(url_index) <= 5:
+                    logger.info(f"  Indexed URL: {normalized_url}")
 
             doi = entry.get("DOI", "")
             if doi:
                 doi_index[doi.lower()] = entry
 
+        logger.info(
+            f"Built index with {len(url_index)} URLs and {len(doi_index)} DOIs"
+        )
+
         # Match citations
         matched = 0
+        ellen_matches = []
         for citation in citations:
-            # Try URL match first
-            if citation.url in url_index:
+            # Debug: track ALL Ellen MacArthur citations
+            if "ellenmacarthur" in citation.url.lower():
+                ellen_matches.append(
+                    {
+                        "authors": citation.authors,
+                        "url": citation.url,
+                        "normalized": normalize_url(citation.url),
+                        "matched": False,
+                    }
+                )
+
+            # Try URL match first (with normalization)
+            normalized_citation_url = normalize_url(citation.url)
+            if normalized_citation_url in url_index:
                 self._populate_citation_from_csl_json(
-                    citation, url_index[citation.url]
+                    citation, url_index[normalized_citation_url]
                 )
                 matched += 1
+                # Mark Ellen MacArthur as matched
+                if ellen_matches and ellen_matches[-1]["url"] == citation.url:
+                    ellen_matches[-1]["matched"] = True
                 continue
 
             # Try DOI match
@@ -200,6 +226,21 @@ class MarkdownToLatexConverter:
                 )
                 matched += 1
                 continue
+
+        # Debug: log ALL Ellen MacArthur citations
+        if ellen_matches:
+            logger.warning(
+                f"DEBUG: ALL Ellen MacArthur citations ({len(ellen_matches)}):"
+            )
+            for em in ellen_matches:
+                status = "MATCHED" if em["matched"] else "FAILED"
+                logger.warning(f"  {status} - {em['authors']}: {em['url']}")
+                if not em["matched"]:
+                    # Check if it's in the index
+                    if em["normalized"] in url_index:
+                        logger.warning("    ERROR: IN INDEX BUT DIDN'T MATCH!")
+                    else:
+                        logger.warning("    (Not in index - expected)")
 
         return matched, len(citations) - matched
 
@@ -523,6 +564,27 @@ class MarkdownToLatexConverter:
 
         # Ensure output directory exists
         ensure_directory(self.output_dir)
+
+        # Auto-detect local citation sources if not explicitly provided
+        # Fallback order (per OpenAI recommendations):
+        # 1. MCP server (via API) - handled by zotero_api_key
+        # 2. Local RDF file: {basename}.rdf
+        # 3. Local CSL JSON file: {basename}.json
+        if not self.zotero_json_path:
+            basename = markdown_file.stem
+            directory = markdown_file.parent
+
+            # Check for JSON file first (easier to parse)
+            json_path = directory / f"{basename}.json"
+            if json_path.exists():
+                logger.info(f"Auto-detected Zotero CSL JSON file: {json_path}")
+                self.zotero_json_path = json_path
+
+            # TODO: Add RDF support
+            # rdf_path = directory / f"{basename}.rdf"
+            # if rdf_path.exists():
+            #     logger.info(f"Auto-detected Zotero RDF file: {rdf_path}")
+            #     self.zotero_rdf_path = rdf_path
 
         # Determine output name
         if output_name is None:

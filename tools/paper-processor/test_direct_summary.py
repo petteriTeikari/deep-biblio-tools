@@ -13,7 +13,7 @@ client = Anthropic()  # Uses ANTHROPIC_API_KEY from environment
 
 # Read the extracted content
 extracted_file = Path(
-    "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/bim/extracted/2D–3D fusion approach for improved point cloud segmentation - ScienceDirect.md"
+    "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/bim/extracted/2D–3D fusion approach for improved point cloud segmentation - ScienceDirect.md"
 )
 content = extracted_file.read_text(encoding="utf-8")
 original_words = len(content.split())

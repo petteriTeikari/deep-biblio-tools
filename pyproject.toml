@@ -35,6 +35,7 @@ dependencies = [
     "mistletoe>=1.4.0",
     "pylatexenc>=2.10",
     "pyyaml>=6.0.2",
+    "pyzotero>=1.7.3",
 ]
 
 [project.scripts]

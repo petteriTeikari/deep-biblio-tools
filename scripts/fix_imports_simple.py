@@ -48,7 +48,9 @@ def fix_python_imports(file_path: Path) -> bool:
 
 def main():
     """Fix imports in all Python files."""
-    root = Path("/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools")
+    root = Path(
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools"
+    )
 
     # Priority directories
     priority_dirs = ["src", "scripts", "tests", "tools"]

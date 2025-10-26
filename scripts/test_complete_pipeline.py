@@ -9,7 +9,7 @@ from pathlib import Path
 def run_pipeline():
     """Run the complete conversion pipeline."""
     base_dir = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools"
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools"
     )
 
     # Input and output paths

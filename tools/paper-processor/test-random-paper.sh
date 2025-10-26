@@ -8,8 +8,8 @@ echo "Testing summarization on: BIM-based quantity takeoff paper"
 echo "=================================================="
 
 paper-processor summarize \
-  "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/bim/BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html" \
-  -o "/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools/test_bim_takeoff_summary.md"
+  "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/bim/BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html" \
+  -o "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools/test_bim_takeoff_summary.md"
 
 echo -e "\nSummary complete! Let's check the compression ratio..."
 

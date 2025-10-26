@@ -30,7 +30,9 @@ def revert_to_underscore(filename: str) -> str:
 
 def revert_python_files(dry_run: bool = True):
     """Revert Python files back to underscore naming."""
-    root = Path("/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools")
+    root = Path(
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools"
+    )
 
     # Find all Python files with hyphens
     files_to_revert = []

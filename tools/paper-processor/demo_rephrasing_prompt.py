@@ -19,7 +19,7 @@ def demonstrate_rephrasing_prompt():
 
     # File path
     input_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
     )
 
     if not input_file.exists():

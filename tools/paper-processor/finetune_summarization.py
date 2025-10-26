@@ -160,7 +160,7 @@ def main():
     """Run the fine-tuning process."""
     # Configuration
     base_dir = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/bim"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/bim"
     )
     test_file = (
         base_dir

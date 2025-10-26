@@ -102,12 +102,22 @@ class UnifiedCitationExtractor:
         links = self.parser.extract_links(content)
 
         for link_info in links:
+            url = link_info["href"]
+
+            # Skip internal cross-references (URLs starting with #)
+            # These are references to sections within the document, not citations
+            if url.startswith("#"):
+                logger.debug(
+                    f"Skipping internal cross-reference: {link_info['text']} -> {url}"
+                )
+                continue
+
             # Check if this link is to an academic resource
-            is_academic = self._is_academic_url(link_info["href"])
+            is_academic = self._is_academic_url(url)
 
             citation = Citation(
                 text=link_info["text"],
-                url=link_info["href"],
+                url=url,
                 line=link_info["line"],
                 position=link_info["position"],
                 is_academic=is_academic,

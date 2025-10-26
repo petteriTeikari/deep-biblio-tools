@@ -60,10 +60,10 @@ def test_rephrase_summary():
 
     # File paths
     input_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/summaries/old/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding_summary.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/summaries/old/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding_summary.md"
     )
     output_dir = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/rephrased"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/rephrased"
     )
     output_dir.mkdir(exist_ok=True)
 
@@ -325,7 +325,7 @@ def create_research_gaps_prompt_template():
 """
 
     template_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools/tools/paper-processor/research_gaps_template.md"
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools/tools/paper-processor/research_gaps_template.md"
     )
     template_file.write_text(template, encoding="utf-8")
     print(f"\nResearch gaps template saved to: {template_file}")

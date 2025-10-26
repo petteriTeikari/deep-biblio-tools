@@ -52,7 +52,7 @@ def combine_markdown_files(input_dir: Path, output_file: Path):
 def main():
     # Set paths
     markdown_dir = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools/data/markdown_parse"
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools/data/markdown_parse"
     )
     output_file = markdown_dir / "combined_papers.md"
 

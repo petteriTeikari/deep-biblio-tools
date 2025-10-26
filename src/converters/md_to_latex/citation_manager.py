@@ -160,10 +160,10 @@ class Citation:
         if self.title:
             lines.append(f'  title = "{self._escape_bibtex(self.title)}",')
 
-        # Add year - use "0000" instead of "Unknown" for BibTeX compatibility
-        # The .bst file has issues with non-numeric years like "n.d." or "Unknown"
+        # Add year - use "1900" instead of "Unknown" for BibTeX compatibility
+        # The .bst file has issues with year="0000" causing malformed natexlab
         year_to_use = (
-            self.year if self.year and self.year != "Unknown" else "0000"
+            self.year if self.year and self.year != "Unknown" else "1900"
         )
         lines.append(f'  year = "{year_to_use}",')
 

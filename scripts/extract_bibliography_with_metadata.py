@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 # API configuration
 CROSSREF_API_URL = "https://api.crossref.org/works/{doi}"
 ARXIV_API_URL = "https://export.arxiv.org/api/query"
-USER_AGENT = "DeepBiblioTools/1.0 (https://github.com/KusiKasa/deep-biblio-tools; mailto:admin@example.com)"
+USER_AGENT = "DeepBiblioTools/1.0 (https://github.com/github-personal/deep-biblio-tools; mailto:admin@example.com)"
 HEADERS = {"User-Agent": USER_AGENT}
 
 # Rate limiting

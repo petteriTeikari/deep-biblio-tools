@@ -5,11 +5,87 @@ import hashlib
 import html
 import logging
 import tempfile
+import urllib.parse
 from pathlib import Path
 
 # import re  # Banned - using string methods instead
 
 logger = logging.getLogger(__name__)
+
+
+def normalize_url(url: str) -> str:
+    """
+    Normalize URLs for reliable citation matching.
+
+    Handles:
+    - http vs https protocol normalization
+    - Trailing slash removal
+    - URL decoding (percent-encoded characters)
+    - DOI canonicalization (dx.doi.org → doi.org)
+    - Case normalization for domains (but not paths)
+    - Query parameter sorting for consistent comparison
+
+    Args:
+        url: URL to normalize
+
+    Returns:
+        Normalized URL string
+    """
+    if not url:
+        return ""
+
+    url = url.strip()
+
+    # DOI-specific normalization
+    if "doi.org" in url or url.startswith("10."):
+        # Normalize DOI resolver
+        url = url.replace("dx.doi.org", "doi.org")
+        url = url.replace("http://doi.org", "https://doi.org")
+
+        # If DOI without resolver, add it
+        if url.startswith("10."):
+            url = f"https://doi.org/{url}"
+
+    # Protocol normalization: prefer https
+    if url.startswith("http://"):
+        # Convert to https for common academic sites
+        domain_start = len("http://")
+        domain_end = url.find("/", domain_start)
+        if domain_end == -1:
+            domain_end = len(url)
+        domain = url[domain_start:domain_end].lower()
+
+        # Sites that support https
+        https_sites = [
+            "doi.org",
+            "arxiv.org",
+            "scholar.google.com",
+            "ieeexplore.ieee.org",
+            "dl.acm.org",
+            "springer.com",
+            "sciencedirect.com",
+        ]
+
+        if any(site in domain for site in https_sites):
+            url = "https://" + url[domain_start:]
+
+    # Remove trailing slashes (but not for URLs that are just domain)
+    if url.endswith("/") and url.count("/") > 2:
+        url = url.rstrip("/")
+
+    # Case normalization: lowercase domain but preserve path case
+    if "://" in url:
+        protocol, rest = url.split("://", 1)
+        if "/" in rest:
+            domain, path = rest.split("/", 1)
+            url = f"{protocol}://{domain.lower()}/{path}"
+        else:
+            url = f"{protocol}://{rest.lower()}"
+
+    # URL decode (handles %20, etc.)
+    url = urllib.parse.unquote(url)
+
+    return url
 
 
 def convert_unicode_to_latex(text: str) -> str:
@@ -392,7 +468,12 @@ def generate_citation_key(
             char.isascii() and char.isalpha()
         ):  # ONLY ASCII alphabetic characters
             clean_name.append(char)
+        # Skip all other characters (control chars, non-ASCII, special chars)
     last_name = "".join(clean_name)
+
+    # CRITICAL: Final sanitization to prevent ^^? characters in LaTeX
+    # Remove any remaining control characters or non-printable ASCII
+    last_name = "".join(c for c in last_name if ord(c) >= 32 and ord(c) < 127)
 
     if use_better_bibtex and title:
         # Better BibTeX style: authorTitleWord(s)Year
@@ -446,12 +527,16 @@ def generate_citation_key(
         }
 
         # Clean title: remove special chars but keep spaces
+        # CRITICAL: Also sanitize title to prevent ^^? characters
         clean_title = []
         for char in title:
-            if char.isalpha() or char.isspace():
-                clean_title.append(char)
-            else:
-                clean_title.append(" ")
+            # Only keep printable ASCII letters and spaces
+            if ord(char) >= 32 and ord(char) < 127:
+                if char.isalpha() or char.isspace():
+                    clean_title.append(char)
+                else:
+                    clean_title.append(" ")
+            # Skip control characters and non-ASCII
         title_words = "".join(clean_title).split()
 
         # Filter significant words

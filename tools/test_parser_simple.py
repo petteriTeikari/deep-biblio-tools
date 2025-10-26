@@ -74,7 +74,7 @@ def extract_abstract_from_html(html_content):
 
 
 # Test with the HTML file
-test_file = "/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools/data/elsevier_manual_scrape/2D–3D fusion approach for improved point cloud segmentation - ScienceDirect.html"
+test_file = "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools/data/elsevier_manual_scrape/2D–3D fusion approach for improved point cloud segmentation - ScienceDirect.html"
 
 with open(test_file, encoding="utf-8") as f:
     html_content = f.read()

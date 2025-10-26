@@ -113,10 +113,10 @@ def test_rephrase_full_paper():
 
     # File paths
     input_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
     )
     output_dir = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/rephrased"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/rephrased"
     )
     output_dir.mkdir(exist_ok=True)
 

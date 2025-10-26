@@ -5,7 +5,7 @@ export ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}"
 
 # Run paper summarization with all features
 paper-processor summarize-folder \
-  "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/bim" \
+  "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/bim" \
   --pattern all_formats \
   --parallel \
   --skip-existing \

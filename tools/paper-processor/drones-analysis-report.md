@@ -116,9 +116,9 @@ The compression ratios show significant variability (0.6% to 32.5%), indicating:
 
 ## File Locations
 
-- **Original Papers**: `/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/`
-- **Extracted Content**: `/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/extracted/`
-- **Summaries**: `/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/summaries/`
+- **Original Papers**: `/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/`
+- **Extracted Content**: `/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/extracted/`
+- **Summaries**: `/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/summaries/`
 - **Logs**:
   - `drones_processing_20250823_095553.log`
   - `drones_processing_continue_20250823_095754.log`

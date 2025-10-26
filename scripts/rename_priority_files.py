@@ -39,7 +39,9 @@ def should_rename_priority(filepath: Path) -> bool:
     # Check if in priority directory
     try:
         rel_path = filepath.relative_to(
-            Path("/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools")
+            Path(
+                "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools"
+            )
         )
         first_dir = str(rel_path).split("/")[0]
         if first_dir not in PRIORITY_DIRS:
@@ -141,7 +143,9 @@ def update_python_imports(file_path: Path, renames: dict[Path, Path]) -> bool:
 
 def rename_priority_files(dry_run: bool = True):
     """Rename priority files only."""
-    root = Path("/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools")
+    root = Path(
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools"
+    )
 
     # Collect priority files to rename
     renames = {}

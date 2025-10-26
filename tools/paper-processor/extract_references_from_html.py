@@ -39,7 +39,7 @@ def create_complete_academic_rephrasing():
 
     # Read the existing academic rephrasing
     input_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/summaries/AirVista-II_academic_rephrase_50percent_with_appendix.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/summaries/AirVista-II_academic_rephrase_50percent_with_appendix.md"
     )
     content = input_file.read_text(encoding="utf-8")
 
@@ -87,7 +87,7 @@ The work was partly supported by the Science and Technology Development Fund, Ma
 
     # Save the updated version
     output_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/summaries/AirVista-II_academic_rephrase_50percent_complete_references.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/summaries/AirVista-II_academic_rephrase_50percent_complete_references.md"
     )
     output_file.write_text(new_content, encoding="utf-8")
 

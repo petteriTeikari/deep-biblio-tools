@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from scraper_standalone import ElsevierScraper
 
 # Test the abstract extraction on a local file
-test_file = "/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools/data/elsevier_manual_scrape/2D–3D fusion approach for improved point cloud segmentation - ScienceDirect.html"
+test_file = "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools/data/elsevier_manual_scrape/2D–3D fusion approach for improved point cloud segmentation - ScienceDirect.html"
 
 # Create scraper instance
 scraper = ElsevierScraper()

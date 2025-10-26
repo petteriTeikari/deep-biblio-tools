@@ -20,10 +20,10 @@ def create_balanced_rephrasing():
 
     # Paths
     input_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
     )
     output_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/summaries/AirVista-II_balanced_50percent_rephrase.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/summaries/AirVista-II_balanced_50percent_rephrase.md"
     )
 
     # Initialize processor

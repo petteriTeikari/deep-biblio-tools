@@ -299,7 +299,7 @@ Note: The reference numbers in brackets correspond to the paper's internal citat
 
 def main():
     json_path = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/bim/summaries/Omni-Scan2BIM__A_ready-to-use_Scan2BIM_approach_based_on_vision_foundation_models_for_MEP_scenes_-_ScienceDirect_comprehensive_summary.json"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/bim/summaries/Omni-Scan2BIM__A_ready-to-use_Scan2BIM_approach_based_on_vision_foundation_models_for_MEP_scenes_-_ScienceDirect_comprehensive_summary.json"
     )
 
     if json_path.exists():

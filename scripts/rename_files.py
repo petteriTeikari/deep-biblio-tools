@@ -110,7 +110,9 @@ def update_python_imports(content: str, renames: dict[str, str]) -> str:
 
 def rename_files(dry_run: bool = True):
     """Rename files in the repository."""
-    root = Path("/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools")
+    root = Path(
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools"
+    )
 
     # Collect all files to rename
     renames = {}

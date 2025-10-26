@@ -6,7 +6,7 @@ export ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}"
 # First extract the paper to see its size
 echo "Step 1: Extracting paper to check size..."
 paper-processor extract \
-  "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/bim/BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html" \
+  "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/bim/BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html" \
   -o "test_extract.md"
 
 if [ -f "test_extract.md" ]; then
@@ -23,7 +23,7 @@ fi
 echo -e "\n\nStep 2: Creating summary (this may take 30-60 seconds)..."
 # Now try summarization with folder command which has better error handling
 paper-processor summarize-folder \
-  "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/bim" \
+  "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/bim" \
   --pattern "BIM-based quantity takeoff_ Current state and future opportunities - ScienceDirect.html" \
   --debug \
   -o "test_summaries" \

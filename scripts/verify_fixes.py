@@ -7,7 +7,7 @@ from pathlib import Path
 def check_fixes():
     """Check if all fixes are properly implemented."""
     base_dir = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/github/deep-biblio-tools"
+        "/home/petteri/Dropbox/LABs/github-personal/github/deep-biblio-tools"
     )
 
     print("Checking implemented fixes...")

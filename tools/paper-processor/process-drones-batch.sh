@@ -3,7 +3,7 @@
 
 export ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}"
 
-INPUT_DIR="/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones"
+INPUT_DIR="/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 LOG_FILE="drones_processing_${TIMESTAMP}.log"
 
@@ -80,7 +80,7 @@ import os
 from pathlib import Path
 import statistics
 
-input_dir = Path("/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones")
+input_dir = Path("/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones")
 extracted_dir = input_dir / "extracted"
 summaries_dir = input_dir / "summaries"
 

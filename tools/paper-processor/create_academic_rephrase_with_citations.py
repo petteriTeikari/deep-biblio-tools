@@ -30,10 +30,10 @@ def create_academic_rephrasing():
     """Create academic rephrasing with proper citations."""
 
     input_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/extracted/AirVista-II_ An Agentic System for Embodied UAVs Toward Dynamic Scene Semantic Understanding.md"
     )
     output_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/summaries/AirVista-II_academic_rephrase_50percent.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/summaries/AirVista-II_academic_rephrase_50percent.md"
     )
 
     # Read content
@@ -222,7 +222,7 @@ Zhu, D., Chen, J., Shen, X., Li, X., & Elhoseiny, M. (2023). [MiniGPT-4: Enhanci
 Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}"""
 
     report_file = Path(
-        "/home/petteri/Dropbox/LABs/KusiKasa/papers/scan2bim/biblio/drones/summaries/AirVista-II_citation_report.md"
+        "/home/petteri/Dropbox/LABs/github-personal/papers/scan2bim/biblio/drones/summaries/AirVista-II_citation_report.md"
     )
     report_file.write_text(citation_report, encoding="utf-8")
     print(f"Citation report saved to: {report_file}")
