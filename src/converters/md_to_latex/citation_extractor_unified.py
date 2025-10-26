@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 # Local imports
+from src.converters.md_to_latex.utils import normalize_arxiv_url
 from src.parsers import MarkdownParser
 
 logger = logging.getLogger(__name__)
@@ -111,6 +112,10 @@ class UnifiedCitationExtractor:
                     f"Skipping internal cross-reference: {link_info['text']} -> {url}"
                 )
                 continue
+
+            # Normalize arXiv URLs to remove version specifiers (v1, v2, etc.)
+            # This prevents duplicate citations for the same paper
+            url = normalize_arxiv_url(url)
 
             # Check if this link is to an academic resource
             is_academic = self._is_academic_url(url)

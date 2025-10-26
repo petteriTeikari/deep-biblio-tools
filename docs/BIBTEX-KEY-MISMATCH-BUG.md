@@ -1,8 +1,9 @@
 # BibTeX Key Mismatch Bug: Citations vs Generated Keys
 
-**Status**: CRITICAL BUG - Root cause of "missing citations" warnings
+**Status**: PARTIALLY FIXED - arXiv URL normalization completed, key mapping remains
 **Date Identified**: 2025-10-26
-**Impact**: 2 citations appear as "undefined" in LaTeX despite being in Zotero
+**Date Fixed (Part 1)**: 2025-10-26 (arXiv URL deduplication)
+**Impact**: Multiple citations appear as "undefined" in LaTeX despite being in Zotero
 
 ---
 
@@ -259,3 +260,57 @@ But the LaTeX `\citep{moore2025}` command doesn't match the actual key `@article
 3. Careful BBT integration (Phase 3)
 
 DO NOT attempt quick fixes without safety nets in place.
+
+---
+
+## Phase 3 Progress: Part 1 - arXiv URL Normalization (COMPLETED)
+
+**Date**: 2025-10-26
+**Commit**: feat: Fix arXiv URL deduplication in citation extractor
+
+### Problem Found
+
+The citation extractor was creating DUPLICATE citations for the same arXiv paper when the markdown contained URLs with and without version specifiers:
+
+```markdown
+[Moore 2025](https://arxiv.org/abs/2508.12683v1)  → moore2025
+[Moore, 2025](https://arxiv.org/abs/2508.12683)   → moore2025b
+```
+
+Same paper, two different citation keys!
+
+### Solution Implemented
+
+Added arXiv URL normalization to `citation_extractor_unified.py`:
+
+```python
+# Import normalize_arxiv_url from utils
+from src.converters.md_to_latex.utils import normalize_arxiv_url
+
+# In extract_citations():
+# Normalize arXiv URLs to remove version specifiers (v1, v2, etc.)
+# This prevents duplicate citations for the same paper
+url = normalize_arxiv_url(url)
+```
+
+### Results
+
+- **Before**: 368 citations extracted (including 3 duplicates)
+- **After**: 365 citations extracted (duplicates eliminated)
+- **Test case**: Moore 2025 paper no longer appears twice
+
+### Remaining Work (Phase 3 Part 2)
+
+The key mismatch problem still exists but is now CLEARER:
+
+```
+LaTeX uses:        \citep{moore2025}
+BibTeX has:        @article{moorePreprintPdf2025,
+```
+
+This requires mapping Zotero's generated keys to our simpler keys. Options:
+1. Use Zotero's keys directly in LaTeX (replace our key generation)
+2. Create alias entries in BibTeX (@article{moore2025, crossref={moorePreprintPdf2025}})
+3. Implement Better BibTeX integration for stable, simple keys
+
+**Recommendation**: Option 1 is simplest and most robust. Extract the actual key from Zotero's BibTeX output and use that in the LaTeX \citep commands.
