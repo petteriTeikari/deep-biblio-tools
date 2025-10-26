@@ -25,6 +25,7 @@ from src.converters.md_to_latex.concept_boxes import (
     ConceptBoxConverter,
     ConceptBoxStyle,
 )
+from src.converters.md_to_latex.debug_logger import PipelineDebugger
 from src.converters.md_to_latex.latex_builder import LatexBuilder
 from src.converters.md_to_latex.post_processing import post_process_latex_file
 from src.converters.md_to_latex.utils import (
@@ -737,6 +738,11 @@ class MarkdownToLatexConverter:
         # Ensure output directory exists
         ensure_directory(self.output_dir)
 
+        # Initialize debug logger for pipeline inspection
+        debug_dir = self.output_dir / "debug"
+        debugger = PipelineDebugger(debug_dir)
+        logger.info(f"Debug artifacts will be saved to: {debug_dir}")
+
         # Auto-detect local citation sources if not explicitly provided
         # Fallback order (per OpenAI recommendations):
         # 1. MCP server (via API) - handled by zotero_api_key
@@ -835,6 +841,36 @@ class MarkdownToLatexConverter:
                 pbar.set_description("Extracting citations")
             citations = self.citation_manager.extract_citations(content)
 
+            # STAGE 1: Citation Extraction Debug
+            debugger.log_stage(1, "Citation Extraction")
+            debugger.log_stats(extracted_count=len(citations))
+            debugger.log_sample(
+                [
+                    {
+                        "text": c.original_text,
+                        "url": c.url,
+                        "authors": c.authors,
+                        "year": c.year,
+                    }
+                    for c in citations
+                ],
+                label="extracted citations",
+                max_show=5,
+            )
+            debugger.dump_json(
+                [
+                    {
+                        "original_text": c.original_text,
+                        "url": c.url,
+                        "authors": c.authors,
+                        "year": c.year,
+                        "title": c.title,
+                    }
+                    for c in citations
+                ],
+                "debug-01-extracted-citations.json",
+            )
+
             # Step 3.5: Pre-populate from Zotero (API preferred, fallback to JSON)
             collection_name = os.getenv("ZOTERO_COLLECTION", "dpp-fashion")
 
@@ -844,9 +880,79 @@ class MarkdownToLatexConverter:
                     pbar.set_description(
                         f"Loading from Zotero API ({collection_name})"
                     )
+
+                # STAGE 2: Zotero Matching Debug (CRITICAL)
+                debugger.log_stage(2, "Zotero Matching via API")
                 matched, missing = self._populate_from_zotero_api(
                     citations, collection_name
                 )
+
+                # Log matching statistics
+                debugger.log_stats(
+                    total_citations=len(citations),
+                    matched_from_zotero=matched,
+                    missing_from_zotero=missing,
+                    match_rate=f"{100 * matched / len(citations):.1f}%",
+                )
+
+                # Sample of matched citations
+                matched_citations = [
+                    c for c in citations if c.key and c.key != ""
+                ]
+                debugger.log_sample(
+                    [
+                        {
+                            "text": c.original_text,
+                            "url": c.url,
+                            "key": c.key,
+                            "authors": c.authors,
+                            "year": c.year,
+                        }
+                        for c in matched_citations[:5]
+                    ],
+                    label="matched citations",
+                    max_show=5,
+                )
+
+                # Sample of unmatched citations
+                unmatched_citations = [
+                    c for c in citations if not c.key or c.key == ""
+                ]
+                if unmatched_citations:
+                    debugger.log_sample(
+                        [
+                            {"text": c.original_text, "url": c.url}
+                            for c in unmatched_citations[:5]
+                        ],
+                        label="unmatched citations",
+                        max_show=5,
+                    )
+
+                # Dump matching results
+                debugger.dump_json(
+                    {
+                        "total": len(citations),
+                        "matched": matched,
+                        "missing": missing,
+                        "match_rate": f"{100 * matched / len(citations):.1f}%",
+                        "matched_citations": [
+                            {
+                                "text": c.original_text,
+                                "url": c.url,
+                                "key": c.key,
+                                "authors": c.authors,
+                                "year": c.year,
+                            }
+                            for c in matched_citations
+                        ],
+                        "unmatched_citations": [
+                            {"text": c.original_text, "url": c.url}
+                            for c in unmatched_citations
+                        ],
+                    },
+                    "debug-02-zotero-matching-results.json",
+                )
+
                 logger.info(
                     f"Matched {matched}/{len(citations)} citations from Zotero API"
                 )
@@ -887,6 +993,34 @@ class MarkdownToLatexConverter:
 
             for citation in citations:
                 self.citation_manager.fetch_citation_metadata(citation)
+
+            # STAGE 3: Citation Key Generation Debug
+            debugger.log_stage(3, "Citation Key Generation & Metadata Fetching")
+            keys_generated = sum(1 for c in citations if c.key and c.key != "")
+            unknown_authors = sum(
+                1 for c in citations if c.authors == "Unknown"
+            )
+            unknown_years = sum(1 for c in citations if c.year == "Unknown")
+            debugger.log_stats(
+                total_citations=len(citations),
+                keys_generated=keys_generated,
+                unknown_authors=unknown_authors,
+                unknown_years=unknown_years,
+            )
+            debugger.dump_json(
+                [
+                    {
+                        "text": c.original_text,
+                        "url": c.url,
+                        "key": c.key,
+                        "authors": c.authors,
+                        "year": c.year,
+                        "title": c.title,
+                    }
+                    for c in citations
+                ],
+                "debug-03-citation-keys-generated.json",
+            )
 
             # Collect failed citations for report
             failed_citations = []
@@ -1111,6 +1245,32 @@ class MarkdownToLatexConverter:
             post_process_latex_file(output_tex)
             logger.info("Applied post-processing fixes to LaTeX file")
 
+            # STAGE 5: LaTeX Citation Commands Debug
+            debugger.log_stage(5, "LaTeX Citation Commands Validation")
+            tex_content = output_tex.read_text(encoding="utf-8")
+            citep_count = tex_content.count(r"\citep{")
+            citet_count = tex_content.count(r"\citet{")
+            cite_count = tex_content.count(r"\cite{")
+            total_cites = citep_count + citet_count + cite_count
+            debugger.log_stats(
+                tex_file_size=len(tex_content),
+                citep_count=citep_count,
+                citet_count=citet_count,
+                cite_count=cite_count,
+                total_citations_in_tex=total_cites,
+            )
+            debugger.dump_json(
+                {
+                    "citep_count": citep_count,
+                    "citet_count": citet_count,
+                    "cite_count": cite_count,
+                    "total": total_cites,
+                    "expected": len(citations),
+                    "matches_expected": total_cites == len(citations),
+                },
+                "debug-05-latex-citations.json",
+            )
+
             # Write BibTeX file
             output_bib = self.output_dir / "references.bib"
             if verbose and citations:
@@ -1119,6 +1279,30 @@ class MarkdownToLatexConverter:
                 )
             self.citation_manager.generate_bibtex_file(
                 output_bib, show_progress=verbose
+            )
+
+            # STAGE 4: BibTeX File Generation Debug
+            debugger.log_stage(4, "BibTeX File Generation & Validation")
+            bib_content = output_bib.read_text(encoding="utf-8")
+            entry_count = bib_content.count("@")
+            unknown_count = bib_content.count("Unknown")
+            anonymous_count = bib_content.count("Anonymous")
+            debugger.log_stats(
+                bib_file_size=len(bib_content),
+                entry_count=entry_count,
+                unknown_count=unknown_count,
+                anonymous_count=anonymous_count,
+            )
+            # Save copy of BibTeX for inspection
+            debugger.dump_text(bib_content, "debug-04-references.bib")
+            debugger.dump_json(
+                {
+                    "entry_count": entry_count,
+                    "unknown_count": unknown_count,
+                    "anonymous_count": anonymous_count,
+                    "has_errors": unknown_count > 0 or anonymous_count > 0,
+                },
+                "debug-04-bibtex-validation.json",
             )
 
             # Copy bibliography style file (use spbasic_pt as default)
@@ -1163,6 +1347,57 @@ class MarkdownToLatexConverter:
             pdf_path = self._compile_pdf(output_tex, verbose)
             if verbose:
                 pbar.update(1)
+
+            # STAGE 6: PDF Compilation & Citation Resolution Debug
+            debugger.log_stage(
+                6, "PDF Compilation & Citation Resolution Validation"
+            )
+            if pdf_path and pdf_path.exists():
+                debugger.log_stats(
+                    pdf_generated=True, pdf_size_bytes=pdf_path.stat().st_size
+                )
+
+                # Check .blg file for unresolved citations
+                blg_path = pdf_path.with_suffix(".blg")
+                if blg_path.exists():
+                    blg_content = blg_path.read_text(encoding="utf-8")
+                    missing_entries = []
+                    for line in blg_content.splitlines():
+                        if "didn't find a database entry for" in line:
+                            # Extract the citation key from the error line
+                            parts = line.split('"')
+                            if len(parts) >= 2:
+                                missing_entries.append(parts[1])
+
+                    debugger.log_stats(
+                        blg_file_exists=True,
+                        missing_entries_count=len(missing_entries),
+                    )
+                    debugger.dump_json(
+                        {
+                            "pdf_exists": True,
+                            "pdf_size": pdf_path.stat().st_size,
+                            "missing_entries": missing_entries,
+                            "has_unresolved": len(missing_entries) > 0,
+                        },
+                        "debug-06-pdf-validation.json",
+                    )
+                else:
+                    debugger.log_stats(blg_file_exists=False)
+                    debugger.dump_json(
+                        {
+                            "pdf_exists": True,
+                            "pdf_size": pdf_path.stat().st_size,
+                            "blg_missing": True,
+                        },
+                        "debug-06-pdf-validation.json",
+                    )
+            else:
+                debugger.log_stats(pdf_generated=False)
+                debugger.dump_json(
+                    {"pdf_exists": False, "error": "PDF compilation failed"},
+                    "debug-06-pdf-validation.json",
+                )
 
             # Step 9: Summary
             if verbose:
