@@ -144,11 +144,11 @@ class Citation:
                 # Add "and others" to indicate multiple authors
                 authors_to_use = f"{first_author} and others"
             else:
-                # Fallback if extraction fails
-                authors_to_use = "Unknown"
+                # Fallback if extraction fails - use "{Anonymous}" to avoid BibTeX style issues
+                authors_to_use = "{Anonymous}"
         elif not authors_to_use or authors_to_use.strip() == "":
-            # Empty author field
-            authors_to_use = "Unknown"
+            # Empty author field - use "{Anonymous}" (curly braces prevent case changes)
+            authors_to_use = "{Anonymous}"
 
         clean_authors = self._escape_bibtex(authors_to_use)
         # Limit author field length to prevent malformed entries
@@ -160,8 +160,12 @@ class Citation:
         if self.title:
             lines.append(f'  title = "{self._escape_bibtex(self.title)}",')
 
-        # Add year
-        lines.append(f'  year = "{self.year}",')
+        # Add year - use "0000" instead of "Unknown" for BibTeX compatibility
+        # The .bst file has issues with non-numeric years like "n.d." or "Unknown"
+        year_to_use = (
+            self.year if self.year and self.year != "Unknown" else "0000"
+        )
+        lines.append(f'  year = "{year_to_use}",')
 
         # Add journal if available
         if self.journal:
