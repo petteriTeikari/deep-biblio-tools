@@ -88,8 +88,8 @@ class TestCitationManager:
 
         assert len(citations) == 2
         assert (
-            citations[0].authors == "Smith et al"
-        )  # Note: mistletoe removes the period
+            citations[0].authors == "Smith et al."
+        )  # Note: mistletoe preserves the period in "et al."
         assert citations[0].year == "2023"
         assert citations[1].authors == "Jones"
         assert citations[1].year == "2022"
