@@ -96,24 +96,17 @@ class BblTransformer:
         Returns:
             Transformed entry with hyperlinked author names
         """
-        # Extract citation key from: [{Authors(Year)}]{key}
-        # Find the two sets of braces
-        first_brace = entry.find("{")
-        if first_brace == -1:
+        # Extract citation key from: [label]{key}
+        # Find the closing bracket of the label
+        close_bracket = entry.find("]")
+        if close_bracket == -1:
             return entry  # Malformed entry, return as-is
 
-        # Find matching close brace for citation key
-        brace_count = 1
-        second_brace_start = first_brace + 1
-        while brace_count > 0 and second_brace_start < len(entry):
-            if entry[second_brace_start] == "{":
-                brace_count += 1
-            elif entry[second_brace_start] == "}":
-                brace_count -= 1
-            second_brace_start += 1
+        # Extract the label (everything before ])
+        label = entry[1:close_bracket]  # Skip opening '['
 
-        # Extract cite key (second set of braces)
-        cite_key_start = entry.find("{", second_brace_start)
+        # Find cite key after ']' - should be '{key}'
+        cite_key_start = entry.find("{", close_bracket)
         if cite_key_start == -1:
             return entry  # Malformed entry
 
@@ -193,9 +186,7 @@ class BblTransformer:
         rest_of_entry = self._remove_url_commands(rest_of_entry)
 
         # Construct transformed entry
-        transformed = (
-            f"[{entry[first_brace+1:second_brace_start-1]}]{{{cite_key}}}\n"
-        )
+        transformed = f"[{label}]{{{cite_key}}}\n"
         transformed += f"\\href{{{url}}}{{{author_year}}} {rest_of_line}"
         transformed += rest_of_entry
 
@@ -216,14 +207,14 @@ class BblTransformer:
         i = 0
         while i < len(text):
             # Check for \urlprefix
-            if text[i : i + 11] == "\\urlprefix":
+            if text[i : i + 10] == "\\urlprefix":
                 # Skip \urlprefix
-                i += 11
+                i += 10
                 # Skip whitespace
                 while i < len(text) and text[i] in " \t\n":
                     i += 1
                 # Check for \url{
-                if text[i : i + 5] == "\\url{":
+                if i < len(text) and text[i : i + 5] == "\\url{":
                     # Find matching closing brace
                     i += 5
                     brace_count = 1
