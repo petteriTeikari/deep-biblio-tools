@@ -11,7 +11,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 # Local imports
-from src.converters.md_to_latex.utils import normalize_arxiv_url
+from src.converters.md_to_latex.utils import normalize_arxiv_url, normalize_url
 from src.parsers import MarkdownParser
 
 logger = logging.getLogger(__name__)
@@ -120,6 +120,12 @@ class UnifiedCitationExtractor:
             url = normalize_arxiv_url(url)
             if url != original_url:
                 logger.debug(f"Normalized arXiv URL: {original_url} -> {url}")
+
+            # Normalize URL for reliable matching (http/https, trailing slashes, etc.)
+            normalized_url = normalize_url(url)
+            if normalized_url != url:
+                logger.debug(f"Normalized URL: {url} -> {normalized_url}")
+                url = normalized_url
 
             # Check if this link is to an academic resource
             is_academic = self._is_academic_url(url)

@@ -1183,9 +1183,12 @@ class CitationManager:
                 # Regular citation with URL - create the markdown pattern
                 # We need to find [some text](exact_url)
                 # Since we have the exact URL, we can be precise
+                # NOTE: The citation.url is already normalized during extraction
                 search_pattern = f"]({citation.url})"
 
-                logger.debug(f"Searching for citation {key}: {search_pattern}")
+                logger.debug(
+                    f"Searching for citation {key} with normalized URL: {search_pattern}"
+                )
 
                 # Find all occurrences of this URL pattern
                 pos = 0
