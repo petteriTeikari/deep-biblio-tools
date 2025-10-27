@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 # Third-party imports
 import requests
 from bs4 import BeautifulSoup
+from markdown_it import MarkdownIt
+from markdown_it.token import Token
 from tqdm import tqdm
 
 # Local imports
@@ -22,6 +24,7 @@ from src.converters.md_to_latex.utils import (
     convert_unicode_to_latex,
     extract_doi_from_url,
     generate_citation_key,
+    normalize_url,
     sanitize_latex,
 )
 from src.converters.md_to_latex.zotero_integration import ZoteroClient
@@ -1168,114 +1171,157 @@ class CitationManager:
             except (AttributeError, ImportError):
                 pass
 
-    def replace_citations_in_text(self, content: str) -> str:
-        """Replace markdown citations with LaTeX cite commands."""
-        # Create a list of replacements to make
-        replacements = []
+    def _build_normalized_url_lookup(self) -> dict[str, str]:
+        """Build a lookup map from normalized URLs to citation keys.
 
-        logger.info(
-            f"Starting citation replacement for {len(self.citations)} citations"
-        )
-
-        # For each citation we've stored, find it in the content and prepare replacement
+        Returns:
+            Dictionary mapping normalized URLs to citation keys
+        """
+        lookup = {}
         for key, citation in self.citations.items():
             if not citation.url.startswith("#orphan-"):
-                # Regular citation with URL - create the markdown pattern
-                # We need to find [some text](exact_url)
-                # Since we have the exact URL, we can be precise
-                # NOTE: The citation.url is already normalized during extraction
-                search_pattern = f"]({citation.url})"
-
-                logger.debug(
-                    f"Searching for citation {key} with normalized URL: {search_pattern}"
-                )
-
-                # Find all occurrences of this URL pattern
-                pos = 0
-                found_count = 0
-                while True:
-                    pos = content.find(search_pattern, pos)
-                    if pos == -1:
-                        break
-
-                    found_count += 1
-                    logger.debug(
-                        f"Found occurrence {found_count} at position {pos}"
-                    )
-
-                    # Find the opening bracket by going backwards
-                    bracket_pos = pos - 1
-                    depth = 0
-                    while bracket_pos >= 0:
-                        if content[bracket_pos] == "]":
-                            depth += 1
-                        elif content[bracket_pos] == "[":
-                            if depth == 0:
-                                # Found the matching opening bracket
-                                link_text = content[bracket_pos + 1 : pos]
-                                replacements.append(
-                                    {
-                                        "start": bracket_pos,
-                                        "end": pos + len(search_pattern),
-                                        "replacement": f"\\citep{{{citation.key}}}",
-                                        "original": content[
-                                            bracket_pos : pos
-                                            + len(search_pattern)
-                                        ],
-                                    }
-                                )
-                                logger.debug(
-                                    f"Will replace: [{link_text}]({citation.url}) -> \\citep{{{citation.key}}}"
-                                )
-                                break
-                            else:
-                                depth -= 1
-                        bracket_pos -= 1
-
-                    pos += len(search_pattern)
-
-                if found_count == 0:
+                normalized = normalize_url(citation.url)
+                if normalized in lookup:
                     logger.warning(
-                        f"Citation NOT FOUND in content: {key} -> {citation.url}"
+                        f"URL collision: {normalized} maps to both {key} and {lookup[normalized]}"
                     )
-                    logger.warning(f"  Citation key: {citation.key}")
-                    logger.warning(f"  Authors: {citation.authors}")
-                    logger.warning(f"  Year: {citation.year}")
-                    # Show a sample of what we're searching in
-                    if len(content) > 200:
-                        logger.debug(f"  Content sample: {content[:200]}...")
-                else:
-                    logger.info(
-                        f"Found {found_count} occurrence(s) of citation {key}"
-                    )
-            else:
-                # Orphan citation - these are trickier
-                # For now, log them
-                logger.info(
-                    f"Orphan citation to be handled manually: {citation.authors} ({citation.year})"
-                )
+                lookup[normalized] = key
 
-        logger.info(f"Prepared {len(replacements)} replacements")
+        logger.info(f"Built normalized URL lookup with {len(lookup)} entries")
+        return lookup
 
-        # Sort replacements by position (descending) to avoid position shifts
-        replacements.sort(key=lambda x: x["start"], reverse=True)
+    def replace_citations_in_text_ast(self, content: str) -> tuple[str, int]:
+        """Replace markdown citations with LaTeX cite commands using AST parsing.
 
-        # Apply replacements
-        for i, repl in enumerate(replacements):
-            logger.debug(
-                f"Applying replacement {i + 1}/{len(replacements)}: {repl['original']} -> {repl['replacement']}"
-            )
-            content = (
-                content[: repl["start"]]
-                + repl["replacement"]
-                + content[repl["end"] :]
-            )
+        Uses markdown-it-py to parse the markdown into tokens, find link tokens,
+        and replace them with citation commands. This is more robust than string
+        manipulation as it properly handles nested brackets, special characters, etc.
+
+        Returns:
+            Tuple of (modified_content, replacement_count)
+        """
+        # Build normalized URL lookup
+        url_to_key = self._build_normalized_url_lookup()
+
+        # Parse markdown into tokens
+        md = MarkdownIt()
+        tokens = md.parse(content)
+
+        replacements = 0
+        failed_urls = []
 
         logger.info(
-            f"Citation replacement complete: {len(replacements)} replacements applied"
+            f"Starting AST-based citation replacement for {len(tokens)} tokens"
         )
 
-        return content
+        # Process tokens to find and replace links
+        i = 0
+        while i < len(tokens):
+            if tokens[i].type == "link_open":
+                # Extract href from token attributes
+                href = None
+                for attr in tokens[i].attrs or []:
+                    if attr[0] == "href":
+                        href = attr[1]
+                        break
+
+                if href:
+                    # Normalize the URL for lookup
+                    normalized_href = normalize_url(href)
+
+                    # Find the citation key
+                    key = url_to_key.get(normalized_href)
+
+                    if key:
+                        # Find the closing link token
+                        j = i + 1
+                        depth = 1
+                        link_text_parts = []
+
+                        while j < len(tokens) and depth > 0:
+                            if tokens[j].type == "link_open":
+                                depth += 1
+                            elif tokens[j].type == "link_close":
+                                depth -= 1
+                                if depth == 0:
+                                    break
+                            elif tokens[j].type == "text":
+                                link_text_parts.append(tokens[j].content)
+                            elif (
+                                tokens[j].type == "inline"
+                                and tokens[j].children
+                            ):
+                                # Extract text from inline children
+                                for child in tokens[j].children:
+                                    if child.type == "text":
+                                        link_text_parts.append(child.content)
+                            j += 1
+
+                        link_text = "".join(link_text_parts)
+                        citation = self.citations[key]
+
+                        logger.debug(
+                            f"Replacing [{link_text}]({href}) -> \\citep{{{citation.key}}}"
+                        )
+
+                        # Create a new text token with the citation command
+                        new_token = Token("text", "", 0)
+                        new_token.content = f"\\citep{{{citation.key}}}"
+
+                        # Replace tokens[i:j+1] with new_token
+                        del tokens[i : j + 1]
+                        tokens.insert(i, new_token)
+                        replacements += 1
+                    else:
+                        logger.warning(
+                            f"No citation key found for URL: {href} (normalized: {normalized_href})"
+                        )
+                        failed_urls.append(href)
+                        i += 1
+                else:
+                    i += 1
+            else:
+                i += 1
+
+        # Render tokens back to markdown/text
+        # Since we're replacing with LaTeX commands, we need to extract the text content
+        output_parts = []
+        for token in tokens:
+            if token.type == "text":
+                output_parts.append(token.content)
+            elif token.type == "inline" and token.children:
+                for child in token.children:
+                    if child.type == "text":
+                        output_parts.append(child.content)
+            # For other token types, use the renderer
+            elif hasattr(token, "content") and token.content:
+                output_parts.append(token.content)
+
+        # If we didn't get good output from manual extraction, use the renderer
+        if (
+            not output_parts
+            or len("".join(output_parts).strip()) < len(content) // 2
+        ):
+            output = md.renderer.render(tokens, md.options, {})
+        else:
+            output = "".join(output_parts)
+
+        logger.info(
+            f"AST replacement: {replacements} citations replaced, {len(failed_urls)} failed"
+        )
+        if failed_urls:
+            logger.error(f"Failed URLs: {failed_urls[:5]}...")  # Show first 5
+
+        return output, replacements
+
+    def replace_citations_in_text(self, content: str) -> str:
+        """Replace markdown citations with LaTeX cite commands."""
+        # Use AST-based replacement
+        output, replacements = self.replace_citations_in_text_ast(content)
+        logger.info(
+            f"Completed citation replacement: {replacements} citations replaced"
+        )
+        return output
 
     def generate_bibtex_file(
         self, output_path: Path, show_progress: bool = False
