@@ -360,7 +360,13 @@ def convert():
 @click.option(
     "-o", "--output", type=click.Path(path_type=Path), help="Output file"
 )
-def md2latex(input_file: Path, output: Path | None):
+@click.option(
+    "-c",
+    "--collection",
+    type=str,
+    help="Zotero collection name (overrides ZOTERO_COLLECTION env var)",
+)
+def md2latex(input_file: Path, output: Path | None, collection: str | None):
     """Convert Markdown to LaTeX using Zotero Web API."""
     # Determine output directory and name
     # If user provides explicit output path, use its directory
@@ -377,14 +383,21 @@ def md2latex(input_file: Path, output: Path | None):
         zotero_api_key = os.getenv("ZOTERO_API_KEY")
         zotero_library_id = os.getenv("ZOTERO_LIBRARY_ID")
 
+        # Collection: CLI option > env var > default
+        zotero_collection = (
+            collection or os.getenv("ZOTERO_COLLECTION") or "dpp-fashion"
+        )
+
         converter = MarkdownToLatexConverter(
             output_dir=output_dir,
             zotero_api_key=zotero_api_key,
             zotero_library_id=zotero_library_id,
+            collection_name=zotero_collection,
         )
         result_path = converter.convert(input_file, output_name)
 
         click.echo(f"Converting markdown to LaTeX: {input_file}")
+        click.echo(f"Using Zotero collection: {zotero_collection}")
         click.echo(f"Converted {input_file} to {result_path}")
     except Exception as e:
         click.echo(f"Error converting file: {e}", err=True)
