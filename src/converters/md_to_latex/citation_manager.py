@@ -480,7 +480,7 @@ class CitationManager:
                             arxiv_id_match = arxiv_id[:9]
                 if arxiv_id_match:
                     zotero_data = self.zotero_client.search_by_identifier(
-                        f"arXiv:{arxiv_id_match.group(1)}"
+                        f"arXiv:{arxiv_id_match}"
                     )
                     if zotero_data:
                         # Parse Zotero data to update citation fields
@@ -503,7 +503,7 @@ class CitationManager:
                                     brace_pos + 1 : comma_pos
                                 ].strip()
                         logger.info(
-                            f"Fetched metadata from Zotero for arXiv: {arxiv_id_match.group(1)}"
+                            f"Fetched metadata from Zotero for arXiv: {arxiv_id_match}"
                         )
                         # Save to cache
                         self._save_to_cache(citation, "zotero")
