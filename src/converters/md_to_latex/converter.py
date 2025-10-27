@@ -1175,6 +1175,12 @@ class MarkdownToLatexConverter:
             except (RuntimeError, OSError, ValueError) as e:
                 logger.error(f"Pandoc conversion failed: {e}")
                 raise
+
+            # Fix escaped dollar signs in math equations
+            # Pandoc sometimes escapes $$ as \$\$ which breaks LaTeX math
+            latex_content = latex_content.replace(r"\$\$", "$$")
+            latex_content = latex_content.replace(r"\$", "$")
+
             if verbose:
                 pbar.update(1)
 
@@ -1883,44 +1889,31 @@ class MarkdownToLatexConverter:
 
             os.chdir(self.output_dir)
 
-            # Run pdflatex twice to resolve references
-            for i in range(2):
-                if verbose:
-                    logger.info(f"Running {latex_cmd} (pass {i + 1}/2)...")
+            # Run first latex pass to generate aux file
+            if verbose:
+                logger.info(f"Running {latex_cmd} (pass 1/3)...")
 
-                cmd = [
-                    latex_cmd,
-                    "-interaction=nonstopmode",
-                    "-halt-on-error",
-                    tex_file.name,
-                ]
+            cmd = [
+                latex_cmd,
+                "-interaction=nonstopmode",
+                tex_file.name,  # Remove halt-on-error to continue past math errors
+            ]
 
-                result = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    encoding="utf-8",
-                    errors="replace",
-                    timeout=60,  # 60 second timeout
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=60,
+            )
+
+            if result.returncode != 0:
+                logger.warning(
+                    f"{latex_cmd} pass 1 had errors (continuing to run bibtex)"
                 )
 
-                if result.returncode != 0:
-                    logger.error(
-                        f"{latex_cmd} failed with return code {result.returncode}"
-                    )
-                    if verbose:
-                        logger.error(f"{latex_cmd} output:")
-                        logger.error(result.stdout[-2000:])  # Last 2000 chars
-                        logger.error(result.stderr)
-
-                    # Try to extract specific error from log
-                    log_file = tex_file.with_suffix(".log")
-                    if log_file.exists():
-                        self._extract_latex_errors(log_file)
-
-                    return None
-
-            # Run biber if we have citations and using biblatex
+            # Run biber/bibtex if we have citations and using biblatex
             if (self.output_dir / "references.bib").exists():
                 # Check if we're using biblatex by looking for the .bcf file
                 bcf_file = tex_file.with_suffix(".bcf")
