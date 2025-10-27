@@ -441,10 +441,10 @@ FUNCTION {format.eprint}
   if$
 }
 FUNCTION {format.url}
-{ url empty$
-    { "" }
-    { "\urlprefix\url{" url * "}" * }
-  if$
+{
+  % Always return empty string to suppress URL display
+  % URLs are still used by hyperref for author name hyperlinking
+  ""
 }
 
 STRINGS  { bibinfo}

@@ -19,6 +19,7 @@ from markdown_it import MarkdownIt
 from tqdm import tqdm
 
 # Local imports
+from src.converters.md_to_latex.bbl_transformer import BblTransformer
 from src.converters.md_to_latex.citation_manager import CitationManager
 from src.converters.md_to_latex.citation_matcher import CitationMatcher
 from src.converters.md_to_latex.concept_boxes import (
@@ -1933,16 +1934,39 @@ class MarkdownToLatexConverter:
                         if bibtex_result.stderr:
                             logger.warning(bibtex_result.stderr)
 
-                    # Check if .bbl file was created and is valid
-                    bbl_file = tex_file.with_suffix(".bbl")
-                    if not bbl_file.exists() or bbl_file.stat().st_size == 0:
-                        logger.warning(
-                            "Bibliography processing failed - continuing without bibliography"
-                        )
-                        # Don't try to run pdflatex again with broken bibliography
-                        # Check if PDF was already created in initial passes
-                        pdf_path = self.output_dir / pdf_name
-                        return pdf_path if pdf_path.exists() else None
+                # Check if .bbl file was created and is valid
+                bbl_file = tex_file.with_suffix(".bbl")
+                if not bbl_file.exists() or bbl_file.stat().st_size == 0:
+                    logger.warning(
+                        "Bibliography processing failed - continuing without bibliography"
+                    )
+                    # Don't try to run pdflatex again with broken bibliography
+                    # Check if PDF was already created in initial passes
+                    pdf_path = self.output_dir / pdf_name
+                    return pdf_path if pdf_path.exists() else None
+
+                # Transform .bbl to arXiv format with hyperlinked author names
+                try:
+                    bib_file = self.output_dir / "references.bib"
+
+                    if bib_file.exists() and bbl_file.exists():
+                        if verbose:
+                            logger.info(
+                                "Transforming .bbl to arXiv format with hyperlinked authors..."
+                            )
+
+                        transformer = BblTransformer(bib_file, bbl_file)
+                        transformed_bbl = transformer.transform()
+
+                        # Write transformed .bbl back
+                        with open(bbl_file, "w") as f:
+                            f.write(transformed_bbl)
+
+                        if verbose:
+                            logger.info("BBL transformation complete")
+                except Exception as e:
+                    logger.warning(f"BBL transformation failed: {e}")
+                    # Continue with untransformed .bbl
 
                 # Run pdflatex twice more to incorporate bibliography
                 for i in range(2):
