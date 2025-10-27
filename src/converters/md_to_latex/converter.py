@@ -743,6 +743,15 @@ class MarkdownToLatexConverter:
             # Save output in an 'output' subdirectory within the input file's directory
             self.output_dir = markdown_file.parent / "output"
 
+        # Clean output directory to avoid stale artifacts BEFORE ensuring it exists
+        if self.output_dir and self.output_dir.exists():
+            for item in self.output_dir.iterdir():
+                if item.is_file():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+            logger.info(f"Cleaned output directory: {self.output_dir}")
+
         # Ensure output directory exists
         ensure_directory(self.output_dir)
 

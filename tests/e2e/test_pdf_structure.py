@@ -29,7 +29,7 @@ class TestPDFStructure:
     """PDF structural validation tests."""
 
     def _convert_markdown_to_pdf(
-        self, markdown_content: str, output_dir: Path
+        self, markdown_content: str, temp_dir: Path
     ) -> Path:
         """Helper to convert markdown to PDF.
 
@@ -41,10 +41,11 @@ class TestPDFStructure:
             Path to generated PDF
         """
         # Write markdown to temp file
-        md_file = output_dir / "test.md"
+        md_file = temp_dir / "test.md"
         md_file.write_text(markdown_content, encoding="utf-8")
 
         # Convert
+        output_dir = temp_dir / "output"
         converter = MarkdownToLatexConverter(output_dir=output_dir)
         converter.convert(markdown_file=md_file, verbose=False)
 
@@ -63,10 +64,8 @@ Citation with arXiv: [Jones (2021)](https://arxiv.org/abs/2101.00001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Extract all hyperlinks
             links = extract_links(pdf_file)
@@ -103,10 +102,8 @@ Bibliography section here.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Get font information
             fonts = get_font_info(pdf_file)
@@ -139,10 +136,8 @@ Citation: [Author (2020)](https://doi.org/10.1000/test.001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Get metadata
             metadata = get_metadata(pdf_file)
@@ -204,10 +199,8 @@ Bibliography generated automatically.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Check page count (may be 1 or more pages depending on template)
             page_count = get_page_count(pdf_file)
@@ -234,12 +227,21 @@ class TestHyperlinkStyling:
     """Test hyperlink appearance and styling in PDFs."""
 
     def _convert_markdown_to_pdf(
-        self, markdown_content: str, output_dir: Path
+        self, markdown_content: str, temp_dir: Path
     ) -> Path:
-        """Helper to convert markdown to PDF."""
-        md_file = output_dir / "test.md"
+        """Helper to convert markdown to PDF.
+
+        Args:
+            markdown_content: Markdown text with citations
+            temp_dir: Temporary directory for test files
+
+        Returns:
+            Path to generated PDF
+        """
+        md_file = temp_dir / "test.md"
         md_file.write_text(markdown_content, encoding="utf-8")
 
+        output_dir = temp_dir / "output"
         converter = MarkdownToLatexConverter(output_dir=output_dir)
         converter.convert(markdown_file=md_file, verbose=False)
 
@@ -256,10 +258,8 @@ Another citation: [Another Work (2021)](https://arxiv.org/abs/2101.00001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Extract links
             links = extract_links(pdf_file)
@@ -291,10 +291,8 @@ Citation: [Smith (2020)](https://doi.org/10.1000/test.001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Extract links
             links = extract_links(pdf_file)

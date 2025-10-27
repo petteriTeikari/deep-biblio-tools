@@ -29,7 +29,7 @@ class TestLaTeXCompilation:
     """LaTeX compilation validation tests."""
 
     def _convert_markdown(
-        self, markdown_content: str, output_dir: Path
+        self, markdown_content: str, temp_dir: Path
     ) -> tuple[Path, Path, Path]:
         """Helper to convert markdown and return file paths.
 
@@ -41,10 +41,11 @@ class TestLaTeXCompilation:
             Tuple of (tex_file, pdf_file, log_file) paths
         """
         # Write markdown to temp file
-        md_file = output_dir / "test.md"
+        md_file = temp_dir / "test.md"
         md_file.write_text(markdown_content, encoding="utf-8")
 
         # Convert
+        output_dir = temp_dir / "output"
         converter = MarkdownToLatexConverter(output_dir=output_dir)
         converter.convert(markdown_file=md_file, verbose=False)
 
@@ -69,9 +70,9 @@ Bibliography generated automatically.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
             tex_file, pdf_file, log_file = self._convert_markdown(
-                markdown_content, output_dir
+                markdown_content, temp_dir
             )
 
             # Check LaTeX log for critical errors
@@ -97,13 +98,14 @@ Bibliography generated automatically.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
             tex_file, pdf_file, log_file = self._convert_markdown(
-                markdown_content, output_dir
+                markdown_content, temp_dir
             )
 
             # Check for .bbl file (BibTeX output)
             # .bbl file is named after the .tex file (test.bbl in this case)
+            output_dir = tex_file.parent
             bbl_file = output_dir / "test.bbl"
 
             # This will raise AssertionError if .bbl missing or invalid
@@ -118,9 +120,9 @@ Citation: [Test (2020)](https://doi.org/10.1000/test.001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
             tex_file, pdf_file, log_file = self._convert_markdown(
-                markdown_content, output_dir
+                markdown_content, temp_dir
             )
 
             # Check for required packages
@@ -145,9 +147,9 @@ Citation: [Test (2020)](https://doi.org/10.1000/test.001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
             tex_file, pdf_file, log_file = self._convert_markdown(
-                markdown_content, output_dir
+                markdown_content, temp_dir
             )
 
             # Check bibliography style is spbasic_pt (Springer basic)
@@ -174,9 +176,9 @@ Bibliography section.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
             tex_file, pdf_file, log_file = self._convert_markdown(
-                markdown_content, output_dir
+                markdown_content, temp_dir
             )
 
             # Extract warnings from log
@@ -215,9 +217,9 @@ Citation: [Einstein (1905)](https://doi.org/10.1000/test.001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
             tex_file, pdf_file, log_file = self._convert_markdown(
-                markdown_content, output_dir
+                markdown_content, temp_dir
             )
 
             # Verify PDF generated (math didn't break compilation)
@@ -254,9 +256,10 @@ class TestRealWorldConversion:
         the real conversion has issues.
         """
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
 
             # Convert the REAL MCP review paper
+            output_dir = temp_dir / "output"
             converter = MarkdownToLatexConverter(output_dir=output_dir)
             converter.convert(markdown_file=self.MCP_PAPER_PATH, verbose=False)
 
@@ -295,9 +298,10 @@ class TestRealWorldConversion:
         from tests.e2e.helpers_pdf import extract_text_from_pdf
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
+            temp_dir = Path(tmpdir)
 
             # Convert the REAL MCP review paper
+            output_dir = temp_dir / "output"
             converter = MarkdownToLatexConverter(output_dir=output_dir)
             converter.convert(markdown_file=self.MCP_PAPER_PATH, verbose=False)
 

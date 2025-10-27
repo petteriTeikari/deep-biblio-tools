@@ -25,20 +25,23 @@ class TestPDFContentValidation:
     """Critical PDF content validation tests."""
 
     def _convert_markdown_to_pdf(
-        self, markdown_content: str, output_dir: Path
+        self, markdown_content: str, temp_dir: Path
     ) -> Path:
         """Helper to convert markdown to PDF.
 
         Args:
             markdown_content: Markdown text with citations
-            output_dir: Where to write output files
+            temp_dir: Temporary directory for test files
 
         Returns:
             Path to generated PDF
         """
-        # Write markdown to temp file
-        md_file = output_dir / "test.md"
+        # Write markdown to temp file (in temp_dir, NOT in output)
+        md_file = temp_dir / "test.md"
         md_file.write_text(markdown_content, encoding="utf-8")
+
+        # Output goes to subdirectory
+        output_dir = temp_dir / "output"
 
         # Convert
         converter = MarkdownToLatexConverter(output_dir=output_dir)
@@ -65,10 +68,8 @@ Bibliography generated automatically.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Verify PDF exists
             assert pdf_file.exists(), "PDF was not generated"
@@ -96,10 +97,8 @@ Here is a citation: [Mildenhall et al. (2022)](https://doi.org/10.1145/3503250)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             pdf_text = extract_text_from_pdf(pdf_file)
             normalized_text = normalize_pdf_text(pdf_text)
@@ -125,10 +124,8 @@ More text here.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             pdf_text = extract_text_from_pdf(pdf_file)
             pdf_text_lower = pdf_text.lower()
@@ -150,10 +147,8 @@ Citation 3: [Brown (2022)](https://doi.org/10.1000/test.003)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             pdf_text = extract_text_from_pdf(pdf_file)
             citation_count = count_citations_in_text(pdf_text)
@@ -172,10 +167,8 @@ Some content here.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             # Check page count
             page_count = get_page_count(pdf_file)
@@ -198,10 +191,8 @@ Third mention: [Smith (2020)](https://doi.org/10.1000/test.001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             pdf_text = extract_text_from_pdf(pdf_file)
 
@@ -221,12 +212,13 @@ class TestEdgeCases:
     """Test edge cases and error handling."""
 
     def _convert_markdown_to_pdf(
-        self, markdown_content: str, output_dir: Path
+        self, markdown_content: str, temp_dir: Path
     ) -> Path:
         """Helper to convert markdown to PDF."""
-        md_file = output_dir / "test.md"
+        md_file = temp_dir / "test.md"
         md_file.write_text(markdown_content, encoding="utf-8")
 
+        output_dir = temp_dir / "output"
         converter = MarkdownToLatexConverter(output_dir=output_dir)
         converter.convert(markdown_file=md_file, verbose=False)
 
@@ -243,10 +235,8 @@ Just plain text content.
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             assert (
                 pdf_file.exists()
@@ -270,10 +260,8 @@ Citation: [Test (2020)](https://doi.org/10.1000/test.001)
 """
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_dir = Path(tmpdir)
-            pdf_file = self._convert_markdown_to_pdf(
-                markdown_content, output_dir
-            )
+            temp_dir = Path(tmpdir)
+            pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
             assert pdf_file.exists(), "PDF not generated with special chars"
 
