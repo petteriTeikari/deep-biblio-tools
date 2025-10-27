@@ -4,6 +4,24 @@
 
 Professional toolkit for academic paper processing, bibliographic validation, and automated literature review generation. This project provides enterprise-grade tools for processing academic papers, validating citations, and generating comprehensive literature reviews with proper academic formatting.
 
+## 🎉 Recent Updates (2025-10-27)
+
+### Quality Improvements
+- ✅ **Clean Logging**: Removed debug code from production, proper log levels throughout
+- ✅ **MCP Server**: Fully implemented citation quality tools (Zotero matching, BibTeX key validation)
+- ✅ **Zero Linting Errors**: All code passes ruff checks with consistent formatting
+- ✅ **Regression Tests**: 16/16 tests passing for 4 papers with zero missing citations
+- ✅ **Golden Dataset**: Deterministic test fixtures for reliable testing
+
+### New Features
+- 🔍 **Citation Audit**: Pre-conversion quality checking with `--audit` flag
+- 🔗 **Better BibTeX Integration**: Verified working correctly from Zotero exports
+- 📊 **MCP Tools**: Real-time citation quality checking via Model Context Protocol
+- 🎯 **AST-Based Parsing**: Robust Markdown/LaTeX parsing without regex
+- 📦 **Golden Test Suite**: Frozen bibliography snapshots for deterministic testing
+
+See [DEEP-CODE-REVIEW-AND-CONTINUATION-PLAN.md](DEEP-CODE-REVIEW-AND-CONTINUATION-PLAN.md) for complete details.
+
 ## 🚀 Key Features
 
 ```mermaid
@@ -26,6 +44,7 @@ graph LR
 - **📦 Batch Processing**: Handle individual files or entire directories
 - **📝 Article Summarizer**: Create 25% comprehensive summaries preserving academic citations
 - **📖 Literature Review Generator**: Automatically generate themed literature reviews from paper collections
+- **🎯 MCP Integration**: Real-time citation quality checking via Model Context Protocol
 
 ## 📋 Table of Contents
 

@@ -1214,13 +1214,13 @@ class CitationManager:
                 lookup[normalized] = key
 
         if normalization_log:
-            logger.error(
-                f"[H2-TEST] Found {len(normalization_log)} URLs with different normalizations"
+            logger.debug(
+                f"Found {len(normalization_log)} URLs with different normalizations"
             )
             for item in normalization_log[:3]:
-                logger.error(f"[H2-TEST] {item}")
+                logger.debug(f"{item}")
         else:
-            logger.error("[H2-TEST] All URLs normalize consistently")
+            logger.debug("All URLs normalize consistently")
 
         logger.info(f"Built normalized URL lookup with {len(lookup)} entries")
         return lookup
@@ -1235,19 +1235,17 @@ class CitationManager:
         Returns:
             Tuple of (modified_content, replacement_count)
         """
-        # H1 TEST: Check if self.citations is populated
-        logger.error(
-            f"[H1-TEST] self.citations dict has {len(self.citations)} entries"
-        )
+        # Check if self.citations is populated
+        logger.debug(f"self.citations dict has {len(self.citations)} entries")
         if len(self.citations) == 0:
-            logger.error(
-                "[H1-TEST] CRITICAL: self.citations is EMPTY - no replacements possible"
+            logger.warning(
+                "CRITICAL: self.citations is EMPTY - no replacements possible"
             )
         else:
             sample_keys = list(self.citations.keys())[:5]
-            logger.error(f"[H1-TEST] Sample keys: {sample_keys}")
+            logger.debug(f"Sample keys: {sample_keys}")
             sample_urls = [self.citations[k].url for k in sample_keys]
-            logger.error(f"[H1-TEST] Sample URLs: {sample_urls}")
+            logger.debug(f"Sample URLs: {sample_urls}")
 
         # Build normalized URL lookup
         url_to_key = self._build_normalized_url_lookup()
@@ -1269,7 +1267,7 @@ class CitationManager:
             f"Starting AST-based citation replacement for {len(tokens)} tokens"
         )
 
-        # H4 DEBUG: Log token structure to understand nesting
+        # Log token structure for debugging citation replacement
         token_types_found = {}
         for token in tokens:
             token_types_found[token.type] = (
@@ -1281,7 +1279,7 @@ class CitationManager:
                     token_types_found[child_key] = (
                         token_types_found.get(child_key, 0) + 1
                     )
-        logger.error(f"[H4-DEBUG] Token structure: {token_types_found}")
+        logger.debug(f"Token structure: {token_types_found}")
 
         # Process tokens to find and replace links
         # Links are nested inside inline tokens, not at top level
@@ -1368,20 +1366,18 @@ class CitationManager:
                     else:
                         i += 1
 
-        # H4 TEST: Summary
-        logger.error(f"[H4-DEBUG] Links processed: {links_processed}")
-        logger.error(f"[H4-TEST] Lookup attempts: {len(lookup_attempts)}")
-        logger.error(f"[H4-TEST] Successful: {replacements}")
-        logger.error(f"[H4-TEST] Failed: {len(failed_urls)}")
+        # Log citation replacement summary
+        logger.debug(f"Links processed: {links_processed}")
+        logger.debug(f"Lookup attempts: {len(lookup_attempts)}")
+        logger.info(f"Successfully replaced {replacements} citations")
         if failed_urls:
-            logger.error("[H4-TEST] First 3 failed URLs:")
+            logger.warning(f"Failed to resolve {len(failed_urls)} URLs")
+            logger.debug("First 3 failed URLs:")
             for url in failed_urls[:3]:
-                logger.error(f"[H4-TEST]   - {url}")
+                logger.debug(f"  - {url}")
 
-        # H3 TEST: Render tokens back to markdown
-        logger.error(
-            "[H3-TEST] Starting token rendering with markdown-it renderer"
-        )
+        # Render tokens back to markdown
+        logger.debug("Starting token rendering with markdown-it renderer")
 
         # Use the markdown-it renderer to convert tokens back to markdown text
         # This preserves all markdown structure (headers, paragraphs, lists, etc.)
@@ -1409,15 +1405,13 @@ class CitationManager:
         # Unescape HTML entities like &quot; &amp; etc.
         output = html.unescape(output)
 
-        # H3 TEST: Check rendering results
-        logger.error(
-            f"[H3-TEST] Rendered output: {len(output)} chars (original: {len(content)})"
+        # Check rendering results
+        logger.debug(
+            f"Rendered output: {len(output)} chars (original: {len(content)})"
         )
         citations_in_output = output.count("\\citep{")
-        logger.error(
-            f"[H3-TEST] Citations in rendered output: {citations_in_output}"
-        )
-        logger.error(f"[H3-TEST] Expected citations: {replacements}")
+        logger.debug(f"Citations in rendered output: {citations_in_output}")
+        logger.debug(f"Expected citations: {replacements}")
 
         logger.info(
             f"AST replacement: {replacements} citations replaced, {len(failed_urls)} failed"
