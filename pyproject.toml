@@ -36,12 +36,15 @@ dependencies = [
     "pylatexenc>=2.10",
     "pyyaml>=6.0.2",
     "pyzotero>=1.7.3",
+    "mcp>=1.0.0",
+    "httpx>=0.27.0",
 ]
 
 [project.scripts]
 deep-biblio = "src.cli:cli"
 deep-biblio-md2latex = "src.cli_md_to_latex:convert_markdown_to_latex"
 deep-biblio-to-lyx = "src.cli_to_lyx:cli"
+mcp-citation-quality = "mcp_servers.citation_quality.server:main"
 
 [project.optional-dependencies]
 dev = [
