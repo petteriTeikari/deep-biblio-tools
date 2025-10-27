@@ -1128,7 +1128,25 @@ class MarkdownToLatexConverter:
 
             if verbose:
                 pbar.set_description(f"Processing {len(citations)} citations")
+
+            # Write debug artifact: markdown after extraction, before replacement
+            debug_dir = self.output_dir / "debug"
+            debug_dir.mkdir(exist_ok=True)
+            debug_before_replacement = (
+                debug_dir / "1-markdown-before-replacement.md"
+            )
+            debug_before_replacement.write_text(content, encoding="utf-8")
+            logger.debug(f"Debug artifact written: {debug_before_replacement}")
+
             content = self.citation_manager.replace_citations_in_text(content)
+
+            # Write debug artifact: markdown after citation replacement
+            debug_after_replacement = (
+                debug_dir / "2-markdown-after-replacement.md"
+            )
+            debug_after_replacement.write_text(content, encoding="utf-8")
+            logger.debug(f"Debug artifact written: {debug_after_replacement}")
+
             if verbose:
                 pbar.update(1)
 
@@ -1175,6 +1193,11 @@ class MarkdownToLatexConverter:
             except (RuntimeError, OSError, ValueError) as e:
                 logger.error(f"Pandoc conversion failed: {e}")
                 raise
+
+            # Write debug artifact: LaTeX from Pandoc (before post-processing)
+            debug_from_pandoc = debug_dir / "3-latex-from-pandoc.tex"
+            debug_from_pandoc.write_text(latex_content, encoding="utf-8")
+            logger.debug(f"Debug artifact written: {debug_from_pandoc}")
 
             # Fix escaped dollar signs in math equations
             # Pandoc sometimes escapes $$ as \$\$ which breaks LaTeX math
@@ -1228,6 +1251,12 @@ class MarkdownToLatexConverter:
                     result.append(latex_content[i])
                     i += 1
             latex_content = "".join(result)
+
+            # Write debug artifact: LaTeX after all post-processing
+            debug_after_processing = debug_dir / "4-latex-after-processing.tex"
+            debug_after_processing.write_text(latex_content, encoding="utf-8")
+            logger.debug(f"Debug artifact written: {debug_after_processing}")
+            logger.info(f"All debug artifacts written to: {debug_dir}")
 
             if verbose:
                 pbar.update(1)
