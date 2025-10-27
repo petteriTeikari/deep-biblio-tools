@@ -1173,6 +1173,10 @@ class CitationManager:
         # Create a list of replacements to make
         replacements = []
 
+        logger.info(
+            f"Starting citation replacement for {len(self.citations)} citations"
+        )
+
         # For each citation we've stored, find it in the content and prepare replacement
         for key, citation in self.citations.items():
             if not citation.url.startswith("#orphan-"):
@@ -1181,12 +1185,20 @@ class CitationManager:
                 # Since we have the exact URL, we can be precise
                 search_pattern = f"]({citation.url})"
 
+                logger.debug(f"Searching for citation {key}: {search_pattern}")
+
                 # Find all occurrences of this URL pattern
                 pos = 0
+                found_count = 0
                 while True:
                     pos = content.find(search_pattern, pos)
                     if pos == -1:
                         break
+
+                    found_count += 1
+                    logger.debug(
+                        f"Found occurrence {found_count} at position {pos}"
+                    )
 
                     # Find the opening bracket by going backwards
                     bracket_pos = pos - 1
@@ -1197,12 +1209,20 @@ class CitationManager:
                         elif content[bracket_pos] == "[":
                             if depth == 0:
                                 # Found the matching opening bracket
+                                link_text = content[bracket_pos + 1 : pos]
                                 replacements.append(
                                     {
                                         "start": bracket_pos,
                                         "end": pos + len(search_pattern),
                                         "replacement": f"\\citep{{{citation.key}}}",
+                                        "original": content[
+                                            bracket_pos : pos
+                                            + len(search_pattern)
+                                        ],
                                     }
+                                )
+                                logger.debug(
+                                    f"Will replace: [{link_text}]({citation.url}) -> \\citep{{{citation.key}}}"
                                 )
                                 break
                             else:
@@ -1210,6 +1230,21 @@ class CitationManager:
                         bracket_pos -= 1
 
                     pos += len(search_pattern)
+
+                if found_count == 0:
+                    logger.warning(
+                        f"Citation NOT FOUND in content: {key} -> {citation.url}"
+                    )
+                    logger.warning(f"  Citation key: {citation.key}")
+                    logger.warning(f"  Authors: {citation.authors}")
+                    logger.warning(f"  Year: {citation.year}")
+                    # Show a sample of what we're searching in
+                    if len(content) > 200:
+                        logger.debug(f"  Content sample: {content[:200]}...")
+                else:
+                    logger.info(
+                        f"Found {found_count} occurrence(s) of citation {key}"
+                    )
             else:
                 # Orphan citation - these are trickier
                 # For now, log them
@@ -1217,16 +1252,25 @@ class CitationManager:
                     f"Orphan citation to be handled manually: {citation.authors} ({citation.year})"
                 )
 
+        logger.info(f"Prepared {len(replacements)} replacements")
+
         # Sort replacements by position (descending) to avoid position shifts
         replacements.sort(key=lambda x: x["start"], reverse=True)
 
         # Apply replacements
-        for repl in replacements:
+        for i, repl in enumerate(replacements):
+            logger.debug(
+                f"Applying replacement {i + 1}/{len(replacements)}: {repl['original']} -> {repl['replacement']}"
+            )
             content = (
                 content[: repl["start"]]
                 + repl["replacement"]
                 + content[repl["end"] :]
             )
+
+        logger.info(
+            f"Citation replacement complete: {len(replacements)} replacements applied"
+        )
 
         return content
 

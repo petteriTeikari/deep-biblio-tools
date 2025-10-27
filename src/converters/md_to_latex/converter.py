@@ -1199,6 +1199,13 @@ class MarkdownToLatexConverter:
                     i += 1
             latex_content = "".join(result)
 
+            # Fix unescaped ampersands in any remaining markdown hyperlinks
+            # Some citations may not have been replaced (e.g., wrong DOIs),
+            # and Pandoc may leave them as markdown syntax
+            latex_content = self._escape_ampersands_in_markdown_links(
+                latex_content
+            )
+
             # Fix unescaped ampersands that break LaTeX
             # Use character-by-character parsing to escape & as \&
             # Skip if already escaped
@@ -1494,6 +1501,60 @@ class MarkdownToLatexConverter:
                 pbar.close()
             logger.error(f"Conversion failed: {e}")
             raise
+
+    def _escape_ampersands_in_markdown_links(self, content: str) -> str:
+        """Escape ampersands inside markdown hyperlinks.
+
+        Some citations may not be replaced (e.g., wrong DOIs in source),
+        so we need to escape & characters in remaining markdown links
+        to prevent LaTeX compilation errors.
+
+        Uses character-by-character state machine to parse markdown links.
+        """
+        result = []
+        i = 0
+        while i < len(content):
+            # Check if we're at the start of a markdown link [text](url)
+            if content[i] == "[":
+                # Find the closing ] and check if it's followed by (
+                link_text_start = i
+                j = i + 1
+                bracket_depth = 1
+
+                # Find matching ]
+                while j < len(content) and bracket_depth > 0:
+                    if content[j] == "[":
+                        bracket_depth += 1
+                    elif content[j] == "]":
+                        bracket_depth -= 1
+                    j += 1
+
+                # Check if this is a hyperlink (] followed by ()
+                if j < len(content) and content[j] == "(":
+                    # Find the closing )
+                    j += 1
+                    paren_depth = 1
+                    while j < len(content) and paren_depth > 0:
+                        if content[j] == "(":
+                            paren_depth += 1
+                        elif content[j] == ")":
+                            paren_depth -= 1
+                        j += 1
+
+                    # We found a complete markdown link from i to j
+                    # Extract the text part and escape ampersands
+                    link = content[link_text_start:j]
+                    # Escape & in the link text (between [ and ])
+                    escaped_link = link.replace(" & ", r" \& ")
+                    result.append(escaped_link)
+                    i = j
+                    continue
+
+            # Not a markdown link, keep as-is
+            result.append(content[i])
+            i += 1
+
+        return "".join(result)
 
     def _escape_currency_dollars(self, content: str) -> str:
         """Escape dollar signs that represent currency, not math mode.

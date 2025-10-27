@@ -101,6 +101,7 @@ class UnifiedCitationExtractor:
 
         # Extract all links using the parser
         links = self.parser.extract_links(content)
+        logger.info(f"Extracted {len(links)} total links from markdown")
 
         for link_info in links:
             url = link_info["href"]
@@ -115,7 +116,10 @@ class UnifiedCitationExtractor:
 
             # Normalize arXiv URLs to remove version specifiers (v1, v2, etc.)
             # This prevents duplicate citations for the same paper
+            original_url = url
             url = normalize_arxiv_url(url)
+            if url != original_url:
+                logger.debug(f"Normalized arXiv URL: {original_url} -> {url}")
 
             # Check if this link is to an academic resource
             is_academic = self._is_academic_url(url)
@@ -130,9 +134,18 @@ class UnifiedCitationExtractor:
             citations.append(citation)
 
             if is_academic:
-                logger.debug(
-                    f"Found academic citation: {citation.text} -> {citation.url}"
+                logger.info(
+                    f"Found academic citation at line {citation.line}: [{citation.text}]({citation.url})"
                 )
+            else:
+                logger.debug(
+                    f"Found non-academic link at line {citation.line}: [{citation.text}]({citation.url})"
+                )
+
+        logger.info(
+            f"Extraction complete: {len([c for c in citations if c.is_academic])} academic citations, "
+            f"{len([c for c in citations if not c.is_academic])} non-academic links"
+        )
 
         return citations
 
@@ -323,6 +336,10 @@ class UnifiedCitationExtractor:
         citations = self.extract_citations(content)
         result = []
 
+        logger.info(
+            f"Processing {len(citations)} extracted citations for year/author parsing"
+        )
+
         for citation in citations:
             # ROBUST APPROACH: Look for ANY 4-digit year (1900-2100) in the text
             # If found, it's a citation. If not, it's a regular hyperlink.
@@ -355,10 +372,14 @@ class UnifiedCitationExtractor:
             # CRITICAL: Skip links without a year
             # This prevents regular hyperlinks like [Google Docs](URL) from being treated as citations
             if not year_found:
-                logger.debug(
+                logger.info(
                     f"Skipping non-citation hyperlink (no year found): [{citation.text}]({citation.url})"
                 )
                 continue
+
+            logger.info(
+                f"Parsed citation: authors='{authors}', year={year}, url={citation.url}"
+            )
 
             result.append(
                 {
@@ -370,5 +391,9 @@ class UnifiedCitationExtractor:
                     "is_orphan": not citation.is_academic,  # Interpret non-academic as orphan
                 }
             )
+
+        logger.info(
+            f"Filtered to {len(result)} citations (skipped {len(citations) - len(result)} non-citations)"
+        )
 
         return result
