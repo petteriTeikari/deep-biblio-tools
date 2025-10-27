@@ -84,13 +84,25 @@ def get_font_info(pdf_path: Path) -> dict[int, list[dict]]:
 
             fonts_obj = resources["/Font"]
             for name, font_ref in fonts_obj.items():
-                fdict = font_ref.get_object()
+                # In newer pikepdf, font_ref is already the object
+                # Try .get_object() for backwards compatibility
+                try:
+                    fdict = font_ref.get_object()
+                except AttributeError:
+                    fdict = font_ref
 
                 # Check if font is embedded
+                # Method 1: Check for /FontFile* entries
                 embedded = any(
                     k in fdict
                     for k in ["/FontFile", "/FontFile2", "/FontFile3"]
                 )
+
+                # Method 2: Check for + prefix in /BaseFont name (standard indicator)
+                if not embedded:
+                    basefont = str(fdict.get("/BaseFont", ""))
+                    # Format: /XXXXXX+FontName where XXXXXX is subset prefix
+                    embedded = "+" in basefont
 
                 fonts.setdefault(page_i, []).append(
                     {
