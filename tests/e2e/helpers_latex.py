@@ -94,7 +94,7 @@ def _extract_error_context(
 
             # Add line numbers for reference
             numbered = [
-                f"  {j+1}: {line}"
+                f"  {j + 1}: {line}"
                 for j, line in enumerate(context_lines_list, start=start)
             ]
             return "\n".join(numbered)
