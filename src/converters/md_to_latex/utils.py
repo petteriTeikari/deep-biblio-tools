@@ -750,32 +750,46 @@ def extract_doi_from_url(url: str) -> str | None:
     # Look for common DOI patterns without regex
     url_lower = url.lower()
 
-    # Check for doi.org pattern
+    # Determine where the DOI starts
+    doi_start = -1
     if "doi.org/" in url_lower:
-        start = url_lower.find("doi.org/") + 8
-        doi = url[start:].strip()
+        doi_start = url_lower.find("doi.org/") + 8
+    elif "dx.doi.org/" in url_lower:
+        doi_start = url_lower.find("dx.doi.org/") + 11
+    elif "/doi/" in url_lower:
+        # Generic DOI path pattern (e.g., journal.com/doi/10.1234/example)
+        doi_start = url_lower.find("/doi/") + 5
 
-        # Clean up DOI
-        # Remove query parameters
-        if "?" in doi:
-            doi = doi[: doi.find("?")]
+    if doi_start == -1:
+        return None
 
-        # Remove fragment
-        if "#" in doi:
-            doi = doi[: doi.find("#")]
+    doi = url[doi_start:].strip()
 
-        # Remove trailing punctuation
-        while doi and doi[-1] in ")]}>,;:":
-            doi = doi[:-1]
+    # Clean up DOI
+    # Remove query parameters
+    if "?" in doi:
+        doi = doi[: doi.find("?")]
 
-        # Remove "full/" prefix if present
-        if doi.startswith("full/"):
-            doi = doi[5:]
+    # Remove fragment
+    if "#" in doi:
+        doi = doi[: doi.find("#")]
 
-        # Replace escaped parentheses
-        doi = doi.replace(r"\(", "(").replace(r"\)", ")")
+    # Remove trailing punctuation
+    while doi and doi[-1] in ")]}>,;:":
+        doi = doi[:-1]
 
-        return doi
+    # Remove "full/" prefix if present
+    if doi.startswith("full/"):
+        doi = doi[5:]
+
+    # Replace escaped parentheses
+    doi = doi.replace(r"\(", "(").replace(r"\)", ")")
+
+    # Validate DOI format - must start with "10."
+    if not doi.startswith("10."):
+        return None
+
+    return doi
 
 
 def extract_isbn_from_url(url: str) -> str | None:
