@@ -1,6 +1,7 @@
 """Citation extraction and management for markdown to LaTeX conversion."""
 
 # Standard library imports
+import html
 import json
 import logging
 from datetime import datetime
@@ -1386,14 +1387,27 @@ class CitationManager:
         # This preserves all markdown structure (headers, paragraphs, lists, etc.)
         output = md.renderer.render(tokens, md.options, {})
 
-        # Strip single-line paragraph wrappers for simple text
-        # (markdown-it renders everything as HTML by default)
-        if (
-            output.startswith("<p>")
-            and output.endswith("</p>\n")
-            and output.count("<p>") == 1
-        ):
-            output = output[3:-5]  # Remove <p> and </p>\n
+        # Strip ALL HTML tags (markdown-it renders everything as HTML by default)
+        # We need markdown text, not HTML, for the rest of the pipeline
+        # Remove HTML tags character by character (no regex)
+        cleaned = []
+        i = 0
+        while i < len(output):
+            if output[i] == "<":
+                # Find closing >
+                j = i + 1
+                while j < len(output) and output[j] != ">":
+                    j += 1
+                if j < len(output):
+                    # Skip the entire tag
+                    i = j + 1
+                    continue
+            cleaned.append(output[i])
+            i += 1
+
+        output = "".join(cleaned)
+        # Unescape HTML entities like &quot; &amp; etc.
+        output = html.unescape(output)
 
         # H3 TEST: Check rendering results
         logger.error(
