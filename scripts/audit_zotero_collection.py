@@ -54,9 +54,9 @@ def audit_collection(collection_name: str = "dpp-fashion") -> dict:
     # Fetch all items
     items = zot.collection_items(collection_id)
 
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"ZOTERO COLLECTION AUDIT: {collection_name}")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
     print(f"Total items: {len(items)}\n")
 
     # Track issues
@@ -189,9 +189,9 @@ def audit_collection(collection_name: str = "dpp-fashion") -> dict:
             )
 
     # Print report
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("ISSUES FOUND")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
     if issues["missing_title"]:
         print(f"\nMISSING TITLE ({len(issues['missing_title'])} items):")
@@ -256,9 +256,9 @@ def audit_collection(collection_name: str = "dpp-fashion") -> dict:
             print()
 
     # Summary
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("SUMMARY")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
     total_issues = sum(
         len(v) if not k == "duplicates" else len(v) for k, v in issues.items()
     )
