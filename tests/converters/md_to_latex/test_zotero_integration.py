@@ -8,6 +8,14 @@ from src.converters.md_to_latex.zotero_integration import (
 )
 
 
+@pytest.fixture(autouse=True)
+def clear_zotero_env_vars(monkeypatch):
+    """Clear Zotero environment variables to prevent test pollution."""
+    monkeypatch.delenv("ZOTERO_API_KEY", raising=False)
+    monkeypatch.delenv("ZOTERO_LIBRARY_ID", raising=False)
+    monkeypatch.delenv("ZOTERO_LIBRARY_TYPE", raising=False)
+
+
 class TestZoteroClient:
     """Test ZoteroClient functionality."""
 
