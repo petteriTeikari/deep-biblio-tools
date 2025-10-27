@@ -165,8 +165,8 @@ class LatexBuilder:
                 "\\hypersetup{",
                 "    colorlinks=true,",
                 "    linkcolor=NavyBlue,",
-                "    citecolor=BrickRed,",
-                "    urlcolor=BrickRed",
+                "    citecolor=NavyBlue,",
+                "    urlcolor=NavyBlue",
                 "}",
                 "",
             ]

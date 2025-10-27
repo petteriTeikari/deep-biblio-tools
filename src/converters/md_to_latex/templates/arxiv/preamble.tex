@@ -1,0 +1,53 @@
+% arXiv LaTeX Template Preamble
+% Based on: https://arxiv.org/pdf/2508.02765 (UAD Review Paper)
+% Style: Professional two-column academic paper with hyperlinked citations
+
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{balance}
+
+\geometry{top=0.75in, bottom=0.75in, left=0.75in, right=0.75in, columnsep=0.25in}
+
+
+\usepackage[authoryear,round]{natbib}
+
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=NavyBlue,
+    citecolor=NavyBlue,
+    urlcolor=NavyBlue
+}
+
+% Custom text-mode symbol commands
+\newcommand{\textinfty}{\ensuremath{\infty}}
+\newcommand{\textapprox}{\ensuremath{\approx}}
+\newcommand{\textdiv}{\ensuremath{\div}}
+\newcommand{\textneq}{\ensuremath{\neq}}
+\newcommand{\textgreaterequal}{\ensuremath{\geq}}
+\newcommand{\textlessequal}{\ensuremath{\leq}}
+\newcommand{\texttimes}{\ensuremath{\times}}
+
+% Define urlprefix for spbasic_pt bibliography style
+\newcommand{\urlprefix}{URL: }
