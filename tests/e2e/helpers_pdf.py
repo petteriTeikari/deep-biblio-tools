@@ -199,6 +199,36 @@ def extract_text_from_pdf(pdf_path: Path) -> str:
     return "\n".join(text_parts)
 
 
+# Alias for backward compatibility with tests
+extract_pdf_text = extract_text_from_pdf
+
+
+def assert_no_missing_citations(pdf_path: Path) -> None:
+    """Assert that PDF has ZERO (?) citations.
+
+    This is the CRITICAL regression test - ensures all citations are resolved.
+    Raises AssertionError if any (?) found in PDF text.
+
+    Args:
+        pdf_path: Path to PDF file
+
+    Raises:
+        AssertionError: If any (?) citations found in PDF
+
+    Example:
+        >>> assert_no_missing_citations(Path("paper.pdf"))  # Passes if no (?)
+    """
+    pdf_text = extract_text_from_pdf(pdf_path)
+
+    # Count occurrences of (?) in PDF
+    missing_count = pdf_text.count("(?)")
+
+    assert missing_count == 0, (
+        f"Found {missing_count} missing citation(s) '(?)' in PDF: {pdf_path.name}\n"
+        f"This indicates citations that could not be resolved to BibTeX entries."
+    )
+
+
 # ---------- Structural Validation ----------
 
 
