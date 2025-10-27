@@ -1,6 +1,7 @@
 """Unified CLI for Deep Biblio Tools."""
 
 # Standard library imports
+import asyncio
 import os
 import sys
 from pathlib import Path
@@ -8,6 +9,7 @@ from pathlib import Path
 # Third-party imports
 import click
 from dotenv import load_dotenv
+from mcp_servers.citation_quality.tools.audit import audit_markdown_citations
 
 # Local imports
 from .bibliography import (
@@ -366,8 +368,88 @@ def convert():
     type=str,
     help="Zotero collection name (overrides ZOTERO_COLLECTION env var)",
 )
-def md2latex(input_file: Path, output: Path | None, collection: str | None):
+@click.option(
+    "--audit",
+    is_flag=True,
+    help="Run citation quality audit before conversion",
+)
+def md2latex(
+    input_file: Path, output: Path | None, collection: str | None, audit: bool
+):
     """Convert Markdown to LaTeX using Zotero Web API."""
+    # Collection: CLI option > env var > default
+    zotero_collection = (
+        collection or os.getenv("ZOTERO_COLLECTION") or "dpp-fashion"
+    )
+
+    # Run audit if requested
+    if audit:
+        click.echo(f"Running citation quality audit on: {input_file}")
+        click.echo("=" * 60)
+
+        try:
+            # Run audit
+            audit_result = asyncio.run(
+                audit_markdown_citations(
+                    file_path=str(input_file),
+                    zotero_collection=zotero_collection,
+                    check_link_health_enabled=False,  # Skip link health for speed
+                    validate_metadata=True,
+                )
+            )
+
+            # Display summary
+            summary = audit_result.get("summary", {})
+            click.echo("\nAudit Results:")
+            click.echo(f"  Total citations: {summary.get('total_links', 0)}")
+            click.echo(
+                f"  Academic papers: {summary.get('academic_citations', 0)}"
+            )
+            click.echo(
+                f"  Grey literature: {summary.get('grey_literature', 0)}"
+            )
+            click.echo(f"  Problematic: {summary.get('problematic', 0)}")
+            click.echo(f"  Questionable: {summary.get('questionable', 0)}")
+
+            # Display issues
+            issues = audit_result.get("issues", [])
+            if issues:
+                click.echo(f"\nFound {len(issues)} issue(s):")
+                for issue in issues[:5]:  # Show first 5
+                    severity = issue.get("severity", "unknown")
+                    issue_type = issue.get("type", "unknown")
+                    line = issue.get("line", "?")
+                    message = issue.get("issue", "")
+
+                    if severity == "error":
+                        prefix = "[ERROR]"
+                    else:
+                        prefix = "[WARN]"
+
+                    click.echo(f"  {prefix} Line {line}: {issue_type}")
+                    click.echo(f"    {message}")
+
+                if len(issues) > 5:
+                    click.echo(f"  ... and {len(issues) - 5} more issue(s)")
+
+                # Ask for confirmation
+                click.echo("\n" + "=" * 60)
+                if not click.confirm(
+                    "Continue with conversion despite issues?"
+                ):
+                    click.echo("Conversion cancelled.")
+                    sys.exit(0)
+            else:
+                click.echo("\nAll citations look good!")
+
+            click.echo("=" * 60)
+
+        except Exception as e:
+            click.echo(f"Warning: Audit failed: {e}", err=True)
+            if not click.confirm("Continue with conversion anyway?"):
+                click.echo("Conversion cancelled.")
+                sys.exit(1)
+
     # Determine output directory and name
     # If user provides explicit output path, use its directory
     # Otherwise, let converter use default (input_file.parent / "output")
@@ -382,11 +464,6 @@ def md2latex(input_file: Path, output: Path | None, collection: str | None):
         # Get Zotero credentials from environment
         zotero_api_key = os.getenv("ZOTERO_API_KEY")
         zotero_library_id = os.getenv("ZOTERO_LIBRARY_ID")
-
-        # Collection: CLI option > env var > default
-        zotero_collection = (
-            collection or os.getenv("ZOTERO_COLLECTION") or "dpp-fashion"
-        )
 
         converter = MarkdownToLatexConverter(
             output_dir=output_dir,
