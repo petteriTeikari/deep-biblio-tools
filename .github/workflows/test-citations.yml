@@ -26,5 +26,11 @@ jobs:
       - name: Run citation pipeline regression tests
         run: uv run python -m pytest tests/test_citation_pipeline.py -v
 
+      - name: Run BBL transformer tests
+        run: uv run python -m pytest tests/test_bbl_transformer.py -v
+
+      - name: Run MD-to-LaTeX integration tests
+        run: uv run python -m pytest tests/test_md_to_latex_integration.py -v
+
       - name: Run all tests
         run: uv run python -m pytest tests/ -v
