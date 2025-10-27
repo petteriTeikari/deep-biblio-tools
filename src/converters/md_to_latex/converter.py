@@ -1953,7 +1953,9 @@ class MarkdownToLatexConverter:
                             logger.warning(bibtex_result.stderr)
 
                 # Check if .bbl file was created and is valid
-                bbl_file = tex_file.with_suffix(".bbl")
+                # Use relative path since we're in output_dir
+                bbl_file = Path(tex_file.stem + ".bbl")
+
                 if not bbl_file.exists() or bbl_file.stat().st_size == 0:
                     logger.warning(
                         "Bibliography processing failed - continuing without bibliography"
@@ -1965,7 +1967,8 @@ class MarkdownToLatexConverter:
 
                 # Transform .bbl to arXiv format with hyperlinked author names
                 try:
-                    bib_file = self.output_dir / "references.bib"
+                    # Use relative path since we're in output_dir
+                    bib_file = Path("references.bib")
 
                     if bib_file.exists() and bbl_file.exists():
                         if verbose:
