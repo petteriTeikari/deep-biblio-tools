@@ -24,6 +24,7 @@ from src.converters.md_to_latex.utils import (
     convert_unicode_to_latex,
     extract_doi_from_url,
     generate_citation_key,
+    normalize_arxiv_url,
     normalize_url,
     sanitize_latex,
 )
@@ -1178,14 +1179,47 @@ class CitationManager:
             Dictionary mapping normalized URLs to citation keys
         """
         lookup = {}
+
+        # H2 TEST: Track normalization inconsistencies
+        normalization_log = []
+
         for key, citation in self.citations.items():
             if not citation.url.startswith("#orphan-"):
-                normalized = normalize_url(citation.url)
+                original_url = citation.url
+
+                # Test BOTH normalization paths
+                arxiv_normalized = normalize_arxiv_url(original_url)
+                general_normalized = normalize_url(original_url)
+
+                # Log if they differ
+                if arxiv_normalized != general_normalized:
+                    normalization_log.append(
+                        {
+                            "key": key,
+                            "original": original_url,
+                            "arxiv_norm": arxiv_normalized,
+                            "general_norm": general_normalized,
+                            "stored_in_citation": citation.url,
+                        }
+                    )
+
+                # Use the same logic as extraction (arxiv first, then general)
+                normalized = normalize_url(normalize_arxiv_url(original_url))
+
                 if normalized in lookup:
                     logger.warning(
                         f"URL collision: {normalized} maps to both {key} and {lookup[normalized]}"
                     )
                 lookup[normalized] = key
+
+        if normalization_log:
+            logger.error(
+                f"[H2-TEST] Found {len(normalization_log)} URLs with different normalizations"
+            )
+            for item in normalization_log[:3]:
+                logger.error(f"[H2-TEST] {item}")
+        else:
+            logger.error("[H2-TEST] All URLs normalize consistently")
 
         logger.info(f"Built normalized URL lookup with {len(lookup)} entries")
         return lookup
@@ -1200,6 +1234,20 @@ class CitationManager:
         Returns:
             Tuple of (modified_content, replacement_count)
         """
+        # H1 TEST: Check if self.citations is populated
+        logger.error(
+            f"[H1-TEST] self.citations dict has {len(self.citations)} entries"
+        )
+        if len(self.citations) == 0:
+            logger.error(
+                "[H1-TEST] CRITICAL: self.citations is EMPTY - no replacements possible"
+            )
+        else:
+            sample_keys = list(self.citations.keys())[:5]
+            logger.error(f"[H1-TEST] Sample keys: {sample_keys}")
+            sample_urls = [self.citations[k].url for k in sample_keys]
+            logger.error(f"[H1-TEST] Sample URLs: {sample_urls}")
+
         # Build normalized URL lookup
         url_to_key = self._build_normalized_url_lookup()
 
@@ -1210,101 +1258,152 @@ class CitationManager:
         replacements = 0
         failed_urls = []
 
+        # H4 TEST: Track all lookup attempts
+        logger.error(
+            f"[H4-TEST] Starting citation replacement with {len(url_to_key)} URLs in lookup"
+        )
+        lookup_attempts = []
+
         logger.info(
             f"Starting AST-based citation replacement for {len(tokens)} tokens"
         )
 
-        # Process tokens to find and replace links
-        i = 0
-        while i < len(tokens):
-            if tokens[i].type == "link_open":
-                # Extract href from token attributes
-                href = None
-                for attr in tokens[i].attrs or []:
-                    if attr[0] == "href":
-                        href = attr[1]
-                        break
-
-                if href:
-                    # Normalize the URL for lookup
-                    normalized_href = normalize_url(href)
-
-                    # Find the citation key
-                    key = url_to_key.get(normalized_href)
-
-                    if key:
-                        # Find the closing link token
-                        j = i + 1
-                        depth = 1
-                        link_text_parts = []
-
-                        while j < len(tokens) and depth > 0:
-                            if tokens[j].type == "link_open":
-                                depth += 1
-                            elif tokens[j].type == "link_close":
-                                depth -= 1
-                                if depth == 0:
-                                    break
-                            elif tokens[j].type == "text":
-                                link_text_parts.append(tokens[j].content)
-                            elif (
-                                tokens[j].type == "inline"
-                                and tokens[j].children
-                            ):
-                                # Extract text from inline children
-                                for child in tokens[j].children:
-                                    if child.type == "text":
-                                        link_text_parts.append(child.content)
-                            j += 1
-
-                        link_text = "".join(link_text_parts)
-                        citation = self.citations[key]
-
-                        logger.debug(
-                            f"Replacing [{link_text}]({href}) -> \\citep{{{citation.key}}}"
-                        )
-
-                        # Create a new text token with the citation command
-                        new_token = Token("text", "", 0)
-                        new_token.content = f"\\citep{{{citation.key}}}"
-
-                        # Replace tokens[i:j+1] with new_token
-                        del tokens[i : j + 1]
-                        tokens.insert(i, new_token)
-                        replacements += 1
-                    else:
-                        logger.warning(
-                            f"No citation key found for URL: {href} (normalized: {normalized_href})"
-                        )
-                        failed_urls.append(href)
-                        i += 1
-                else:
-                    i += 1
-            else:
-                i += 1
-
-        # Render tokens back to markdown/text
-        # Since we're replacing with LaTeX commands, we need to extract the text content
-        output_parts = []
+        # H4 DEBUG: Log token structure to understand nesting
+        token_types_found = {}
         for token in tokens:
-            if token.type == "text":
-                output_parts.append(token.content)
-            elif token.type == "inline" and token.children:
+            token_types_found[token.type] = (
+                token_types_found.get(token.type, 0) + 1
+            )
+            if token.type == "inline" and token.children:
                 for child in token.children:
-                    if child.type == "text":
-                        output_parts.append(child.content)
-            # For other token types, use the renderer
-            elif hasattr(token, "content") and token.content:
-                output_parts.append(token.content)
+                    child_key = f"inline > {child.type}"
+                    token_types_found[child_key] = (
+                        token_types_found.get(child_key, 0) + 1
+                    )
+        logger.error(f"[H4-DEBUG] Token structure: {token_types_found}")
 
-        # If we didn't get good output from manual extraction, use the renderer
+        # Process tokens to find and replace links
+        # Links are nested inside inline tokens, not at top level
+        links_processed = 0
+        for token in tokens:
+            if token.type == "inline" and token.children:
+                i = 0
+                while i < len(token.children):
+                    child = token.children[i]
+                    if child.type == "link_open":
+                        links_processed += 1
+                        # Extract href from token attributes
+                        # attrs can be either a dict or a list of tuples
+                        href = None
+                        if hasattr(child, "attrs") and child.attrs:
+                            if isinstance(child.attrs, dict):
+                                href = child.attrs.get("href")
+                            else:
+                                # List of tuples format
+                                for attr in child.attrs:
+                                    if attr[0] == "href":
+                                        href = attr[1]
+                                        break
+
+                        if href:
+                            # Normalize the URL for lookup
+                            normalized_href = normalize_url(href)
+
+                            # Find the citation key
+                            key = url_to_key.get(normalized_href)
+
+                            # H4 TEST: Log every lookup attempt
+                            lookup_attempts.append(
+                                {
+                                    "original": href,
+                                    "normalized": normalized_href,
+                                    "found_key": key,
+                                    "success": key is not None,
+                                }
+                            )
+
+                            if key:
+                                # Find the closing link token
+                                j = i + 1
+                                depth = 1
+                                link_text_parts = []
+
+                                while j < len(token.children) and depth > 0:
+                                    if token.children[j].type == "link_open":
+                                        depth += 1
+                                    elif token.children[j].type == "link_close":
+                                        depth -= 1
+                                        if depth == 0:
+                                            break
+                                    elif token.children[j].type == "text":
+                                        link_text_parts.append(
+                                            token.children[j].content
+                                        )
+                                    j += 1
+
+                                link_text = "".join(link_text_parts)
+                                citation = self.citations[key]
+
+                                logger.debug(
+                                    f"Replacing [{link_text}]({href}) -> \\citep{{{citation.key}}}"
+                                )
+
+                                # Create a new text token with the citation command
+                                new_token = Token("text", "", 0)
+                                new_token.content = f"\\citep{{{citation.key}}}"
+
+                                # Replace children[i:j+1] with new_token
+                                del token.children[i : j + 1]
+                                token.children.insert(i, new_token)
+                                replacements += 1
+                            else:
+                                logger.warning(
+                                    f"No citation key found for URL: {href} (normalized: {normalized_href})"
+                                )
+                                failed_urls.append(href)
+                                i += 1
+                        else:
+                            i += 1
+                    else:
+                        i += 1
+
+        # H4 TEST: Summary
+        logger.error(f"[H4-DEBUG] Links processed: {links_processed}")
+        logger.error(f"[H4-TEST] Lookup attempts: {len(lookup_attempts)}")
+        logger.error(f"[H4-TEST] Successful: {replacements}")
+        logger.error(f"[H4-TEST] Failed: {len(failed_urls)}")
+        if failed_urls:
+            logger.error("[H4-TEST] First 3 failed URLs:")
+            for url in failed_urls[:3]:
+                logger.error(f"[H4-TEST]   - {url}")
+
+        # H3 TEST: Render tokens back to markdown
+        logger.error(
+            "[H3-TEST] Starting token rendering with markdown-it renderer"
+        )
+
+        # Use the markdown-it renderer to convert tokens back to markdown text
+        # This preserves all markdown structure (headers, paragraphs, lists, etc.)
+        output = md.renderer.render(tokens, md.options, {})
+
+        # Strip single-line paragraph wrappers for simple text
+        # (markdown-it renders everything as HTML by default)
         if (
-            not output_parts
-            or len("".join(output_parts).strip()) < len(content) // 2
+            output.startswith("<p>")
+            and output.endswith("</p>\n")
+            and output.count("<p>") == 1
         ):
-            output = md.renderer.render(tokens, md.options, {})
-        else:
-            output = "".join(output_parts)
+            output = output[3:-5]  # Remove <p> and </p>\n
+
+        # H3 TEST: Check rendering results
+        logger.error(
+            f"[H3-TEST] Rendered output: {len(output)} chars (original: {len(content)})"
+        )
+        citations_in_output = output.count("\\citep{")
+        logger.error(
+            f"[H3-TEST] Citations in rendered output: {citations_in_output}"
+        )
+        logger.error(f"[H3-TEST] Expected citations: {replacements}")
 
         logger.info(
             f"AST replacement: {replacements} citations replaced, {len(failed_urls)} failed"

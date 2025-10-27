@@ -1140,6 +1140,14 @@ class MarkdownToLatexConverter:
 
             content = self.citation_manager.replace_citations_in_text(content)
 
+            # CRITICAL: Also replace citations in abstract (extracted earlier at line 856)
+            if abstract:
+                logger.info("Replacing citations in abstract...")
+                abstract = self.citation_manager.replace_citations_in_text(
+                    abstract
+                )
+                logger.info("Abstract citation replacement complete")
+
             # Write debug artifact: markdown after citation replacement
             debug_after_replacement = (
                 debug_dir / "2-markdown-after-replacement.md"
