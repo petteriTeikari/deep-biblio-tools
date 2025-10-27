@@ -899,11 +899,16 @@ class MarkdownToLatexConverter:
                 )
 
                 # Log matching statistics
+                match_rate = (
+                    f"{100 * matched / len(citations):.1f}%"
+                    if len(citations) > 0
+                    else "N/A (no citations)"
+                )
                 debugger.log_stats(
                     total_citations=len(citations),
                     matched_from_zotero=matched,
                     missing_from_zotero=missing,
-                    match_rate=f"{100 * matched / len(citations):.1f}%",
+                    match_rate=match_rate,
                 )
 
                 # Sample of matched citations
@@ -939,12 +944,17 @@ class MarkdownToLatexConverter:
                     )
 
                 # Dump matching results
+                match_rate_json = (
+                    f"{100 * matched / len(citations):.1f}%"
+                    if len(citations) > 0
+                    else "N/A"
+                )
                 debugger.dump_json(
                     {
                         "total": len(citations),
                         "matched": matched,
                         "missing": missing,
-                        "match_rate": f"{100 * matched / len(citations):.1f}%",
+                        "match_rate": match_rate_json,
                         "matched_citations": [
                             {
                                 "url": c.url,
@@ -1051,12 +1061,17 @@ class MarkdownToLatexConverter:
             if failed_citations:
                 # Write JSON report to output directory
                 json_path = self.output_dir / "missing-citations-report.json"
+                match_rate_report = (
+                    f"{100 * (len(citations) - len(failed_citations)) / len(citations):.1f}%"
+                    if len(citations) > 0
+                    else "N/A"
+                )
                 with open(json_path, "w") as f:
                     json.dump(
                         {
                             "total_citations": len(citations),
                             "missing_count": len(failed_citations),
-                            "match_rate": f"{100 * (len(citations) - len(failed_citations)) / len(citations):.1f}%",
+                            "match_rate": match_rate_report,
                             "missing_citations": failed_citations,
                         },
                         f,
