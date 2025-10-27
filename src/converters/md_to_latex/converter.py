@@ -1178,8 +1178,49 @@ class MarkdownToLatexConverter:
 
             # Fix escaped dollar signs in math equations
             # Pandoc sometimes escapes $$ as \$\$ which breaks LaTeX math
-            latex_content = latex_content.replace(r"\$\$", "$$")
-            latex_content = latex_content.replace(r"\$", "$")
+            # Use character-by-character parsing to avoid regex
+            result = []
+            i = 0
+            while i < len(latex_content):
+                if (
+                    i < len(latex_content) - 2
+                    and latex_content[i : i + 3] == r"\$\$"
+                ):
+                    result.append("$$")
+                    i += 3
+                elif (
+                    i < len(latex_content) - 1
+                    and latex_content[i : i + 2] == r"\$"
+                ):
+                    result.append("$")
+                    i += 2
+                else:
+                    result.append(latex_content[i])
+                    i += 1
+            latex_content = "".join(result)
+
+            # Fix unescaped ampersands that break LaTeX
+            # Use character-by-character parsing to escape & as \&
+            # Skip if already escaped
+            result = []
+            i = 0
+            while i < len(latex_content):
+                if (
+                    latex_content[i] == "\\"
+                    and i + 1 < len(latex_content)
+                    and latex_content[i + 1] == "&"
+                ):
+                    # Already escaped, keep as-is
+                    result.append("\\&")
+                    i += 2
+                elif latex_content[i] == "&":
+                    # Unescaped ampersand, escape it
+                    result.append("\\&")
+                    i += 1
+                else:
+                    result.append(latex_content[i])
+                    i += 1
+            latex_content = "".join(result)
 
             if verbose:
                 pbar.update(1)
