@@ -1914,7 +1914,8 @@ class MarkdownToLatexConverter:
                 )
 
             # Run biber/bibtex if we have citations and using biblatex
-            if (self.output_dir / "references.bib").exists():
+            # Use relative path since we're already in output_dir
+            if Path("references.bib").exists():
                 # Check if we're using biblatex by looking for the .bcf file
                 bcf_file = tex_file.with_suffix(".bcf")
                 if bcf_file.exists():
