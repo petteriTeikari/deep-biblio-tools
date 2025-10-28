@@ -210,6 +210,79 @@ class TestZoteroClient:
         assert client._get_first_title_word("On AI") == ""  # Too short
         assert client._get_first_title_word("") == ""
 
+    @patch("requests.get")
+    def test_load_collection_with_keys(self, mock_get):
+        """Test loading collection with Better BibTeX keys."""
+        client = ZoteroClient(api_key="test_key", library_id="12345")
+
+        # Mock finding collection
+        mock_collections_response = MagicMock()
+        mock_collections_response.status_code = 200
+        mock_collections_response.json.return_value = [
+            {"key": "ABC123", "data": {"name": "test-collection"}}
+        ]
+
+        # Mock fetching BibTeX
+        mock_bibtex_response = MagicMock()
+        mock_bibtex_response.status_code = 200
+        mock_bibtex_response.text = """@article{smithMachineLearning2023,
+  author = "Smith, John",
+  title = "Machine Learning Basics",
+  year = "2023",
+  doi = "10.1234/example",
+  url = "https://example.com/paper"
+}
+
+@misc{jonesDeepLearning2022,
+  author = "Jones, Jane",
+  title = "Deep Learning Tutorial",
+  year = "2022",
+  url = "https://example.com/tutorial"
+}"""
+
+        mock_get.side_effect = [mock_collections_response, mock_bibtex_response]
+
+        result = client.load_collection_with_keys("test-collection")
+
+        # Verify results
+        assert len(result) == 2
+        assert "smithMachineLearning2023" in result
+        assert "jonesDeepLearning2022" in result
+
+        # Check entry contents
+        smith_entry = result["smithMachineLearning2023"]
+        assert smith_entry["author"] == "Smith, John"
+        assert smith_entry["title"] == "Machine Learning Basics"
+        assert smith_entry["year"] == "2023"
+        assert smith_entry["doi"] == "10.1234/example"
+
+        jones_entry = result["jonesDeepLearning2022"]
+        assert jones_entry["author"] == "Jones, Jane"
+        assert jones_entry["year"] == "2022"
+
+    @patch("requests.get")
+    def test_load_collection_with_keys_empty(self, mock_get):
+        """Test loading empty collection."""
+        client = ZoteroClient(api_key="test_key", library_id="12345")
+
+        # Mock finding collection
+        mock_collections_response = MagicMock()
+        mock_collections_response.status_code = 200
+        mock_collections_response.json.return_value = [
+            {"key": "ABC123", "data": {"name": "empty-collection"}}
+        ]
+
+        # Mock empty BibTeX
+        mock_bibtex_response = MagicMock()
+        mock_bibtex_response.status_code = 200
+        mock_bibtex_response.text = ""
+
+        mock_get.side_effect = [mock_collections_response, mock_bibtex_response]
+
+        result = client.load_collection_with_keys("empty-collection")
+
+        assert result == {}
+
 
 @pytest.mark.integration
 class TestZoteroIntegration:
