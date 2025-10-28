@@ -6,6 +6,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 
 # Third-party imports
@@ -241,6 +242,7 @@ class CitationManager:
         prefer_arxiv: bool = False,
         zotero_api_key: str | None = None,
         zotero_library_id: str | None = None,
+        zotero_collection: str | None = None,
         use_cache: bool = True,
         use_better_bibtex_keys: bool = True,
     ):
@@ -256,6 +258,7 @@ class CitationManager:
 
         # Initialize Zotero client if configured
         self.zotero_client = None
+        self.zotero_entries = {}  # Dict mapping citation keys to BibTeX entries
         if zotero_api_key or zotero_library_id:
             self.zotero_client = ZoteroClient(
                 api_key=zotero_api_key, library_id=zotero_library_id
@@ -264,7 +267,73 @@ class CitationManager:
                 f"Initialized Zotero client with library_id: {zotero_library_id}"
             )
 
+            # Load collection with Better BibTeX keys if specified
+            if zotero_collection:
+                try:
+                    self.zotero_entries = (
+                        self.zotero_client.load_collection_with_keys(
+                            zotero_collection
+                        )
+                    )
+                    logger.info(
+                        f"Loaded {len(self.zotero_entries)} entries from Zotero collection '{zotero_collection}'"
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"Failed to load Zotero collection '{zotero_collection}': {e}"
+                    )
+                    # Continue without Zotero collection (will fall back to API lookups)
+
         # No need to load cache explicitly - SQLite cache handles it
+
+    def _lookup_zotero_entry_by_url(
+        self, url: str
+    ) -> tuple[str, dict[str, Any]] | None:
+        """Look up Zotero entry by URL or DOI.
+
+        Args:
+            url: The URL or DOI URL to lookup
+
+        Returns:
+            Tuple of (citation_key, entry_dict) if found, None otherwise
+        """
+        if not self.zotero_entries:
+            return None
+
+        # Extract DOI if present in URL
+        doi = extract_doi_from_url(url)
+
+        # Search through Zotero entries for matching URL or DOI
+        for cite_key, entry in self.zotero_entries.items():
+            entry_url = entry.get("url", "")
+            entry_doi = entry.get("doi", "")
+
+            # Match by DOI (most reliable)
+            if doi and entry_doi and doi == entry_doi:
+                logger.debug(
+                    f"Found Zotero entry by DOI match: {cite_key} (DOI: {doi})"
+                )
+                return (cite_key, entry)
+
+            # Match by URL (exact match)
+            if url and entry_url and url == entry_url:
+                logger.debug(f"Found Zotero entry by URL match: {cite_key}")
+                return (cite_key, entry)
+
+            # Match by normalized URL (handle trailing slashes, http vs https)
+            if url and entry_url:
+                normalized_url = url.rstrip("/").replace("http://", "https://")
+                normalized_entry_url = entry_url.rstrip("/").replace(
+                    "http://", "https://"
+                )
+                if normalized_url == normalized_entry_url:
+                    logger.debug(
+                        f"Found Zotero entry by normalized URL match: {cite_key}"
+                    )
+                    return (cite_key, entry)
+
+        logger.debug(f"No Zotero entry found for URL: {url}")
+        return None
 
     def _load_from_cache(self, url: str) -> Citation | None:
         """Load a citation from SQLite cache."""
@@ -418,40 +487,79 @@ class CitationManager:
         if doi and doi in seen_dois:
             return  # Already have this DOI
 
-        # TODO(Phase2): Replace with actual Zotero Better BibTeX keys
-        # For now, create temporary Better BibTeX-style key
-        # Pattern: authorTitleYear (e.g., smithMachineLearning2023)
-        first_author = authors.split()[0] if authors else "temp"
-        # Remove special characters and make it start with lowercase
-        clean_author = "".join(c for c in first_author if c.isalpha())
-        if clean_author:
-            clean_author = clean_author[0].lower() + clean_author[1:]
+        # Phase 3: Look up Better BibTeX key from Zotero collection
+        zotero_result = self._lookup_zotero_entry_by_url(url)
+
+        if zotero_result:
+            # Found in Zotero - use Better BibTeX key
+            cite_key, zotero_entry = zotero_result
+            logger.info(
+                f"Using Better BibTeX key from Zotero: {cite_key} for {url}"
+            )
+
+            # Create Citation from Zotero entry
+            citation = Citation(
+                authors=zotero_entry.get("author", authors),
+                year=zotero_entry.get("year", year),
+                url=url,
+                key=cite_key,
+                use_better_bibtex=self.use_better_bibtex_keys,
+            )
+
+            # Populate additional fields from Zotero
+            citation.title = zotero_entry.get("title", "")
+            citation.journal = zotero_entry.get("journal", "")
+            citation.volume = zotero_entry.get("volume", "")
+            citation.pages = zotero_entry.get("pages", "")
+            citation.doi = zotero_entry.get("doi", "")
+            citation.bibtex_type = zotero_entry.get(
+                "ENTRYTYPE", "misc"
+            )  # BibTeX uses ENTRYTYPE
+
+            key = cite_key
+
         else:
-            clean_author = "temp"
+            # Not found in Zotero - create temporary key
+            # This will happen if:
+            # 1. No Zotero collection configured
+            # 2. Citation not in Zotero collection
+            logger.warning(
+                f"Citation not found in Zotero collection: {url} - creating temporary key"
+            )
 
-        # Use "Temp" as title part until we fetch real title
-        base_key = f"{clean_author}Temp{year}"
-        key = base_key
+            # Create temporary Better BibTeX-style key
+            # Pattern: authorTitleYear (e.g., smithMachineLearning2023)
+            first_author = authors.split()[0] if authors else "temp"
+            # Remove special characters and make it start with lowercase
+            clean_author = "".join(c for c in first_author if c.isalpha())
+            if clean_author:
+                clean_author = clean_author[0].lower() + clean_author[1:]
+            else:
+                clean_author = "temp"
 
-        # Handle duplicate keys with alphabetic suffixes
-        counter = 1
-        while key in self.citations:
-            suffix = ""
-            temp = counter
-            while temp > 0:
-                temp -= 1
-                suffix = chr(ord("a") + (temp % 26)) + suffix
-                temp //= 26
-            key = f"{base_key}{suffix}"
-            counter += 1
+            # Use "Temp" as title part until we fetch real title
+            base_key = f"{clean_author}Temp{year}"
+            key = base_key
 
-        citation = Citation(
-            authors,
-            year,
-            url,
-            key,
-            use_better_bibtex=self.use_better_bibtex_keys,
-        )
+            # Handle duplicate keys with alphabetic suffixes
+            counter = 1
+            while key in self.citations:
+                suffix = ""
+                temp = counter
+                while temp > 0:
+                    temp -= 1
+                    suffix = chr(ord("a") + (temp % 26)) + suffix
+                    temp //= 26
+                key = f"{base_key}{suffix}"
+                counter += 1
+
+            citation = Citation(
+                authors,
+                year,
+                url,
+                key,
+                use_better_bibtex=self.use_better_bibtex_keys,
+            )
         citations_found.append(citation)
         self.citations[key] = citation
 
