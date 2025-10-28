@@ -6,6 +6,7 @@ import os
 # import re  # Banned - using string methods instead
 from typing import Any
 
+import bibtexparser
 import requests
 
 logger = logging.getLogger(__name__)
@@ -115,6 +116,70 @@ class ZoteroClient:
             f"Fetched BibTeX export from collection '{collection_name}' ({len(bibtex_content)} chars)"
         )
         return bibtex_content
+
+    def load_collection_with_keys(
+        self, collection_name: str
+    ) -> dict[str, dict[str, Any]]:
+        """Load collection and extract Better BibTeX keys.
+
+        Fetches BibTeX export from Zotero and parses it to extract citation keys.
+        If Better BibTeX plugin is installed in Zotero, this will return proper
+        Better BibTeX keys (e.g., 'adisornDigitalProductPassport2021').
+
+        Args:
+            collection_name: Name of the collection (e.g., 'dpp-fashion')
+
+        Returns:
+            Dict mapping citation keys to parsed BibTeX entries
+            Example: {
+                'adisornDigitalProductPassport2021': {
+                    'author': 'Adisorn, Leelaphongwatana and ...',
+                    'title': 'Digital Product Passport...',
+                    'year': '2021',
+                    ...
+                }
+            }
+
+        Raises:
+            ValueError: If credentials are missing or collection not found
+        """
+        # Fetch BibTeX export from Zotero
+        bibtex_content = self.get_collection_bibtex(collection_name)
+
+        if not bibtex_content or not bibtex_content.strip():
+            logger.warning(
+                f"Empty BibTeX export from collection '{collection_name}'"
+            )
+            return {}
+
+        # Parse BibTeX using bibtexparser (AST-based, no regex)
+        try:
+            bib_database = bibtexparser.loads(bibtex_content)
+            entries_dict = {}
+
+            for entry in bib_database.entries:
+                cite_key = entry.get("ID")
+                if not cite_key:
+                    logger.warning(
+                        f"BibTeX entry missing ID field: {entry.get('title', 'Unknown')}"
+                    )
+                    continue
+
+                # Store the full entry dict with all fields
+                entries_dict[cite_key] = entry
+
+                logger.debug(
+                    f"Loaded citation key: {cite_key} (type: {entry.get('ENTRYTYPE', 'unknown')})"
+                )
+
+            logger.info(
+                f"Loaded {len(entries_dict)} entries with Better BibTeX keys from '{collection_name}'"
+            )
+            return entries_dict
+
+        except Exception as e:
+            logger.error(f"Failed to parse BibTeX export: {e}")
+            raise
 
     def _find_collection_id(self, collection_name: str) -> str | None:
         """Find collection ID by name.
