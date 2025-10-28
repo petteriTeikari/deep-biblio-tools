@@ -259,6 +259,19 @@ class CitationManager:
         # Initialize Zotero client if configured
         self.zotero_client = None
         self.zotero_entries = {}  # Dict mapping citation keys to BibTeX entries
+
+        # CRITICAL: If Better BibTeX keys are required, Zotero credentials MUST be configured
+        if use_better_bibtex_keys and not (
+            zotero_api_key and zotero_library_id
+        ):
+            error_msg = (
+                "CRITICAL ERROR: Better BibTeX keys are required but Zotero credentials are missing.\n"
+                "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env file or disable Better BibTeX.\n"
+                "Better BibTeX keys prevent citation key generation and ensure all keys come from Zotero."
+            )
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
         if zotero_api_key or zotero_library_id:
             self.zotero_client = ZoteroClient(
                 api_key=zotero_api_key, library_id=zotero_library_id

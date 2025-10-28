@@ -93,7 +93,9 @@ class TestCitationManager:
 
     def test_extract_citations(self, temp_cache_dir):
         """Test citation extraction from markdown."""
-        manager = CitationManager(cache_dir=temp_cache_dir)
+        manager = CitationManager(
+            cache_dir=temp_cache_dir, use_better_bibtex_keys=False
+        )
         content = dedent("""
             Some text with [Smith et al. (2023)](https://example.com/paper1) citation.
             Another [Jones (2022)](https://example.com/paper2) reference.
@@ -111,7 +113,9 @@ class TestCitationManager:
 
     def test_duplicate_key_handling(self, temp_cache_dir):
         """Test handling of duplicate citation keys."""
-        manager = CitationManager(cache_dir=temp_cache_dir)
+        manager = CitationManager(
+            cache_dir=temp_cache_dir, use_better_bibtex_keys=False
+        )
         content = dedent("""
             First [Smith (2023)](https://example.com/paper1) citation.
             Second [Smith (2023)](https://example.com/paper2) citation.
@@ -125,7 +129,9 @@ class TestCitationManager:
 
     def test_replace_citations_in_text(self, temp_cache_dir):
         """Test replacement of citations with LaTeX commands."""
-        manager = CitationManager(cache_dir=temp_cache_dir)
+        manager = CitationManager(
+            cache_dir=temp_cache_dir, use_better_bibtex_keys=False
+        )
         content = (
             "Text with [Smith et al. (2023)](https://example.com) citation."
         )
@@ -140,7 +146,9 @@ class TestCitationManager:
     @patch("requests.get")
     def test_fetch_from_crossref(self, mock_get, temp_cache_dir):
         """Test fetching metadata from CrossRef."""
-        manager = CitationManager(cache_dir=temp_cache_dir)
+        manager = CitationManager(
+            cache_dir=temp_cache_dir, use_better_bibtex_keys=False
+        )
         citation = Citation(
             "Smith",
             "2023",
@@ -173,7 +181,9 @@ class TestCitationManager:
     @patch("requests.get")
     def test_fetch_from_arxiv(self, mock_get, temp_cache_dir):
         """Test fetching metadata from arXiv."""
-        manager = CitationManager(cache_dir=temp_cache_dir)
+        manager = CitationManager(
+            cache_dir=temp_cache_dir, use_better_bibtex_keys=False
+        )
         citation = Citation(
             "Smith",
             "2023",
@@ -200,7 +210,9 @@ class TestCitationManager:
     def test_cache_persistence(self, temp_cache_dir):
         """Test citation cache persistence."""
         # First manager instance
-        manager1 = CitationManager(cache_dir=temp_cache_dir)
+        manager1 = CitationManager(
+            cache_dir=temp_cache_dir, use_better_bibtex_keys=False
+        )
         citation = Citation(
             "Smith", "2023", "https://example.com", key="smithTest2023"
         )
@@ -209,13 +221,15 @@ class TestCitationManager:
         # Don't need to call _save_to_cache directly as it's handled internally
 
         # Second manager instance should load from cache
-        CitationManager(cache_dir=temp_cache_dir)
+        CitationManager(cache_dir=temp_cache_dir, use_better_bibtex_keys=False)
         # Check that cache directory exists (SQLite cache is used now)
         assert temp_cache_dir.exists()
 
     def test_generate_bibtex_file(self, temp_cache_dir):
         """Test BibTeX file generation."""
-        manager = CitationManager(cache_dir=temp_cache_dir)
+        manager = CitationManager(
+            cache_dir=temp_cache_dir, use_better_bibtex_keys=False
+        )
 
         # Add some citations
         citation1 = Citation(
