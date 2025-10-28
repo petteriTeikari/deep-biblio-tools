@@ -78,15 +78,15 @@ Bibliography generated automatically.
             pdf_text = extract_text_from_pdf(pdf_file)
 
             # ZERO TOLERANCE checks
-            assert (
-                "(?)" not in pdf_text
-            ), "Found unresolved citation (?). Pipeline BROKEN."
-            assert (
-                "(Unknown)" not in pdf_text
-            ), "Found Unknown author. Citation extraction FAILED."
-            assert (
-                "(Anonymous)" not in pdf_text
-            ), "Found Anonymous author. Citation extraction FAILED."
+            assert "(?)" not in pdf_text, (
+                "Found unresolved citation (?). Pipeline BROKEN."
+            )
+            assert "(Unknown)" not in pdf_text, (
+                "Found Unknown author. Citation extraction FAILED."
+            )
+            assert "(Anonymous)" not in pdf_text, (
+                "Found Anonymous author. Citation extraction FAILED."
+            )
 
     def test_author_names_present_in_pdf(self):
         """Verify actual author names appear in PDF (not just checking absence of errors)."""
@@ -104,9 +104,9 @@ Here is a citation: [Mildenhall et al. (2022)](https://doi.org/10.1145/3503250)
             normalized_text = normalize_pdf_text(pdf_text)
 
             # Check for author name
-            assert (
-                "mildenhall" in normalized_text.lower()
-            ), "Author name not found in PDF"
+            assert "mildenhall" in normalized_text.lower(), (
+                "Author name not found in PDF"
+            )
 
             # Check for year
             assert "2022" in pdf_text, "Year not found in PDF"
@@ -154,9 +154,9 @@ Citation 3: [Brown (2022)](https://doi.org/10.1000/test.003)
             citation_count = count_citations_in_text(pdf_text)
 
             # Should have at least 3 citations (might have more in bibliography)
-            assert (
-                citation_count >= 3
-            ), f"Expected ≥3 citations, found {citation_count}"
+            assert citation_count >= 3, (
+                f"Expected ≥3 citations, found {citation_count}"
+            )
 
     def test_pdf_not_empty(self):
         """Basic sanity check: PDF has content."""
@@ -201,9 +201,9 @@ Third mention: [Smith (2020)](https://doi.org/10.1000/test.001)
 
             # Check "Smith" appears multiple times
             smith_count = pdf_text.lower().count("smith")
-            assert (
-                smith_count >= 3
-            ), f"Expected ≥3 'Smith' mentions, found {smith_count}"
+            assert smith_count >= 3, (
+                f"Expected ≥3 'Smith' mentions, found {smith_count}"
+            )
 
 
 @pytest.mark.e2e
@@ -238,14 +238,14 @@ Just plain text content.
             temp_dir = Path(tmpdir)
             pdf_file = self._convert_markdown_to_pdf(markdown_content, temp_dir)
 
-            assert (
-                pdf_file.exists()
-            ), "PDF not generated for citation-free markdown"
+            assert pdf_file.exists(), (
+                "PDF not generated for citation-free markdown"
+            )
 
             pdf_text = extract_text_from_pdf(pdf_file)
-            assert (
-                len(pdf_text) > 20
-            ), "PDF too short for citation-free markdown"
+            assert len(pdf_text) > 20, (
+                "PDF too short for citation-free markdown"
+            )
 
     def test_markdown_with_special_characters(self):
         """Test handling of LaTeX special characters."""

@@ -3,7 +3,6 @@
 import pytest
 import requests
 
-
 # Mark all tests in this module as unit tests
 pytestmark = pytest.mark.unit
 
@@ -34,7 +33,9 @@ class TestDOIValidator:
 
         # This will be implemented in validate_bibliography.py
         # For now, test the mock works
-        response = requests.get("https://api.crossref.org/works/10.1000/testdoi")
+        response = requests.get(
+            "https://api.crossref.org/works/10.1000/testdoi"
+        )
         assert response.status_code == 200
         data = response.json()
         assert "message" in data
@@ -52,7 +53,9 @@ class TestDOIValidator:
 
         monkeypatch.setattr(requests, "get", mock_get)
 
-        response = requests.get("https://api.crossref.org/works/10.1016/invalid")
+        response = requests.get(
+            "https://api.crossref.org/works/10.1016/invalid"
+        )
         assert response.status_code == 404
 
     def test_rate_limit_returns_429(self, monkeypatch):

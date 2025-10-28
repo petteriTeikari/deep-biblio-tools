@@ -81,9 +81,9 @@ Bibliography generated automatically.
                 assert_no_critical_latex_errors(log_file)
             else:
                 # If no log file, check PDF was generated
-                assert (
-                    pdf_file.exists()
-                ), "No PDF and no log file - compilation failed silently"
+                assert pdf_file.exists(), (
+                    "No PDF and no log file - compilation failed silently"
+                )
 
     def test_bibtex_generated_bbl_file(self):
         """Verify BibTeX ran and generated .bbl file."""
@@ -134,9 +134,9 @@ Citation: [Test (2020)](https://doi.org/10.1000/test.001)
 
             missing = check_template_packages(tex_file, required_packages)
 
-            assert (
-                not missing
-            ), f"LaTeX template missing required packages: {missing}"
+            assert not missing, (
+                f"LaTeX template missing required packages: {missing}"
+            )
 
     def test_bibliography_style_correct(self):
         """Verify correct bibliography style is used."""
@@ -197,9 +197,9 @@ Bibliography section.
                 ]
 
                 for category in expected_categories:
-                    assert (
-                        category in warnings
-                    ), f"Warning category '{category}' missing from results"
+                    assert category in warnings, (
+                        f"Warning category '{category}' missing from results"
+                    )
 
     def test_compilation_with_math_symbols(self):
         """Verify LaTeX compiles correctly with math symbols."""
@@ -223,9 +223,9 @@ Citation: [Einstein (1905)](https://doi.org/10.1000/test.001)
             )
 
             # Verify PDF generated (math didn't break compilation)
-            assert (
-                pdf_file.exists()
-            ), "PDF not generated - math symbols may have broken LaTeX"
+            assert pdf_file.exists(), (
+                "PDF not generated - math symbols may have broken LaTeX"
+            )
 
             # Check log for critical errors
             if log_file.exists():
@@ -282,9 +282,9 @@ class TestRealWorldConversion:
             bbl_file = output_dir / "mcp-draft-refined-v4.bbl"
             # Check .bbl exists (don't check for error markers - too strict)
             assert bbl_file.exists(), "BibTeX output file not generated"
-            assert (
-                len(bbl_file.read_text(encoding="utf-8")) > 10
-            ), "BibTeX output is empty"
+            assert len(bbl_file.read_text(encoding="utf-8")) > 10, (
+                "BibTeX output is empty"
+            )
 
     @pytest.mark.skipif(
         not MCP_PAPER_PATH.exists(),

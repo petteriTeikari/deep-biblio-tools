@@ -151,9 +151,9 @@ Citation: [Author (2020)](https://doi.org/10.1000/test.001)
                 "creator" in str(key).lower() for key in metadata.keys()
             )
 
-            assert (
-                has_producer or has_creator
-            ), "PDF missing producer/creator metadata"
+            assert has_producer or has_creator, (
+                "PDF missing producer/creator metadata"
+            )
 
     def test_multi_page_pdf_handling(self):
         """Verify pipeline handles multi-page PDFs correctly."""
@@ -204,9 +204,9 @@ Bibliography generated automatically.
 
             # Check page count (may be 1 or more pages depending on template)
             page_count = get_page_count(pdf_file)
-            assert (
-                page_count >= 1
-            ), f"Expected at least 1 page, got {page_count} page(s)"
+            assert page_count >= 1, (
+                f"Expected at least 1 page, got {page_count} page(s)"
+            )
 
             # Extract text to verify content across pages
             pdf_text = extract_text_from_pdf(pdf_file)
@@ -266,17 +266,17 @@ Another citation: [Another Work (2021)](https://arxiv.org/abs/2101.00001)
             uri_links = [url for _, url, kind in links if kind == "uri"]
 
             # Should have clickable links
-            assert (
-                len(uri_links) >= 2
-            ), f"Expected ≥2 clickable links, found {len(uri_links)}"
+            assert len(uri_links) >= 2, (
+                f"Expected ≥2 clickable links, found {len(uri_links)}"
+            )
 
             # Check links are external URLs (not internal references)
             external_links = [
                 url for url in uri_links if url.startswith("http")
             ]
-            assert (
-                len(external_links) >= 2
-            ), "Citations not converted to external hyperlinks"
+            assert len(external_links) >= 2, (
+                "Citations not converted to external hyperlinks"
+            )
 
     def test_regular_hyperlinks_preserved(self):
         """Verify non-citation hyperlinks are also preserved."""
@@ -300,12 +300,12 @@ Citation: [Smith (2020)](https://doi.org/10.1000/test.001)
 
             # Check for example.com link
             example_links = [url for url in uri_links if "example.com" in url]
-            assert (
-                len(example_links) >= 1
-            ), "Regular hyperlink not preserved in PDF"
+            assert len(example_links) >= 1, (
+                "Regular hyperlink not preserved in PDF"
+            )
 
             # Check for docs link
             docs_links = [url for url in uri_links if "docs.example.org" in url]
-            assert (
-                len(docs_links) >= 1
-            ), "Documentation link not preserved in PDF"
+            assert len(docs_links) >= 1, (
+                "Documentation link not preserved in PDF"
+            )

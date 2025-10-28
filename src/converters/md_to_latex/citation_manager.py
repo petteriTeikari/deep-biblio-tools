@@ -42,9 +42,37 @@ class Citation:
         authors: str,
         year: str,
         url: str,
-        key: str | None = None,
+        key: str,
         use_better_bibtex: bool = True,
     ):
+        """Initialize Citation with required Better BibTeX key.
+
+        Args:
+            authors: Author string
+            year: Publication year
+            url: Citation URL
+            key: Better BibTeX citation key (REQUIRED - from Zotero)
+            use_better_bibtex: Deprecated - kept for compatibility
+
+        Raises:
+            ValueError: If key is not provided or invalid format
+        """
+        from src.converters.md_to_latex.utils import is_better_bibtex_key
+
+        if not key:
+            raise ValueError(
+                "Citation key is REQUIRED. Must come from Zotero Better BibTeX.\n"
+                "Use load_collection_with_keys() to get keys from Zotero."
+            )
+
+        # Validate Better BibTeX key format
+        if not is_better_bibtex_key(key):
+            logger.warning(
+                f"Citation key '{key}' does not match Better BibTeX format. "
+                f"Expected format: authorTitleYear (e.g., 'smithMachineLearning2024')"
+            )
+
+        self.key = key
         self.authors = authors
         self.year = year
         self.url = url
@@ -55,24 +83,25 @@ class Citation:
         self.doi = extract_doi_from_url(url)
         self.bibtex_type = "misc"
         self.raw_bibtex = None
-        self.issue = ""  # Add issue number
-        self.full_authors = ""  # Store full author list for BibTeX
-        self.abstract = ""  # Store abstract for arXiv papers
-        self.arxiv_category = ""  # Store arXiv category
+        self.issue = ""
+        self.full_authors = ""
+        self.abstract = ""
+        self.arxiv_category = ""
         self.use_better_bibtex = use_better_bibtex
 
-        # Generate key - will be regenerated after title is available if using Better BibTeX
-        self.key = key or generate_citation_key(
-            authors, year, "", use_better_bibtex=False
-        )  # Start with simple key
-
     def regenerate_key_with_title(self) -> str:
-        """Regenerate citation key using title if Better BibTeX is enabled."""
-        if self.use_better_bibtex and self.title:
-            new_key = generate_citation_key(
-                self.authors, self.year, self.title, use_better_bibtex=True
-            )
-            self.key = new_key
+        """DEPRECATED: Key regeneration is forbidden.
+
+        Citation keys must come from Zotero Better BibTeX and never be regenerated.
+        This method is kept for API compatibility but does nothing.
+
+        Returns:
+            The existing key (unchanged)
+        """
+        logger.debug(
+            "regenerate_key_with_title() called but key regeneration is forbidden. "
+            "Returning existing key."
+        )
         return self.key
 
     def _escape_bibtex(self, text: str) -> str:
@@ -244,10 +273,24 @@ class CitationManager:
         cache_data = self.cache.get(url)
         if cache_data:
             # Create Citation object from cached data
+            # TODO(Phase2): Replace temporary key with Zotero Better BibTeX key
+            temp_key = cache_data.get("key")
+            if not temp_key:
+                # Generate temporary placeholder key for cached entries
+                # This will be replaced with actual Zotero keys in Phase 2
+                authors = cache_data.get("authors", "Unknown")
+                year = cache_data.get("year", "0000")
+                title = cache_data.get("title", "TempCached")
+                # Create Better BibTeX-style key format
+                author_part = authors.split()[0] if authors else "temp"
+                title_part = title.split()[0] if title else "Cached"
+                temp_key = f"{author_part}{title_part}{year}"
+
             citation = Citation(
                 authors=cache_data.get("authors", ""),
                 year=cache_data.get("year", ""),
                 url=url,
+                key=temp_key,
                 use_better_bibtex=self.use_better_bibtex_keys,
             )
             citation.title = cache_data.get("title", "")
@@ -375,20 +418,28 @@ class CitationManager:
         if doi and doi in seen_dois:
             return  # Already have this DOI
 
-        # Generate citation key (simple version first, will regenerate with title later)
-        base_key = generate_citation_key(
-            authors, year, "", use_better_bibtex=False
-        )
+        # TODO(Phase2): Replace with actual Zotero Better BibTeX keys
+        # For now, create temporary Better BibTeX-style key
+        # Pattern: authorTitleYear (e.g., smithMachineLearning2023)
+        first_author = authors.split()[0] if authors else "temp"
+        # Remove special characters and make it start with lowercase
+        clean_author = "".join(c for c in first_author if c.isalpha())
+        if clean_author:
+            clean_author = clean_author[0].lower() + clean_author[1:]
+        else:
+            clean_author = "temp"
+
+        # Use "Temp" as title part until we fetch real title
+        base_key = f"{clean_author}Temp{year}"
         key = base_key
 
-        # Handle duplicate keys with alphabetic suffixes (a, b, c, ..., z, aa, ab, ...)
+        # Handle duplicate keys with alphabetic suffixes
         counter = 1
         while key in self.citations:
-            # Generate alphabetic suffix: 1→a, 2→b, ..., 26→z, 27→aa, 28→ab, etc.
             suffix = ""
             temp = counter
             while temp > 0:
-                temp -= 1  # Make it 0-indexed
+                temp -= 1
                 suffix = chr(ord("a") + (temp % 26)) + suffix
                 temp //= 26
             key = f"{base_key}{suffix}"
@@ -1428,7 +1479,7 @@ class CitationManager:
         logger.info(
             f"Completed citation replacement: {replacements} citations replaced"
         )
-        return output
+        return output.rstrip()
 
     def generate_bibtex_file(
         self, output_path: Path, show_progress: bool = False

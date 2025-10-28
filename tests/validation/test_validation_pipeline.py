@@ -1,8 +1,9 @@
 """Integration tests for full validation pipeline."""
 
-import pytest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
+import pytest
 
 pytestmark = pytest.mark.integration
 
@@ -55,11 +56,6 @@ class TestValidationPipeline:
         content = sample_bib_file.read_text()
 
         # Should detect these issues:
-        expected_issues = {
-            "invalid_doi_no_title": ["MISSING_TITLE", "INVALID_DOI", "INCOMPLETE_AUTHORS"],
-            "valid_complete": [],  # No issues
-            "missing_venue": ["MISSING_VENUE"],
-        }
 
         # Count entries
         entry_count = content.count("@")
@@ -69,23 +65,27 @@ class TestValidationPipeline:
         assert sample_bib_file.exists()
         assert sample_bib_file.stat().st_size > 0
 
-    def test_validation_generates_jsonl_output(self, sample_bib_file, temp_workdir):
+    def test_validation_generates_jsonl_output(
+        self, sample_bib_file, temp_workdir
+    ):
         """Should generate JSONL validation report."""
         # Placeholder for actual validation script
         # Expected output: validation_report.jsonl
 
-        expected_output = temp_workdir / "validation_report.jsonl"
+        temp_workdir / "validation_report.jsonl"
 
         # For now, just verify directory structure
         assert temp_workdir.exists()
         assert sample_bib_file.parent == temp_workdir
 
-    def test_validation_generates_csv_output(self, sample_bib_file, temp_workdir):
+    def test_validation_generates_csv_output(
+        self, sample_bib_file, temp_workdir
+    ):
         """Should generate CSV validation report for human review."""
         # Placeholder for actual validation script
         # Expected output: validation_report.csv
 
-        expected_output = temp_workdir / "validation_report.csv"
+        temp_workdir / "validation_report.csv"
 
         # CSV should have these columns:
         expected_columns = [
@@ -106,12 +106,14 @@ class TestValidationPipeline:
 class TestAutoFixPipeline:
     """Test automatic fixing of entries."""
 
-    def test_auto_fix_generates_staged_output(self, sample_bib_file, temp_workdir):
+    def test_auto_fix_generates_staged_output(
+        self, sample_bib_file, temp_workdir
+    ):
         """Should generate staged .bib file with fixes."""
         # Placeholder for auto_fix_bibliography.py
         # Expected output: references_fixed.staged.bib
 
-        expected_output = temp_workdir / "references_fixed.staged.bib"
+        temp_workdir / "references_fixed.staged.bib"
 
         # Original should remain unchanged
         assert sample_bib_file.exists()
@@ -120,16 +122,18 @@ class TestAutoFixPipeline:
         """Should generate audit log of all changes."""
         # Expected output: automatic_fixes.log
 
-        expected_log = temp_workdir / "automatic_fixes.log"
+        temp_workdir / "automatic_fixes.log"
 
         # Log should be JSON lines format
         # Each line: {"timestamp": "...", "citation_key": "...", "action": "...", ...}
 
-    def test_auto_fix_generates_merge_proposal(self, sample_bib_file, temp_workdir):
+    def test_auto_fix_generates_merge_proposal(
+        self, sample_bib_file, temp_workdir
+    ):
         """Should generate merge proposal with diffs."""
         # Expected output: merge_proposal.json
 
-        expected_proposal = temp_workdir / "merge_proposal.json"
+        temp_workdir / "merge_proposal.json"
 
         # Should contain per-entry diffs: {"citation_key": {"old": ..., "new": ...}}
 

@@ -133,9 +133,10 @@ The end.
         # Check BibTeX file
         bib_file = temp_output_dir / "references.bib"
         bib_content = bib_file.read_text()
+        # Phase 1: Temporary Better BibTeX-style keys (smithTemp2023)
         assert (
-            "@misc{smith2023," in bib_content
-            or "@article{smith2023," in bib_content
+            "@misc{smithTemp2023," in bib_content
+            or "@article{smithTemp2023," in bib_content
         )
         assert (
             'author = "Smith and others",' in bib_content

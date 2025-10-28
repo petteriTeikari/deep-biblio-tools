@@ -29,7 +29,8 @@ import requests
 from Levenshtein import distance as levenshtein_distance
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,9 @@ class DOIValidator:
     """Validate DOIs against CrossRef API."""
 
     CROSSREF_API = "https://api.crossref.org/works/{}"
-    HEADERS = {"User-Agent": "deep-biblio-tools/validation (contact via github)"}
+    HEADERS = {
+        "User-Agent": "deep-biblio-tools/validation (contact via github)"
+    }
     TIMEOUT = 10
 
     def __init__(self):
@@ -75,7 +78,9 @@ class DOIValidator:
         url = self.CROSSREF_API.format(doi)
 
         try:
-            response = requests.get(url, headers=self.HEADERS, timeout=self.TIMEOUT)
+            response = requests.get(
+                url, headers=self.HEADERS, timeout=self.TIMEOUT
+            )
 
             if response.status_code == 200:
                 data = response.json().get("message", {})
@@ -173,7 +178,9 @@ class BibSourceValidator:
                 # Fuzzy title matching
                 if doi_metadata and title:
                     crossref_title = " ".join(doi_metadata.get("title", []))
-                    if crossref_title and self._fuzzy_mismatch(title, crossref_title):
+                    if crossref_title and self._fuzzy_mismatch(
+                        title, crossref_title
+                    ):
                         issues.append("FUZZY_TITLE_MISMATCH")
 
         # Check venue for articles
@@ -195,7 +202,9 @@ class BibSourceValidator:
             "doi": doi,
             "doi_status": doi_status,
             "doi_checked_at": (
-                self.doi_validator.cache.get(doi, {}).get("checked_at") if doi else None
+                self.doi_validator.cache.get(doi, {}).get("checked_at")
+                if doi
+                else None
             ),
             "arxiv_id": self._extract_arxiv_id(entry.get("url", "")),
             "issues": issues,
@@ -210,7 +219,9 @@ class BibSourceValidator:
     def _has_incomplete_authors(self, author: str) -> bool:
         return "and others" in author or "et al." in author
 
-    def _fuzzy_mismatch(self, title1: str, title2: str, threshold: float = 0.3) -> bool:
+    def _fuzzy_mismatch(
+        self, title1: str, title2: str, threshold: float = 0.3
+    ) -> bool:
         dist = levenshtein_distance(title1.lower(), title2.lower())
         max_len = max(len(title1), len(title2))
         if max_len == 0:
@@ -334,12 +345,14 @@ def main(bib_file: Path, output_dir: Path | None):
         for issue in result["issues"]:
             issue_counts[issue] = issue_counts.get(issue, 0) + 1
 
-    for issue, count in sorted(issue_counts.items(), key=lambda x: x[1], reverse=True)[:10]:
+    for issue, count in sorted(
+        issue_counts.items(), key=lambda x: x[1], reverse=True
+    )[:10]:
         severity = ISSUES.get(issue, "UNKNOWN")
         print(f"  {issue:30s} ({severity:8s}): {count:4d}")
 
     print(f"\n{'=' * 80}")
-    print(f"Reports written:")
+    print("Reports written:")
     print(f"  JSONL: {output_jsonl}")
     print(f"  CSV:   {output_csv}")
     print(f"  Log:   {log_file}")

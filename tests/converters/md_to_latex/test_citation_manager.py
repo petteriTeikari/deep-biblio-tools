@@ -14,31 +14,42 @@ class TestCitation:
     """Test Citation class."""
 
     def test_basic_citation(self):
-        """Test basic citation creation."""
-        citation = Citation("Smith et al.", "2023", "https://example.com")
+        """Test basic citation creation with required Better BibTeX key."""
+        citation = Citation(
+            "Smith et al.",
+            "2023",
+            "https://example.com",
+            key="smithMachineLearning2023",
+        )
         assert citation.authors == "Smith et al."
         assert citation.year == "2023"
         assert citation.url == "https://example.com"
-        # With Better BibTeX as default, simple key is generated initially
-        assert citation.key == "smith2023"
+        assert citation.key == "smithMachineLearning2023"
 
     def test_custom_key(self):
-        """Test citation with custom key."""
+        """Test citation with Better BibTeX key."""
         citation = Citation(
-            "Smith", "2023", "https://example.com", key="custom2023"
+            "Smith", "2023", "https://example.com", key="smithDeepLearning2023"
         )
-        assert citation.key == "custom2023"
+        assert citation.key == "smithDeepLearning2023"
 
     def test_doi_extraction(self):
         """Test DOI extraction from URL."""
-        citation = Citation("Smith", "2023", "https://doi.org/10.1234/example")
+        citation = Citation(
+            "Smith",
+            "2023",
+            "https://doi.org/10.1234/example",
+            key="smithExample2023",
+        )
         assert citation.doi == "10.1234/example"
 
     def test_to_bibtex_basic(self):
         """Test basic BibTeX generation."""
-        citation = Citation("Smith et al.", "2023", "https://example.com")
+        citation = Citation(
+            "Smith et al.", "2023", "https://example.com", key="smithTest2023"
+        )
         bibtex = citation.to_bibtex()
-        assert "@misc{smith2023," in bibtex
+        assert "@misc{smithTest2023," in bibtex
         assert 'author = "Smith and others",' in bibtex
         assert 'year = "2023",' in bibtex
         assert 'url = "https://example.com",' in bibtex
@@ -46,7 +57,10 @@ class TestCitation:
     def test_to_bibtex_with_metadata(self):
         """Test BibTeX generation with full metadata."""
         citation = Citation(
-            "Smith et al.", "2023", "https://doi.org/10.1234/example"
+            "Smith et al.",
+            "2023",
+            "https://doi.org/10.1234/example",
+            key="smithExamplePaper2023",
         )
         citation.title = "Example Paper"
         citation.journal = "Example Journal"
@@ -54,8 +68,9 @@ class TestCitation:
         citation.pages = "1-10"
         citation.bibtex_type = "article"
 
-        # Regenerate key with title for Better BibTeX format
-        citation.regenerate_key_with_title()
+        # Key regeneration is now a no-op (keys must come from Zotero)
+        result_key = citation.regenerate_key_with_title()
+        assert result_key == "smithExamplePaper2023"  # Key unchanged
 
         bibtex = citation.to_bibtex()
         assert "@article{smithExamplePaper2023," in bibtex
@@ -104,8 +119,9 @@ class TestCitationManager:
 
         citations = manager.extract_citations(content)
         assert len(citations) == 2
-        assert citations[0].key == "smith2023"
-        assert citations[1].key == "smith2023a"
+        # Keys now use Better BibTeX format (temporary until Phase 2)
+        assert citations[0].key == "smithTemp2023"
+        assert citations[1].key == "smithTemp2023a"
 
     def test_replace_citations_in_text(self, temp_cache_dir):
         """Test replacement of citations with LaTeX commands."""
@@ -119,13 +135,18 @@ class TestCitationManager:
 
         # Then replace
         latex_content = manager.replace_citations_in_text(content)
-        assert latex_content == "Text with \\citep{smith2023} citation."
+        assert latex_content == "Text with \\citep{smithTemp2023} citation."
 
     @patch("requests.get")
     def test_fetch_from_crossref(self, mock_get, temp_cache_dir):
         """Test fetching metadata from CrossRef."""
         manager = CitationManager(cache_dir=temp_cache_dir)
-        citation = Citation("Smith", "2023", "https://doi.org/10.1234/example")
+        citation = Citation(
+            "Smith",
+            "2023",
+            "https://doi.org/10.1234/example",
+            key="smithExample2023",
+        )
 
         # Mock CrossRef response
         mock_response = MagicMock()
@@ -153,7 +174,12 @@ class TestCitationManager:
     def test_fetch_from_arxiv(self, mock_get, temp_cache_dir):
         """Test fetching metadata from arXiv."""
         manager = CitationManager(cache_dir=temp_cache_dir)
-        citation = Citation("Smith", "2023", "https://arxiv.org/abs/2301.00001")
+        citation = Citation(
+            "Smith",
+            "2023",
+            "https://arxiv.org/abs/2301.00001",
+            key="smithArxiv2023",
+        )
 
         # Mock arXiv response
         mock_response = MagicMock()
@@ -175,7 +201,9 @@ class TestCitationManager:
         """Test citation cache persistence."""
         # First manager instance
         manager1 = CitationManager(cache_dir=temp_cache_dir)
-        citation = Citation("Smith", "2023", "https://example.com")
+        citation = Citation(
+            "Smith", "2023", "https://example.com", key="smithTest2023"
+        )
         citation.title = "Cached Paper"
         manager1.citations["test"] = citation
         # Don't need to call _save_to_cache directly as it's handled internally
@@ -190,10 +218,14 @@ class TestCitationManager:
         manager = CitationManager(cache_dir=temp_cache_dir)
 
         # Add some citations
-        citation1 = Citation("Smith", "2023", "https://example.com/1")
-        citation2 = Citation("Jones", "2022", "https://example.com/2")
-        manager.citations["smith2023"] = citation1
-        manager.citations["jones2022"] = citation2
+        citation1 = Citation(
+            "Smith", "2023", "https://example.com/1", key="smithTest2023"
+        )
+        citation2 = Citation(
+            "Jones", "2022", "https://example.com/2", key="jonesTest2022"
+        )
+        manager.citations["smithTest2023"] = citation1
+        manager.citations["jonesTest2022"] = citation2
 
         # Generate BibTeX file
         output_path = temp_cache_dir / "references.bib"

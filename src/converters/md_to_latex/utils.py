@@ -507,227 +507,66 @@ def normalize_arxiv_url(url: str) -> str:
     return url
 
 
-def generate_citation_key(
-    authors: str, year: str, title: str = "", use_better_bibtex: bool = True
-) -> str:
-    """Generate a citation key from authors, year, and optionally title.
+def generate_citation_key(*args, **kwargs) -> str:
+    """FORBIDDEN: Citation keys must come from Zotero Better BibTeX.
+
+    This function is intentionally disabled. Citation keys must ONLY come from
+    Zotero Better BibTeX export. Never generate keys locally.
+
+    Raises:
+        RuntimeError: Always - this function must never be called
+
+    See:
+        docs/better-bibtex-key-strategy.md for implementation details
+        .claude/CLAUDE.md for design principles
+    """
+    raise RuntimeError(
+        "Citation key generation is FORBIDDEN.\n"
+        "Keys must come from Zotero Better BibTeX export.\n"
+        "Use load_collection_with_keys() to get keys from Zotero.\n"
+        "See docs/better-bibtex-key-strategy.md"
+    )
+
+
+def is_better_bibtex_key(key: str) -> bool:
+    """Validate Better BibTeX key format without regex.
+
+    Better BibTeX keys have pattern: [author][ShortTitle][year]
+    Example: adisornDigitalProductPassport2021
+
+    Characteristics:
+    - Length: Typically >= 12 characters
+    - Contains both uppercase and lowercase (camelCase)
+    - Ends with 4-digit year
+    - NOT just authorYear (e.g., adisorn2021 is invalid)
 
     Args:
-        authors: Author string (e.g., "Smith, John and Doe, Jane")
-        year: Publication year
-        title: Paper title (used for Better BibTeX style keys)
-        use_better_bibtex: If True, use Better BibTeX style (default),
-                          otherwise use simple authorYear style
+        key: Citation key to validate
 
     Returns:
-        Citation key in either Better BibTeX format (smithMachineLearning2023)
-        or simple format (smith2023)
+        True if key matches Better BibTeX format, False otherwise
     """
-    # CRITICAL FIX: Handle empty or invalid author strings
-    if not authors or authors.strip() == "":
-        # Generate a fallback key using year and part of title if available
-        if title:
-            # Use first significant word from title without regex
-            # Remove non-alphabetic characters
-            clean_title = []
-            for char in title:
-                if char.isalpha() or char.isspace():
-                    clean_title.append(char)
-                else:
-                    clean_title.append(" ")
-            title_words = "".join(clean_title).split()
+    if not key or not isinstance(key, str):
+        return False
 
-            for word in title_words:
-                if len(word) > 3:  # Skip short words
-                    return f"{word.lower()}{year}"
-        return f"unknown{year}"
+    if len(key) < 12:
+        return False
 
-    # Extract first author's last name
-    first_author = authors.split(",")[0].split(" and ")[0].strip()
+    # Must end with 4-digit year
+    if not (len(key) >= 4 and key[-4:].isdigit()):
+        return False
 
-    # Handle "et al." cases - IMPROVED HANDLING
-    if " et al." in first_author or " et al" in first_author:
-        # Extract just the first author before "et al"
-        first_author = first_author.split(" et al")[0].strip()
-        # If we still have nothing, fallback
-        if not first_author:
-            return f"unknown{year}"
+    # Reject simple authorYear pattern (e.g., "adisorn2021")
+    # Check if everything before year is just lowercase letters
+    before_year = key[:-4]
+    if before_year.isalpha() and before_year.islower():
+        return False
 
-    # For last name, handle name prefixes properly
-    author_parts = first_author.split()
-    if author_parts:
-        # Check for name prefixes that should be included with the surname
-        prefixes = [
-            "van",
-            "von",
-            "de",
-            "del",
-            "della",
-            "di",
-            "da",
-            "das",
-            "dos",
-            "der",
-            "la",
-            "le",
-        ]
+    # Better BibTeX keys have mixed case (camelCase)
+    has_upper = any(c.isupper() for c in key)
+    has_lower = any(c.islower() for c in key)
 
-        # Better approach: look for prefixes and combine them with surname
-        surname_parts = []
-        found_prefix = False
-
-        for i, part in enumerate(author_parts):
-            if part.lower() in prefixes:
-                surname_parts.append(part)
-                found_prefix = True
-            elif (
-                found_prefix or i == len(author_parts) - 1
-            ):  # Include all remaining parts after prefix
-                surname_parts.append(part)
-
-        if not surname_parts:
-            last_name = author_parts[-1]  # Fallback to last word
-        else:
-            last_name = "".join(surname_parts)
-    else:
-        last_name = "unknown"
-
-    # Remove special characters from author name - ASCII ONLY for BibTeX compatibility
-    # Use ASCII transliteration for common non-ASCII characters
-    transliteration = {
-        "ä": "a",
-        "ö": "o",
-        "ü": "u",
-        "ß": "ss",
-        "à": "a",
-        "á": "a",
-        "â": "a",
-        "ã": "a",
-        "å": "a",
-        "è": "e",
-        "é": "e",
-        "ê": "e",
-        "ë": "e",
-        "ì": "i",
-        "í": "i",
-        "î": "i",
-        "ï": "i",
-        "ò": "o",
-        "ó": "o",
-        "ô": "o",
-        "õ": "o",
-        "ù": "u",
-        "ú": "u",
-        "û": "u",
-        "ñ": "n",
-        "ç": "c",
-    }
-    clean_name = []
-    for char in last_name:
-        if char.lower() in transliteration:
-            clean_name.append(transliteration[char.lower()])
-        elif (
-            char.isascii() and char.isalpha()
-        ):  # ONLY ASCII alphabetic characters
-            clean_name.append(char)
-        # Skip all other characters (control chars, non-ASCII, special chars)
-    last_name = "".join(clean_name)
-
-    # CRITICAL: Final sanitization to prevent ^^? characters in LaTeX
-    # Remove any remaining control characters or non-printable ASCII
-    last_name = "".join(c for c in last_name if ord(c) >= 32 and ord(c) < 127)
-
-    if use_better_bibtex and title:
-        # Better BibTeX style: authorTitleWord(s)Year
-        # Clean and extract title words
-        # Remove common words and punctuation
-        stop_words = {
-            "a",
-            "an",
-            "the",
-            "and",
-            "or",
-            "but",
-            "for",
-            "with",
-            "without",
-            "of",
-            "in",
-            "on",
-            "at",
-            "to",
-            "from",
-            "by",
-            "as",
-            "is",
-            "are",
-            "was",
-            "were",
-            "been",
-            "be",
-            "have",
-            "has",
-            "had",
-            "do",
-            "does",
-            "did",
-            "will",
-            "would",
-            "could",
-            "should",
-            "may",
-            "might",
-            "must",
-            "can",
-            "this",
-            "that",
-            "these",
-            "those",
-            "into",
-            "upon",
-            "about",
-        }
-
-        # Clean title: remove special chars but keep spaces
-        # CRITICAL: Also sanitize title to prevent ^^? characters
-        clean_title = []
-        for char in title:
-            # Only keep printable ASCII letters and spaces
-            if ord(char) >= 32 and ord(char) < 127:
-                if char.isalpha() or char.isspace():
-                    clean_title.append(char)
-                else:
-                    clean_title.append(" ")
-            # Skip control characters and non-ASCII
-        title_words = "".join(clean_title).split()
-
-        # Filter significant words
-        significant_words = [
-            word
-            for word in title_words
-            if word.lower() not in stop_words and len(word) > 2
-        ]
-
-        # Take first 1-3 significant words for the title part
-        if significant_words:
-            # Capitalize each word
-            title_part = "".join(
-                [word.capitalize() for word in significant_words[:3]]
-            )
-        else:
-            # Fallback if no significant words
-            title_part = "Paper"
-
-        # Better BibTeX format with lowercase first letter of author
-        if last_name:
-            key = f"{last_name[0].lower()}{last_name[1:]}{title_part}{year}"
-        else:
-            key = f"unknown{title_part}{year}"
-    else:
-        # Simple format: authorYear (all lowercase)
-        key = f"{last_name.lower()}{year}"
-
-    return key
+    return has_upper and has_lower
 
 
 def extract_url_from_link(link: str) -> str | None:

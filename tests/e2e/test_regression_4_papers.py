@@ -179,12 +179,12 @@ class TestRegressionPapers:
                     refs_text = pdf_text[refs_start:]
 
                     # Check for problematic patterns
-                    assert (
-                        "Unknown" not in refs_text
-                    ), f"Found 'Unknown' author in {paper_name} references"
-                    assert (
-                        "Anonymous" not in refs_text
-                    ), f"Found 'Anonymous' author in {paper_name} references"
+                    assert "Unknown" not in refs_text, (
+                        f"Found 'Unknown' author in {paper_name} references"
+                    )
+                    assert "Anonymous" not in refs_text, (
+                        f"Found 'Anonymous' author in {paper_name} references"
+                    )
 
     def test_paper_bibtex_file_valid(self, markdown_path: str, paper_name: str):
         """Test that generated references.bib has no Unknown/Anonymous entries.
@@ -223,15 +223,15 @@ class TestRegressionPapers:
                 bib_content = bib_file.read_text(encoding="utf-8")
 
                 # Check for problematic patterns in BibTeX
-                assert (
-                    "author = {Unknown}" not in bib_content
-                ), f"Found 'Unknown' author in {paper_name} BibTeX"
-                assert (
-                    "author = {Anonymous}" not in bib_content
-                ), f"Found 'Anonymous' author in {paper_name} BibTeX"
-                assert (
-                    "author={Unknown}" not in bib_content
-                ), f"Found 'Unknown' author in {paper_name} BibTeX"
-                assert (
-                    "author={Anonymous}" not in bib_content
-                ), f"Found 'Anonymous' author in {paper_name} BibTeX"
+                assert "author = {Unknown}" not in bib_content, (
+                    f"Found 'Unknown' author in {paper_name} BibTeX"
+                )
+                assert "author = {Anonymous}" not in bib_content, (
+                    f"Found 'Anonymous' author in {paper_name} BibTeX"
+                )
+                assert "author={Unknown}" not in bib_content, (
+                    f"Found 'Unknown' author in {paper_name} BibTeX"
+                )
+                assert "author={Anonymous}" not in bib_content, (
+                    f"Found 'Anonymous' author in {paper_name} BibTeX"
+                )

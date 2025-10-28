@@ -1,8 +1,9 @@
 """Unit tests for BibTeX parsing and field validation."""
 
-import pytest
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+
+import pytest
 
 pytestmark = pytest.mark.unit
 
@@ -134,9 +135,9 @@ class TestIssueDetection:
 
         for author, should_flag in test_cases:
             has_incomplete = "and others" in author or "et al." in author
-            assert (
-                has_incomplete == should_flag
-            ), f"Author '{author}' incorrectly flagged"
+            assert has_incomplete == should_flag, (
+                f"Author '{author}' incorrectly flagged"
+            )
 
     def test_detect_placeholder_titles(self):
         """Should flag placeholder or generic titles."""
@@ -150,14 +151,17 @@ class TestIssueDetection:
         test_cases = [
             ("Web page by Unknown Author", True),
             ("A Real Research Paper Title", False),
-            ("Unknown Sources of Error", False),  # False positive - has "Unknown" but valid
+            (
+                "Unknown Sources of Error",
+                False,
+            ),  # False positive - has "Unknown" but valid
         ]
 
         for title, should_flag in test_cases[:2]:  # Skip ambiguous case for now
             is_placeholder = any(p in title for p in placeholder_patterns)
-            assert (
-                is_placeholder == should_flag
-            ), f"Title '{title}' incorrectly flagged"
+            assert is_placeholder == should_flag, (
+                f"Title '{title}' incorrectly flagged"
+            )
 
     def test_detect_missing_doi_for_articles(self):
         """Should flag articles without DOI (warning level)."""
@@ -201,12 +205,6 @@ class TestSeverityLevels:
 
     def test_multiple_issues_uses_highest_severity(self):
         """Entry with multiple issues should use highest severity."""
-        issues = ["MISSING_TITLE", "INCOMPLETE_AUTHORS", "MISSING_DOI"]
-        severities = {
-            "MISSING_TITLE": "CRITICAL",
-            "INCOMPLETE_AUTHORS": "HIGH",
-            "MISSING_DOI": "MEDIUM",
-        }
 
         # Highest severity wins
         max_severity = max(

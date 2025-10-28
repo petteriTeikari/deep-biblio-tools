@@ -168,13 +168,13 @@ def test_bibtex_validation_artifact(golden_baseline):
 
     validation_data = json.loads(validation_file.read_text())
 
-    assert (
-        validation_data.get("unknown_count", 0) == 0
-    ), "BibTeX file contains Unknown author entries"
+    assert validation_data.get("unknown_count", 0) == 0, (
+        "BibTeX file contains Unknown author entries"
+    )
 
-    assert (
-        validation_data.get("anonymous_count", 0) == 0
-    ), "BibTeX file contains Anonymous author entries"
+    assert validation_data.get("anonymous_count", 0) == 0, (
+        "BibTeX file contains Anonymous author entries"
+    )
 
 
 def test_pdf_validation_artifact():

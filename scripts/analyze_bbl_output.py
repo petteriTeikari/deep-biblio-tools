@@ -21,17 +21,17 @@ def parse_bibitem_entries(bbl_path: Path) -> list[dict]:
     """
     entries = []
 
-    with open(bbl_path, 'r', encoding='utf-8') as f:
+    with open(bbl_path, encoding="utf-8") as f:
         content = f.read()
 
     # Find where bibliography starts
-    bib_start = content.find('\\begin{thebibliography}')
+    bib_start = content.find("\\begin{thebibliography}")
     if bib_start == -1:
         print("ERROR: Could not find \\begin{thebibliography}")
         return entries
 
     # Extract just the bibliography section
-    bib_end = content.find('\\end{thebibliography}', bib_start)
+    bib_end = content.find("\\end{thebibliography}", bib_start)
     if bib_end == -1:
         print("ERROR: Could not find \\end{thebibliography}")
         return entries
@@ -40,7 +40,7 @@ def parse_bibitem_entries(bbl_path: Path) -> list[dict]:
 
     # Split into individual entries
     # Each entry starts with \bibitem
-    lines = bib_content.split('\n')
+    lines = bib_content.split("\n")
 
     current_entry = None
 
@@ -48,10 +48,15 @@ def parse_bibitem_entries(bbl_path: Path) -> list[dict]:
         line = line.strip()
 
         # Skip empty lines and preamble
-        if not line or line.startswith('\\begin') or line.startswith('\\provide') or line.startswith('\\expandafter'):
+        if (
+            not line
+            or line.startswith("\\begin")
+            or line.startswith("\\provide")
+            or line.startswith("\\expandafter")
+        ):
             continue
 
-        if line.startswith('\\bibitem'):
+        if line.startswith("\\bibitem"):
             # Save previous entry if exists
             if current_entry is not None:
                 entries.append(finalize_entry(current_entry))
@@ -62,7 +67,7 @@ def parse_bibitem_entries(bbl_path: Path) -> list[dict]:
 
         elif current_entry is not None:
             # Accumulate formatted text
-            current_entry['formatted_text'] += ' ' + line
+            current_entry["formatted_text"] += " " + line
 
     # Don't forget the last entry
     if current_entry is not None:
@@ -80,83 +85,83 @@ def parse_bibitem_line(line: str) -> dict:
     """
 
     # First, extract label if it exists (in square brackets)
-    label = ''
-    label_start = line.find('[{')
+    label = ""
+    label_start = line.find("[{")
 
     if label_start != -1:
         # Find the matching }]
-        label_end = line.find('}]', label_start)
+        label_end = line.find("}]", label_start)
         if label_end != -1:
-            label = line[label_start + 2:label_end]
+            label = line[label_start + 2 : label_end]
             # Citation key comes after the label
-            key_start = line.find('{', label_end)
+            key_start = line.find("{", label_end)
         else:
             # Malformed label, try to find key anyway
-            key_start = line.find('{', label_start + 2)
+            key_start = line.find("{", label_start + 2)
     else:
         # No label, find first { after \bibitem
-        bibitem_pos = line.find('\\bibitem')
+        bibitem_pos = line.find("\\bibitem")
         if bibitem_pos != -1:
-            key_start = line.find('{', bibitem_pos)
+            key_start = line.find("{", bibitem_pos)
         else:
             key_start = -1
 
     # Extract citation key
     if key_start == -1:
         return {
-            'citation_key': 'PARSE_ERROR',
-            'label': '',
-            'formatted_text': line,
-            'issues': ['Failed to parse citation key']
+            "citation_key": "PARSE_ERROR",
+            "label": "",
+            "formatted_text": line,
+            "issues": ["Failed to parse citation key"],
         }
 
-    key_end = line.find('}', key_start)
+    key_end = line.find("}", key_start)
     if key_end == -1:
         return {
-            'citation_key': 'PARSE_ERROR',
-            'label': label,
-            'formatted_text': line,
-            'issues': ['Failed to find end of citation key']
+            "citation_key": "PARSE_ERROR",
+            "label": label,
+            "formatted_text": line,
+            "issues": ["Failed to find end of citation key"],
         }
 
-    citation_key = line[key_start + 1:key_end]
+    citation_key = line[key_start + 1 : key_end]
 
     # Extract any text after the citation key on the same line
-    text_after = line[key_end + 1:].strip()
+    text_after = line[key_end + 1 :].strip()
 
     return {
-        'citation_key': citation_key,
-        'label': label,
-        'formatted_text': text_after,
-        'issues': []
+        "citation_key": citation_key,
+        "label": label,
+        "formatted_text": text_after,
+        "issues": [],
     }
 
 
 def finalize_entry(entry: dict) -> dict:
     """Analyze entry for issues and clean up."""
 
-    text = entry['formatted_text'].strip()
-    entry['formatted_text'] = text
+    text = entry["formatted_text"].strip()
+    entry["formatted_text"] = text
 
     # Detect issues
-    issues = entry['issues']
+    issues = entry["issues"]
 
     # Issue 1: Empty or very short formatted text
     if len(text) < 10:
-        issues.append('EMPTY_OR_TOO_SHORT')
+        issues.append("EMPTY_OR_TOO_SHORT")
 
     # Issue 2: Missing title (text ends right after year)
     # Pattern: ends with "(2021)" or "(2021) " with nothing after
-    if text.endswith(')') and not any(c.isalpha() for c in text.split(')')[-1]):
-        issues.append('MISSING_TITLE')
+    if text.endswith(")") and not any(c.isalpha() for c in text.split(")")[-1]):
+        issues.append("MISSING_TITLE")
 
     # Issue 3: Contains "et~al" but very short (incomplete author list issue)
-    if 'et~al' in text and len(text) < 50:
-        issues.append('INCOMPLETE_AUTHOR_SHORT')
+    if "et~al" in text and len(text) < 50:
+        issues.append("INCOMPLETE_AUTHOR_SHORT")
 
     # Issue 4: Missing venue/journal (no lowercase words after year)
     # This is tricky, but we can check if there are capitalized words after the year
-    year_markers = ['(2021)', '(2022)', '(2023)', '(2024)', '(2025)']
+    year_markers = ["(2021)", "(2022)", "(2023)", "(2024)", "(2025)"]
     has_venue = False
     for marker in year_markers:
         if marker in text:
@@ -166,20 +171,20 @@ def finalize_entry(entry: dict) -> dict:
                 has_venue = True
                 break
 
-    if not has_venue and ')' in text:
-        issues.append('MISSING_VENUE')
+    if not has_venue and ")" in text:
+        issues.append("MISSING_VENUE")
 
     # Issue 5: Contains "Unknown" or "Anonymous"
-    if 'Unknown' in text or 'Anonymous' in text:
-        issues.append('UNKNOWN_OR_ANONYMOUS')
+    if "Unknown" in text or "Anonymous" in text:
+        issues.append("UNKNOWN_OR_ANONYMOUS")
 
     # Issue 6: Contains URL but no actual citation text
-    if '\\href' in text and len(text) < 100:
-        issues.append('URL_ONLY_NO_CONTENT')
+    if "\\href" in text and len(text) < 100:
+        issues.append("URL_ONLY_NO_CONTENT")
 
-    entry['issues'] = issues
-    entry['issue_count'] = len(issues)
-    entry['has_issues'] = len(issues) > 0
+    entry["issues"] = issues
+    entry["issue_count"] = len(issues)
+    entry["has_issues"] = len(issues) > 0
 
     return entry
 
@@ -191,8 +196,15 @@ def write_csv(entries: list[dict], output_path: Path):
         print("ERROR: No entries to write")
         return
 
-    with open(output_path, 'w', newline='', encoding='utf-8') as f:
-        fieldnames = ['citation_key', 'label', 'formatted_text', 'has_issues', 'issue_count', 'issues']
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        fieldnames = [
+            "citation_key",
+            "label",
+            "formatted_text",
+            "has_issues",
+            "issue_count",
+            "issues",
+        ]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
 
         writer.writeheader()
@@ -200,14 +212,16 @@ def write_csv(entries: list[dict], output_path: Path):
         for entry in entries:
             # Convert issues list to string
             entry_copy = entry.copy()
-            entry_copy['issues'] = '; '.join(entry['issues']) if entry['issues'] else ''
+            entry_copy["issues"] = (
+                "; ".join(entry["issues"]) if entry["issues"] else ""
+            )
             writer.writerow(entry_copy)
 
     print(f"✅ Wrote {len(entries)} entries to {output_path}")
 
     # Print summary
-    entries_with_issues = sum(1 for e in entries if e['has_issues'])
-    print(f"\n📊 Summary:")
+    entries_with_issues = sum(1 for e in entries if e["has_issues"])
+    print("\n📊 Summary:")
     print(f"  Total entries: {len(entries)}")
     print(f"  Entries with issues: {entries_with_issues}")
     print(f"  Clean entries: {len(entries) - entries_with_issues}")
@@ -215,18 +229,22 @@ def write_csv(entries: list[dict], output_path: Path):
     # Print issue breakdown
     issue_counts = {}
     for entry in entries:
-        for issue in entry['issues']:
+        for issue in entry["issues"]:
             issue_counts[issue] = issue_counts.get(issue, 0) + 1
 
     if issue_counts:
-        print(f"\n⚠️  Issue breakdown:")
-        for issue, count in sorted(issue_counts.items(), key=lambda x: x[1], reverse=True):
+        print("\n⚠️  Issue breakdown:")
+        for issue, count in sorted(
+            issue_counts.items(), key=lambda x: x[1], reverse=True
+        ):
             print(f"  {issue}: {count}")
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python analyze_bbl_output.py <path_to_bbl_file> [output_csv]")
+        print(
+            "Usage: python analyze_bbl_output.py <path_to_bbl_file> [output_csv]"
+        )
         sys.exit(1)
 
     bbl_path = Path(sys.argv[1])
@@ -248,5 +266,5 @@ def main():
     write_csv(entries, output_path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

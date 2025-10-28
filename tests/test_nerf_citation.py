@@ -41,6 +41,9 @@ def clear_citation_cache():
         shutil.rmtree(cache_dir)
 
 
+@pytest.mark.skip(
+    reason="Phase 1: Key generation disabled, re-enable in Phase 2 with Zotero integration"
+)
 @pytest.mark.skipif(
     SKIP_IN_CI,
     reason="pandoc not available or running in CI/Container (arXiv API flaky)",
@@ -79,9 +82,9 @@ def test_nerf_full_title():
 
         # Check for NeRF title (ACM DOI returns shortened "NeRF", arXiv has full title)
         # Note: DOI API behavior changed - ACM now returns only "NeRF" not full title
-        assert (
-            "NeRF" in bib_content
-        ), f"NeRF title not found in bibliography. Got:\n{bib_content}"
+        assert "NeRF" in bib_content, (
+            f"NeRF title not found in bibliography. Got:\n{bib_content}"
+        )
 
         # Check that both entries exist (arXiv and ACM)
         assert "mildenhall2020" in bib_content.lower(), "arXiv entry not found"
@@ -94,6 +97,9 @@ def test_nerf_full_title():
         assert acm_count == 1, "Duplicate ACM entries found"
 
 
+@pytest.mark.skip(
+    reason="Phase 1: Key generation disabled, re-enable in Phase 2 with Zotero integration"
+)
 @pytest.mark.skipif(
     SKIP_IN_CI,
     reason="pandoc not available or running in CI/Container (arXiv API flaky)",
@@ -121,6 +127,9 @@ def test_nerf_with_prefer_arxiv():
         assert "NeRF" in bib_content
 
 
+@pytest.mark.skip(
+    reason="Phase 1: Key generation disabled, re-enable in Phase 2 with Zotero integration"
+)
 @pytest.mark.skipif(not PANDOC_AVAILABLE, reason="pandoc not available")
 def test_citation_deduplication():
     """Test that duplicate citations are properly deduplicated."""

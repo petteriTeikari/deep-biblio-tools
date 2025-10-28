@@ -18,7 +18,6 @@ To get a Dropbox API token:
 import argparse
 import sys
 from datetime import datetime
-from pathlib import Path
 
 import dropbox
 from dropbox.exceptions import ApiError
@@ -41,8 +40,7 @@ def list_file_revisions(dbx, file_path, target_date=None):
 
         if target_date:
             revisions = [
-                r for r in revisions
-                if r.client_modified.date() == target_date
+                r for r in revisions if r.client_modified.date() == target_date
             ]
 
         return revisions
@@ -74,7 +72,9 @@ def find_files_with_date_revisions(dbx, repo_path, target_date):
             for entry in result.entries:
                 if isinstance(entry, dropbox.files.FileMetadata):
                     # Check revisions for this file
-                    revisions = list_file_revisions(dbx, entry.path_display, target_date)
+                    revisions = list_file_revisions(
+                        dbx, entry.path_display, target_date
+                    )
                     if revisions:
                         results[entry.path_display] = revisions
 
@@ -95,19 +95,17 @@ def main():
         description="Check Dropbox file version history for repository files"
     )
     parser.add_argument(
-        "--token",
-        required=True,
-        help="Dropbox API access token"
+        "--token", required=True, help="Dropbox API access token"
     )
     parser.add_argument(
         "--date",
         default=datetime.now().strftime("%Y-%m-%d"),
-        help="Date to check for file versions (YYYY-MM-DD, default: today)"
+        help="Date to check for file versions (YYYY-MM-DD, default: today)",
     )
     parser.add_argument(
         "--repo-path",
         default="/github-personal/deep-biblio-tools",
-        help="Path to repository in Dropbox (default: /github-personal/deep-biblio-tools)"
+        help="Path to repository in Dropbox (default: /github-personal/deep-biblio-tools)",
     )
 
     args = parser.parse_args()
@@ -148,7 +146,9 @@ def main():
         sys.exit(0)
 
     # Display results
-    print(f"\nFound {len(files_with_revisions)} file(s) with revisions from {target_date}:")
+    print(
+        f"\nFound {len(files_with_revisions)} file(s) with revisions from {target_date}:"
+    )
     print("=" * 80)
 
     for file_path, revisions in sorted(files_with_revisions.items()):
@@ -161,8 +161,8 @@ def main():
             print(f"    - {timestamp} | {size_kb:.1f} KB | Rev: {rev.rev}")
 
     print("\n" + "=" * 80)
-    print(f"\nTo restore a specific revision:")
-    print(f"  dbx.files_restore(path='/path/to/file', rev='revision_id')")
+    print("\nTo restore a specific revision:")
+    print("  dbx.files_restore(path='/path/to/file', rev='revision_id')")
 
 
 if __name__ == "__main__":

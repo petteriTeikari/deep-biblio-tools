@@ -1,5 +1,6 @@
 """Tests for markdown to LaTeX utility functions."""
 
+import pytest
 from src.converters.md_to_latex.utils import (
     clean_pandoc_output,
     extract_abstract_from_markdown,
@@ -35,23 +36,28 @@ class TestSanitizeLatex:
 
 
 class TestGenerateCitationKey:
-    """Test citation key generation."""
+    """Test that citation key generation is properly forbidden."""
 
     def test_single_author(self):
-        """Test key generation for single author."""
-        key = generate_citation_key("Smith", "2023")
-        assert key == "smith2023"
+        """Test that key generation raises RuntimeError."""
+        with pytest.raises(
+            RuntimeError, match="Citation key generation is FORBIDDEN"
+        ):
+            generate_citation_key("Smith", "2023")
 
     def test_multiple_authors(self):
-        """Test key generation for multiple authors."""
-        key = generate_citation_key("Smith, Jones, and Brown", "2023")
-        assert key == "smith2023"
+        """Test that key generation raises RuntimeError for multiple authors."""
+        with pytest.raises(
+            RuntimeError, match="Citation key generation is FORBIDDEN"
+        ):
+            generate_citation_key("Smith, Jones, and Brown", "2023")
 
     def test_et_al(self):
-        """Test key generation with et al."""
-        # With Better BibTeX as default, without title we get simple key
-        key = generate_citation_key("Smith et al.", "2023")
-        assert key == "smith2023"
+        """Test that key generation raises RuntimeError with et al."""
+        with pytest.raises(
+            RuntimeError, match="Citation key generation is FORBIDDEN"
+        ):
+            generate_citation_key("Smith et al.", "2023")
 
 
 class TestExtractUrlFromLink:
