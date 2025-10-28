@@ -743,14 +743,11 @@ class MarkdownToLatexConverter:
             # Save output in an 'output' subdirectory within the input file's directory
             self.output_dir = markdown_file.parent / "output"
 
-        # Clean output directory to avoid stale artifacts BEFORE ensuring it exists
-        if self.output_dir and self.output_dir.exists():
-            for item in self.output_dir.iterdir():
-                if item.is_file():
-                    item.unlink()
-                elif item.is_dir():
-                    shutil.rmtree(item)
-            logger.info(f"Cleaned output directory: {self.output_dir}")
+        # SAFETY: Do NOT clean directories - only remove specific output files
+        # WARNING: Claude Code should NEVER be trusted with directory cleaning operations.
+        # Directory structures are too complex and Claude Code can easily wipe everything.
+        # ONLY remove specific, known output files that will be regenerated.
+        # This prevents accidentally deleting source files, user data, or entire directories.
 
         # Ensure output directory exists
         ensure_directory(self.output_dir)
@@ -788,6 +785,12 @@ class MarkdownToLatexConverter:
         # Determine output name
         if output_name is None:
             output_name = markdown_file.stem
+
+        # SAFETY: Only remove the specific PDF that will be generated (nothing else)
+        output_pdf = self.output_dir / f"{output_name}.pdf"
+        if output_pdf.exists():
+            output_pdf.unlink()
+            logger.debug(f"Removed existing PDF: {output_pdf}")
 
         logger.info(f"Converting {markdown_file} to LaTeX")
 
@@ -1438,9 +1441,10 @@ class MarkdownToLatexConverter:
             converter_dir = Path(__file__).parent
             bst_source = converter_dir / bst_filename
 
+            project_root = Path(__file__).parent.parent.parent.parent.parent
+            templates_dir = project_root / "templates"
+
             if not bst_source.exists():
-                project_root = Path(__file__).parent.parent.parent.parent.parent
-                templates_dir = project_root / "templates"
                 bst_source = templates_dir / bst_filename
 
                 # If not in templates, check project root
@@ -1452,9 +1456,18 @@ class MarkdownToLatexConverter:
                 shutil.copy2(bst_source, bst_dest)
                 logger.info(f"Copied {bst_filename} to output directory")
             else:
-                logger.warning(
-                    f"Bibliography style file {bst_filename} not found"
+                # FAIL-FAST: Stop immediately if .bst file is missing
+                error_msg = (
+                    f"CRITICAL ERROR: Bibliography style file '{bst_filename}' not found!\n"
+                    f"Searched locations:\n"
+                    f"  1. {converter_dir / bst_filename}\n"
+                    f"  2. {templates_dir / bst_filename}\n"
+                    f"  3. {project_root / bst_filename}\n"
+                    f"\nCannot proceed with LaTeX compilation without the bibliography style file.\n"
+                    f"Please ensure '{bst_filename}' exists in the templates/ directory or use a different style."
                 )
+                logger.error(error_msg)
+                raise FileNotFoundError(error_msg)
 
             # Create Makefile
             self.latex_builder.create_makefile(

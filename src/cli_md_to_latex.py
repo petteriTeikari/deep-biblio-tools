@@ -83,8 +83,8 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--bibliography-style",
     type=str,
-    default="biblio-style-compact",
-    help="Custom bibliography style file (default: 'biblio-style-compact')",
+    default="spbasic_pt",
+    help="Custom bibliography style file (default: 'spbasic_pt')",
 )
 @click.option(
     "-v", "--verbose", is_flag=True, help="Show progress and detailed output"

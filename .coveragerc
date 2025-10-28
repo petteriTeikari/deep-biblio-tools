@@ -1,0 +1,48 @@
+# Coverage.py configuration for deep-biblio-tools
+# See: https://coverage.readthedocs.io/en/latest/config.html
+
+[run]
+branch = True
+source = src
+omit =
+    */__init__.py
+    */tests/*
+    */test_*.py
+    */venv/*
+    */.venv/*
+    */setup.py
+    */conftest.py
+
+[report]
+show_missing = True
+skip_covered = True
+precision = 2
+exclude_lines =
+    # Standard pragma
+    pragma: no cover
+
+    # Don't complain about missing debug code
+    def __repr__
+
+    # Don't complain if tests don't hit defensive assertion code
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+
+    # Don't complain about abstract methods
+    @abstractmethod
+
+    # Don't complain about pass statements
+    pass
+
+# Fail build if coverage below threshold
+fail_under = 85
+
+[html]
+directory = coverage_html
+
+[xml]
+output = coverage.xml

@@ -13,6 +13,11 @@ Deep Biblio Tools is a Python library for processing LLM-generated bibliographie
 - **NEVER** convert "$50-200" to LaTeX math mode
 - **NEVER** import after sys.path modifications
 - **NEVER** move Claude guardrail files without updating GitHub Actions
+- **NEVER** implement directory cleaning operations - Claude Code cannot be trusted with this
+  - Directory structures are too complex and Claude Code can easily wipe everything
+  - ONLY remove specific, known output files (e.g., `output.pdf`) that will be regenerated
+  - NEVER use `shutil.rmtree()`, `rm -rf`, or loop deletions of directory contents
+  - If cleaning is absolutely necessary, only delete files with explicit extensions (`.pdf`, `.aux`, `.log`)
 
 ## Required Patterns
 
