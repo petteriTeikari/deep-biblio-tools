@@ -160,13 +160,37 @@ Deep Biblio Tools addresses the critical problem of LLM citation hallucinations 
 - ❌ RDF exports (`.rdf`) - never use these
 - ❌ `LOCAL_BIBTEX_PATH` environment variable - OBSOLETE, delete it
 - ❌ Any local snapshot/export of bibliography data
+- ❌ Generated citation keys - NEVER create keys locally
 
 **REQUIRED** - ALWAYS do this:
 - ✅ Load bibliography from Zotero Web API using `pyzotero`
+- ✅ Use `get_collection_bibtex()` NOT `get_collection_items()` (need Better BibTeX keys)
+- ✅ Better BibTeX plugin REQUIRED in Zotero
+- ✅ Use Better BibTeX keys from Zotero as-is (e.g., `smithMachineLearning2024`)
+- ✅ NEVER generate keys locally (e.g., `smith2024` is WRONG)
 - ✅ Auto-add missing citations to Zotero collection
 - ✅ Generate `references.bib` fresh from Zotero data during each conversion
 - ✅ Delete `references.bib` before each conversion (it's regenerated)
 - ✅ Trust Zotero as single source of truth
+
+### Better BibTeX Keys
+
+**CRITICAL**: Citation keys must come from Zotero Better BibTeX plugin only.
+
+**Valid key format**: `adisornDigitalProductPassport2021` (long, camelCase, descriptive)
+**Invalid key format**: `adisorn2021` (short, generated locally - WRONG)
+
+**Key characteristics**:
+- Length: Typically ≥15 characters
+- Pattern: `[author][ShortTitle][year]`
+- Contains both uppercase and lowercase (camelCase)
+- Self-documenting: can identify paper from key alone
+
+**Enforcement**:
+- `generate_citation_key()` function MUST raise error if called
+- Citation class MUST validate key format on init
+- Fail explicitly if citation not in Zotero (no stub entries)
+- See `docs/better-bibtex-key-strategy.md` for details
 
 ### Environment Configuration
 
