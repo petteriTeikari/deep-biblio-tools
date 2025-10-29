@@ -541,40 +541,27 @@ class CitationManager:
             key = cite_key
 
         else:
-            # Not found in Zotero - create temporary key
+            # Not found in Zotero - try auto-add or create temporary key
             # This will happen if:
             # 1. No Zotero collection configured
             # 2. Citation not in Zotero collection
             logger.warning(
-                f"Citation not found in Zotero collection: {url} - creating temporary key"
+                f"Citation not found in Zotero collection: {url} - attempting auto-add"
             )
 
-            # Create temporary Better BibTeX-style key
-            # Pattern: authorTitleYear (e.g., smithMachineLearning2023)
-            first_author = authors.split()[0] if authors else "temp"
-            # Remove special characters and make it start with lowercase
-            clean_author = "".join(c for c in first_author if c.isalpha())
-            if clean_author:
-                clean_author = clean_author[0].lower() + clean_author[1:]
-            else:
-                clean_author = "temp"
+            # Create placeholder Citation object for _handle_missing_citation()
+            placeholder_citation = Citation(
+                authors,
+                year,
+                url,
+                "temp",  # Will be replaced by _handle_missing_citation()
+                use_better_bibtex=self.use_better_bibtex_keys,
+            )
 
-            # Use "Temp" as title part until we fetch real title
-            base_key = f"{clean_author}Temp{year}"
-            key = base_key
+            # Try to auto-add to Zotero or generate appropriate temp key
+            key = self._handle_missing_citation(placeholder_citation, url)
 
-            # Handle duplicate keys with alphabetic suffixes
-            counter = 1
-            while key in self.citations:
-                suffix = ""
-                temp = counter
-                while temp > 0:
-                    temp -= 1
-                    suffix = chr(ord("a") + (temp % 26)) + suffix
-                    temp //= 26
-                key = f"{base_key}{suffix}"
-                counter += 1
-
+            # Create final Citation object with the determined key
             citation = Citation(
                 authors,
                 year,
