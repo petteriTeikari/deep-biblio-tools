@@ -528,8 +528,47 @@ def generate_citation_key(*args, **kwargs) -> str:
     )
 
 
+def is_valid_zotero_key(key: str) -> bool:
+    """Validate Zotero-generated citation key (Web API or Better BibTeX plugin).
+
+    Accepts TWO valid formats:
+    1. Web API keys: author_title_year (e.g., niinimaki_environmental_2020)
+    2. Better BibTeX plugin keys: authorTitleYear (e.g., adisornDigitalProductPassport2021)
+
+    Both formats are deterministic and from Zotero - just different generators.
+
+    Args:
+        key: Citation key to validate
+
+    Returns:
+        True if key matches either Zotero format, False otherwise
+    """
+    if not key or not isinstance(key, str):
+        return False
+
+    # Reject temporary keys
+    if "Temp" in key:
+        return False
+
+    # Must have reasonable length (not just "a2023")
+    if len(key) < 10:
+        return False
+
+    # Must end with 4-digit year
+    if not (len(key) >= 4 and key[-4:].isdigit()):
+        return False
+
+    # Accept if has underscores (Web API format) OR mixed case (Better BibTeX)
+    has_underscore = "_" in key
+    has_mixed_case = any(c.isupper() for c in key[:-4]) and any(
+        c.islower() for c in key[:-4]
+    )
+
+    return has_underscore or has_mixed_case
+
+
 def is_better_bibtex_key(key: str) -> bool:
-    """Validate Better BibTeX key format without regex.
+    """Validate Better BibTeX PLUGIN key format (strict CamelCase).
 
     Better BibTeX keys have pattern: [author][ShortTitle][year]
     Example: adisornDigitalProductPassport2021
@@ -539,6 +578,7 @@ def is_better_bibtex_key(key: str) -> bool:
     - Contains both uppercase and lowercase (camelCase)
     - Ends with 4-digit year
     - NOT just authorYear (e.g., adisorn2021 is invalid)
+    - NO underscores (that's Web API format)
 
     Args:
         key: Citation key to validate
@@ -554,6 +594,10 @@ def is_better_bibtex_key(key: str) -> bool:
 
     # Must end with 4-digit year
     if not (len(key) >= 4 and key[-4:].isdigit()):
+        return False
+
+    # Reject Web API format (has underscores)
+    if "_" in key:
         return False
 
     # Reject simple authorYear pattern (e.g., "adisorn2021")

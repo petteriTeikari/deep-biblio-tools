@@ -58,19 +58,19 @@ class Citation:
         Raises:
             ValueError: If key is not provided or invalid format
         """
-        from src.converters.md_to_latex.utils import is_better_bibtex_key
+        from src.converters.md_to_latex.utils import is_valid_zotero_key
 
         if not key:
             raise ValueError(
-                "Citation key is REQUIRED. Must come from Zotero Better BibTeX.\n"
+                "Citation key is REQUIRED. Must come from Zotero (Web API or Better BibTeX plugin).\n"
                 "Use load_collection_with_keys() to get keys from Zotero."
             )
 
-        # Validate Better BibTeX key format
-        if not is_better_bibtex_key(key):
+        # Validate Zotero key format (accepts both Web API and Better BibTeX)
+        if not is_valid_zotero_key(key):
             logger.warning(
-                f"Citation key '{key}' does not match Better BibTeX format. "
-                f"Expected format: authorTitleYear (e.g., 'smithMachineLearning2024')"
+                f"Citation key '{key}' does not match Zotero format. "
+                f"Expected: Web API (author_title_year) or Better BibTeX (authorTitleYear)"
             )
 
         self.key = key
@@ -260,14 +260,17 @@ class CitationManager:
         self.zotero_client = None
         self.zotero_entries = {}  # Dict mapping citation keys to BibTeX entries
 
-        # CRITICAL: If Better BibTeX keys are required, Zotero credentials MUST be configured
+        # CRITICAL: If Zotero keys are required, credentials MUST be configured
         if use_better_bibtex_keys and not (
             zotero_api_key and zotero_library_id
         ):
             error_msg = (
-                "CRITICAL ERROR: Better BibTeX keys are required but Zotero credentials are missing.\n"
-                "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env file or disable Better BibTeX.\n"
-                "Better BibTeX keys prevent citation key generation and ensure all keys come from Zotero."
+                "CRITICAL ERROR: Zotero keys are required but credentials are missing.\n"
+                "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env file.\n\n"
+                "Zotero keys prevent local key generation. Accepts two formats:\n"
+                "  - Web API keys: author_title_year (e.g., niinimaki_environmental_2020)\n"
+                "  - Better BibTeX plugin keys: authorTitleYear (e.g., adisornDigitalProductPassport2021)\n\n"
+                "Both are deterministic and from Zotero."
             )
             logger.error(error_msg)
             raise ValueError(error_msg)

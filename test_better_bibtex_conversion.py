@@ -44,7 +44,7 @@ converter = MarkdownToLatexConverter(
     output_dir=OUTPUT_DIR,
     zotero_api_key=zotero_key,
     zotero_library_id=zotero_lib,
-    collection_name="mcp-review",  # Your Zotero collection
+    collection_name="dpp-fashion",  # Use existing Zotero collection
 )
 
 print("\nRunning conversion...")
