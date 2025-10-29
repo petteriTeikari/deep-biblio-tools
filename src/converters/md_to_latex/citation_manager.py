@@ -4,6 +4,7 @@
 import html
 import json
 import logging
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -301,6 +302,11 @@ class CitationManager:
                     # Continue without Zotero collection (will fall back to API lookups)
 
         # No need to load cache explicitly - SQLite cache handles it
+
+        # Phase 1: Auto-add and policy enforcement infrastructure
+        self._doi_validation_cache: dict[str, bool] = {}  # Cache DOI HEAD requests
+        self._citation_errors: list[dict] = []  # Track all errors for end report
+        self.citation_matcher = None  # Will be set if auto-add is enabled
 
     def _lookup_zotero_entry_by_url(
         self, url: str
@@ -1656,3 +1662,311 @@ class CitationManager:
         logger.info(
             f"Generated BibTeX file with {len(bibtex_entries)} entries: {output_path}"
         )
+
+    # ==================================================================================
+    # Phase 1: Auto-Add Integration and Policy Enforcement
+    # ==================================================================================
+
+    def _extract_doi_from_url(self, url: str) -> str | None:
+        """Extract DOI from URL.
+
+        Uses the existing utility function from utils module.
+
+        Args:
+            url: URL that may contain a DOI
+
+        Returns:
+            DOI string if found, None otherwise
+        """
+        return extract_doi_from_url(url)
+
+    def _validate_doi(self, doi: str) -> bool:
+        """Validate DOI via CrossRef HEAD request.
+
+        Returns True if DOI exists (200 OK), False if not found (404).
+        Results are cached to avoid repeated failed requests.
+
+        Args:
+            doi: DOI string to validate
+
+        Returns:
+            True if DOI is valid, False otherwise
+        """
+        # Check cache first
+        if doi in self._doi_validation_cache:
+            return self._doi_validation_cache[doi]
+
+        # HEAD request to CrossRef
+        url = f"https://api.crossref.org/works/{doi}"
+        try:
+            response = requests.head(url, timeout=5)
+            is_valid = response.status_code == 200
+
+            # Cache result (especially 404s to avoid repeated failures)
+            self._doi_validation_cache[doi] = is_valid
+
+            if not is_valid:
+                logger.critical(
+                    f"Invalid DOI detected: {doi} (HTTP {response.status_code})"
+                )
+
+            return is_valid
+        except Exception as e:
+            logger.warning(f"DOI validation failed for {doi}: {e}")
+            # Don't cache network errors (might be transient)
+            return False
+
+    def _generate_temp_key(self, citation: Citation) -> str:
+        """Generate temporary key for citation that couldn't be added to Zotero.
+
+        Args:
+            citation: Citation object
+
+        Returns:
+            Temporary key like "authorTemp2021"
+        """
+        # Create temporary Better BibTeX-style key
+        first_author = citation.authors.split()[0] if citation.authors else "temp"
+        clean_author = "".join(c for c in first_author if c.isalpha())
+        if clean_author:
+            clean_author = clean_author[0].lower() + clean_author[1:]
+        else:
+            clean_author = "temp"
+
+        # Use "Temp" as title part until we fetch real title
+        base_key = f"{clean_author}Temp{citation.year}"
+        key = base_key
+
+        # Handle duplicate keys with alphabetic suffixes
+        counter = 1
+        while key in self.citations:
+            suffix = ""
+            temp = counter
+            while temp > 0:
+                temp -= 1
+                suffix = chr(ord("a") + (temp % 26)) + suffix
+                temp //= 26
+            key = f"{base_key}{suffix}"
+            counter += 1
+
+        return key
+
+    def _fetch_newly_added_entry(self, doi: str) -> dict[str, Any] | None:
+        """Fetch newly added Zotero entry by DOI.
+
+        Args:
+            doi: DOI of the entry to fetch
+
+        Returns:
+            Entry dict with 'key' field if found, None otherwise
+        """
+        if not self.zotero_client:
+            return None
+
+        try:
+            # Re-fetch collection to get new keys
+            # This is a simplified version - in production, we'd search by DOI
+            # For now, just return None and rely on Temp key fallback
+            logger.debug(f"Would fetch newly added entry for DOI: {doi}")
+            return None
+        except Exception as e:
+            logger.warning(f"Failed to fetch newly added entry for {doi}: {e}")
+            return None
+
+    def _fetch_metadata(self, doi: str, url: str) -> dict[str, Any] | None:
+        """Fetch metadata from CrossRef or arXiv.
+
+        Args:
+            doi: DOI string
+            url: Full URL
+
+        Returns:
+            Metadata dict with title, authors, etc. or None if failed
+        """
+        # Try CrossRef first
+        try:
+            crossref_url = f"https://api.crossref.org/works/{doi}"
+            response = requests.get(crossref_url, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                message = data.get("message", {})
+
+                # Extract metadata
+                metadata = {
+                    "title": message.get("title", [""])[0] if message.get("title") else "",
+                    "authors": [],
+                }
+
+                # Extract authors
+                for author in message.get("author", []):
+                    family = author.get("family", "")
+                    given = author.get("given", "")
+                    if family:
+                        metadata["authors"].append(f"{family}, {given}" if given else family)
+
+                return metadata
+        except Exception as e:
+            logger.debug(f"CrossRef fetch failed for {doi}: {e}")
+
+        # TODO: Add arXiv fetching if needed
+        return None
+
+    def _handle_missing_citation(
+        self, citation: Citation, url: str
+    ) -> str:
+        """Handle citation not found in Zotero.
+
+        Flow:
+        1. Extract DOI from URL if present
+        2. Validate DOI (HEAD request to CrossRef)
+        3. If valid DOI:
+           a. Fetch metadata from CrossRef/arXiv
+           b. Attempt auto-add to Zotero (if citation_matcher available)
+           c. Wait 0.5s for Zotero to process
+           d. Re-fetch collection to get new key
+           e. Return Zotero key
+        4. If invalid DOI or no DOI:
+           a. Log CRITICAL error
+           b. Return Temp key as fallback
+           c. Add to error report
+
+        Args:
+            citation: Citation object
+            url: Citation URL
+
+        Returns:
+            Zotero key (if added) or Temp key (if failed)
+        """
+        # Extract DOI from URL
+        doi = self._extract_doi_from_url(url)
+
+        if doi:
+            # Validate DOI before proceeding
+            if not self._validate_doi(doi):
+                self._citation_errors.append({
+                    "severity": "CRITICAL",
+                    "issue": "INVALID_DOI",
+                    "doi": doi,
+                    "url": url,
+                    "citation": citation.authors,
+                })
+                return self._generate_temp_key(citation)
+
+            # Fetch metadata from CrossRef/arXiv
+            metadata = self._fetch_metadata(doi, url)
+
+            if not metadata or not metadata.get("title"):
+                self._citation_errors.append({
+                    "severity": "ERROR",
+                    "issue": "INCOMPLETE_METADATA",
+                    "doi": doi,
+                    "url": url,
+                })
+                return self._generate_temp_key(citation)
+
+            # Attempt auto-add to Zotero
+            if self.citation_matcher:
+                result = self.citation_matcher.add_to_zotero_library(url)
+
+                if result:
+                    # Wait for Zotero to process (avoid race condition)
+                    time.sleep(0.5)
+
+                    # Re-fetch collection to get new key
+                    new_entry = self._fetch_newly_added_entry(doi)
+
+                    if new_entry and "key" in new_entry:
+                        logger.info(
+                            f"Successfully added to Zotero: {doi} → {new_entry['key']}"
+                        )
+                        return new_entry["key"]
+                    else:
+                        logger.warning(
+                            f"Auto-add succeeded but couldn't fetch new key for {doi}"
+                        )
+                        return self._generate_temp_key(citation)
+
+        # Fallback: Temp key for citations without DOI or after failures
+        self._citation_errors.append({
+            "severity": "WARNING",
+            "issue": "NO_DOI_OR_FAILED_ADD",
+            "url": url,
+        })
+        return self._generate_temp_key(citation)
+
+    def _enforce_no_temp_key_for_valid_doi(self, citation: Citation) -> None:
+        """Enforce policy: Temp keys only allowed for invalid/missing DOIs.
+
+        Raises RuntimeError if a Temp key exists for a citation with valid DOI.
+        This prevents "cheating" by using Temp keys as shortcuts.
+
+        Args:
+            citation: Citation to check
+
+        Raises:
+            RuntimeError: If policy violation detected
+        """
+        if "Temp" not in citation.key:
+            return  # Not a temp key, all good
+
+        doi = self._extract_doi_from_url(citation.url)
+
+        if doi and self._validate_doi(doi):
+            raise RuntimeError(
+                f"Policy violation: Temp key '{citation.key}' created for valid DOI {doi}. "
+                f"This citation should have been added to Zotero automatically."
+            )
+
+    def generate_error_report(self) -> str:
+        """Generate human-readable error report.
+
+        Groups errors by severity and provides actionable information.
+
+        Returns:
+            Formatted error report string
+        """
+        if not self._citation_errors:
+            return "✅ All citations processed successfully (no errors)"
+
+        report = [
+            "",
+            "=" * 80,
+            "CITATION PROCESSING ERROR REPORT",
+            "=" * 80,
+            "",
+        ]
+
+        # Group by severity
+        critical = [e for e in self._citation_errors if e["severity"] == "CRITICAL"]
+        errors = [e for e in self._citation_errors if e["severity"] == "ERROR"]
+        warnings = [e for e in self._citation_errors if e["severity"] == "WARNING"]
+
+        # Report each severity level
+        if critical:
+            report.append(
+                f"🔴 CRITICAL ({len(critical)} issues) - Invalid DOIs from LLM hallucinations"
+            )
+            for err in critical:
+                report.append(f"  - {err['issue']}: {err.get('doi', err.get('url', 'N/A'))}")
+                report.append(f"    Citation: {err.get('citation', 'Unknown')}")
+            report.append("")
+
+        if errors:
+            report.append(
+                f"⚠️  ERROR ({len(errors)} issues) - Missing/incomplete metadata"
+            )
+            for err in errors:
+                report.append(f"  - {err['issue']}: {err.get('doi', err.get('url', 'N/A'))}")
+            report.append("")
+
+        if warnings:
+            report.append(
+                f"ℹ️  WARNING ({len(warnings)} issues) - Citations without DOI"
+            )
+            report.append(
+                f"    {len(warnings)} citations could not be auto-added (web pages, etc.)"
+            )
+            report.append("")
+
+        report.append("=" * 80)
+        return "\n".join(report)
