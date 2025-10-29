@@ -21,9 +21,12 @@ from src.converters.md_to_latex.citation_manager import Citation, CitationManage
 @pytest.fixture
 def citation_manager():
     """Create a CitationManager instance for testing."""
+    # Create with minimal config for testing (no Zotero credentials needed)
     return CitationManager(
         use_better_bibtex_keys=False,
-        collection_name="test-collection",
+        zotero_api_key="test_key",
+        zotero_library_id="test_id",
+        zotero_collection=None,  # No collection loading needed for unit tests
     )
 
 
@@ -349,10 +352,10 @@ def test_error_reporting_groups_by_severity(citation_manager):
 
     report = citation_manager.generate_error_report()
 
-    # Check that all severity levels appear in order
-    critical_pos = report.find("CRITICAL")
-    error_pos = report.find("ERROR")
-    warning_pos = report.find("WARNING")
+    # Check that all severity levels appear in order (search for emoji markers)
+    critical_pos = report.find("🔴 CRITICAL")
+    error_pos = report.find("⚠️  ERROR")
+    warning_pos = report.find("ℹ️  WARNING")
 
     assert critical_pos > 0
     assert error_pos > critical_pos

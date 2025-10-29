@@ -315,6 +315,87 @@ class BibSourceValidator:
         return actions
 
 
+# ==============================================================================
+# Top-level convenience functions for testing
+# ==============================================================================
+
+
+def count_bibtex_authors(author_field: str) -> int:
+    """Count authors in BibTeX author field.
+
+    BibTeX format: "Last1, First1 and Last2, First2 and Last3, First3"
+
+    Returns:
+        Number of authors, or -1 if truncated with "others"/"et al"
+    """
+    if not author_field or author_field.strip() == "":
+        return 0
+
+    # Check for "others" or "et al" (indicates truncated list)
+    if "others" in author_field.lower() or "et al" in author_field.lower():
+        return -1
+
+    # Split by " and " to count authors
+    authors = [a.strip() for a in author_field.split(" and ") if a.strip()]
+    return len(authors)
+
+
+def validate_author_completeness(
+    entry: dict, doi_metadata: dict | None = None
+) -> list[str]:
+    """Validate author completeness.
+
+    Returns empty list if complete, list of issues if incomplete.
+
+    Args:
+        entry: BibTeX entry dict with 'author' field
+        doi_metadata: Optional DOI metadata from CrossRef
+
+    Returns:
+        List of issue strings
+    """
+    issues = []
+
+    author_field = entry.get("author", "")
+    author_count = count_bibtex_authors(author_field)
+
+    # If author count is negative, list was truncated with "others"/"et al"
+    if author_count == -1:
+        # Check if DOI metadata available to verify expected count
+        if doi_metadata and "author" in doi_metadata:
+            expected_count = len(doi_metadata["author"])
+
+            # Only flag as incomplete if expected authors < 15
+            # (for 15+ author papers, "et al" is acceptable)
+            if expected_count < 15:
+                issues.append(
+                    f"INCOMPLETE_AUTHORS: has 'et al' but only {expected_count} expected"
+                )
+        else:
+            issues.append("INCOMPLETE_AUTHORS: has 'others'/'et al' (check if acceptable)")
+        return issues
+
+    # If no authors at all
+    if author_count == 0:
+        issues.append("NO_AUTHORS: empty author field")
+        return issues
+
+    # If ≥6 complete authors, accept as complete (not truncated)
+    if author_count >= 6:
+        return []  # No issues
+
+    # For 1-5 authors, check against DOI metadata if available
+    if doi_metadata and "author" in doi_metadata:
+        expected_count = len(doi_metadata["author"])
+
+        if author_count < expected_count:
+            issues.append(
+                f"INCOMPLETE_AUTHORS: has {author_count} but expected {expected_count}"
+            )
+
+    return issues
+
+
 @click.command()
 @click.argument("bib_file", type=click.Path(exists=True, path_type=Path))
 @click.option("--output-dir", type=click.Path(path_type=Path), default=None)
