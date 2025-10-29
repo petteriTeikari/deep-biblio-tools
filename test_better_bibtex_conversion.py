@@ -30,11 +30,12 @@ zotero_key = os.getenv("ZOTERO_API_KEY")
 zotero_lib = os.getenv("ZOTERO_LIBRARY_ID")
 
 if not zotero_key or not zotero_lib:
-    print("⚠️  WARNING: Zotero credentials not configured")
+    print("❌ ERROR: Zotero credentials not configured")
     print("   Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env")
-    print("   Conversion will use temporary keys only")
-else:
-    print(f"✅ Zotero API configured (library: {zotero_lib})")
+    print("   Better BibTeX mode requires Zotero API access")
+    exit(1)
+
+print(f"✅ Zotero API configured (library: {zotero_lib})")
 
 # Run conversion
 print(f"\nInput file: {INPUT_FILE}")
@@ -45,6 +46,7 @@ converter = MarkdownToLatexConverter(
     zotero_api_key=zotero_key,
     zotero_library_id=zotero_lib,
     collection_name="dpp-fashion",  # Use existing Zotero collection
+    use_better_bibtex_keys=True,  # CRITICAL: Enable Web API key mode
 )
 
 print("\nRunning conversion...")
@@ -84,29 +86,52 @@ for line in lines:
 
 print(f"\nFound {len(citation_keys)} citation entries")
 
-# Check key formats
-better_bibtex_keys = []
-short_keys = []
-temp_keys = []
+# Check key formats using the actual validation function
+from src.converters.md_to_latex.utils import is_valid_zotero_key
+
+web_api_keys = []  # Zotero Web API format: author_title_year
+better_bibtex_keys = []  # Better BibTeX plugin format: authorTitleYear
+legacy_zotero_keys = []  # Legacy Zotero format: authoryear or authoryearsuffix
+temp_keys = []  # Temporary format: authorTempYear
+invalid_keys = []  # Keys that don't match any Zotero format
 
 for key in citation_keys:
     if "Temp" in key:
         temp_keys.append(key)
-    elif len(key) >= 15 and any(c.isupper() for c in key[:-4]):
+    elif not is_valid_zotero_key(key):
+        invalid_keys.append(key)
+    elif "_" in key:
+        # Web API format has underscores
+        web_api_keys.append(key)
+    elif any(c.isupper() for c in key) and any(c.islower() for c in key):
+        # Better BibTeX plugin format (CamelCase)
         better_bibtex_keys.append(key)
     else:
-        short_keys.append(key)
+        # Legacy Zotero format (alphanumeric with year)
+        legacy_zotero_keys.append(key)
 
 print("\n" + "=" * 80)
 print("Key Format Analysis")
 print("=" * 80)
-print(f"✅ Better BibTeX keys: {len(better_bibtex_keys)}")
+print(f"✅ Zotero Web API keys: {len(web_api_keys)}")
+print(f"✅ Better BibTeX plugin keys: {len(better_bibtex_keys)}")
+print(f"✅ Legacy Zotero keys: {len(legacy_zotero_keys)}")
 print(f"⚠️  Temporary keys: {len(temp_keys)}")
-print(f"❌ Short keys (old format): {len(short_keys)}")
+print(f"❌ Invalid keys: {len(invalid_keys)}")
+
+if web_api_keys:
+    print("\nSample Web API keys (first 5):")
+    for key in web_api_keys[:5]:
+        print(f"  ✅ {key}")
 
 if better_bibtex_keys:
-    print("\nSample Better BibTeX keys (first 5):")
+    print("\nSample Better BibTeX plugin keys (first 5):")
     for key in better_bibtex_keys[:5]:
+        print(f"  ✅ {key}")
+
+if legacy_zotero_keys:
+    print("\nSample Legacy Zotero keys (first 5):")
+    for key in legacy_zotero_keys[:5]:
         print(f"  ✅ {key}")
 
 if temp_keys:
@@ -114,23 +139,25 @@ if temp_keys:
     for key in temp_keys[:5]:
         print(f"  ⚠️  {key}")
 
-if short_keys:
-    print("\nSample short keys (first 5):")
-    for key in short_keys[:5]:
+if invalid_keys:
+    print("\nSample invalid keys (first 5):")
+    for key in invalid_keys[:5]:
         print(f"  ❌ {key}")
 
 # Final verdict
 print("\n" + "=" * 80)
-if better_bibtex_keys and not short_keys:
-    print("✅ SUCCESS: All keys are Better BibTeX format!")
+total_zotero_keys = len(web_api_keys) + len(better_bibtex_keys) + len(legacy_zotero_keys)
+if total_zotero_keys > 0 and not invalid_keys:
+    print("✅ SUCCESS: All keys are from Zotero!")
     print(
-        f"   {len(better_bibtex_keys)} from Zotero, {len(temp_keys)} temporary"
+        f"   {len(web_api_keys)} Web API, {len(better_bibtex_keys)} Better BibTeX, "
+        f"{len(legacy_zotero_keys)} Legacy, {len(temp_keys)} temporary"
     )
-elif short_keys:
-    print("❌ FAILURE: Found short keys (old format)")
-    print("   Better BibTeX integration not working correctly")
+elif invalid_keys:
+    print("❌ FAILURE: Found invalid keys (not from Zotero)")
+    print("   Zotero integration not working correctly")
 else:
     print(
-        "⚠️  PARTIAL: Only temporary keys (Zotero not configured or citations not in collection)"
+        "⚠️  PARTIAL: Only temporary keys (citations not in Zotero collection)"
     )
 print("=" * 80)

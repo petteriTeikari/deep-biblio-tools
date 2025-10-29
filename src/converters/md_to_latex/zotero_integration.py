@@ -153,8 +153,12 @@ class ZoteroClient:
             return {}
 
         # Parse BibTeX using bibtexparser (AST-based, no regex)
+        # Configure parser to accept ALL entry types (including patents, etc.)
         try:
-            bib_database = bibtexparser.loads(bibtex_content)
+            parser = bibtexparser.bparser.BibTexParser()
+            parser.ignore_nonstandard_types = False  # Accept patents and other non-standard types
+            parser.homogenize_fields = False  # Keep field names as-is
+            bib_database = bibtexparser.loads(bibtex_content, parser=parser)
             entries_dict = {}
 
             for entry in bib_database.entries:
@@ -274,13 +278,16 @@ class ZoteroClient:
         return all_items
 
     def _fetch_collection_bibtex(self, collection_id: str) -> str:
-        """Fetch BibTeX export for a collection.
+        """Fetch BibTeX export for a collection with pagination.
+
+        IMPORTANT: Zotero API paginates results. This method fetches ALL items
+        by paginating through the collection until no more items are returned.
 
         Args:
             collection_id: Zotero collection key
 
         Returns:
-            BibTeX content as string
+            BibTeX content as string (all items concatenated)
         """
         url = f"{self.base_url}/{self.library_type}s/{self.library_id}/collections/{collection_id}/items"
 
@@ -288,23 +295,61 @@ class ZoteroClient:
             "Zotero-API-Key": self.api_key,
         }
 
-        # Request BibTeX format
-        # If Better BibTeX is installed, it should provide BBT citation keys
+        # Start with first page
         params = {
             "format": "bibtex",
+            "limit": 100,  # Max items per request
+            "start": 0,
         }
 
+        all_bibtex = []
+        total_fetched = 0
+
         try:
-            response = requests.get(
-                url, headers=headers, params=params, timeout=30
+            while True:
+                response = requests.get(
+                    url, headers=headers, params=params, timeout=30
+                )
+                response.raise_for_status()
+
+                # Get BibTeX content for this page
+                bibtex_chunk = response.text.strip()
+
+                if not bibtex_chunk:
+                    logger.debug(f"Empty response at start={params['start']}, stopping pagination")
+                    break
+
+                all_bibtex.append(bibtex_chunk)
+
+                # Count entries in this chunk (crude but works)
+                entries_in_chunk = bibtex_chunk.count("@")
+                total_fetched += entries_in_chunk
+
+                logger.debug(
+                    f"Fetched {entries_in_chunk} entries (total so far: {total_fetched})"
+                )
+
+                # Move to next page
+                # Note: We can't use "entries < limit" as stopping condition because
+                # BibTeX export filters to only citable items, so we may get less than
+                # limit even if there are more pages. Instead, keep going until we get
+                # an empty response.
+                params["start"] += params["limit"]
+
+                # Safety limit: stop after 1000 pages (100,000 items)
+                if params["start"] > 100000:
+                    logger.warning("Hit safety limit of 100k items, stopping pagination")
+                    break
+
+            # Combine all BibTeX chunks
+            combined_bibtex = "\n\n".join(all_bibtex)
+
+            logger.info(
+                f"Fetched {total_fetched} BibTeX entries from collection "
+                f"({len(combined_bibtex)} chars total)"
             )
-            response.raise_for_status()
 
-            # Response is plain text BibTeX
-            bibtex_content = response.text
-
-            logger.debug(f"Fetched {len(bibtex_content)} chars of BibTeX")
-            return bibtex_content
+            return combined_bibtex
 
         except Exception as e:
             logger.error(f"Failed to fetch BibTeX export: {e}")

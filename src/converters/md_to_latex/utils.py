@@ -529,19 +529,20 @@ def generate_citation_key(*args, **kwargs) -> str:
 
 
 def is_valid_zotero_key(key: str) -> bool:
-    """Validate Zotero-generated citation key (Web API or Better BibTeX plugin).
+    """Validate Zotero-generated citation key (any Zotero format).
 
-    Accepts TWO valid formats:
+    Accepts THREE valid formats:
     1. Web API keys: author_title_year (e.g., niinimaki_environmental_2020)
     2. Better BibTeX plugin keys: authorTitleYear (e.g., adisornDigitalProductPassport2021)
+    3. Legacy Zotero keys: authoryear or authoryearsuffix (e.g., ellenmacarthur2017new)
 
-    Both formats are deterministic and from Zotero - just different generators.
+    All formats are deterministic and from Zotero - just different export formats.
 
     Args:
         key: Citation key to validate
 
     Returns:
-        True if key matches either Zotero format, False otherwise
+        True if key matches any Zotero format, False otherwise
     """
     if not key or not isinstance(key, str):
         return False
@@ -554,17 +555,30 @@ def is_valid_zotero_key(key: str) -> bool:
     if len(key) < 10:
         return False
 
-    # Must end with 4-digit year
-    if not (len(key) >= 4 and key[-4:].isdigit()):
+    # Check if key contains a 4-digit year (must be somewhere in the key)
+    # Use simple string scanning without regex
+    has_year = False
+    for i in range(len(key) - 3):
+        if key[i:i+4].isdigit():
+            year = int(key[i:i+4])
+            # Reasonable year range for academic citations
+            if 1900 <= year <= 2030:
+                has_year = True
+                break
+
+    if not has_year:
         return False
 
-    # Accept if has underscores (Web API format) OR mixed case (Better BibTeX)
+    # Accept these formats:
+    # 1. Has underscores = Web API format (e.g., author_title_2020)
+    # 2. Has mixed case = Better BibTeX format (e.g., authorTitle2020)
+    # 3. All lowercase/alphanumeric with year = Legacy Zotero format (e.g., author2020suffix)
     has_underscore = "_" in key
-    has_mixed_case = any(c.isupper() for c in key[:-4]) and any(
-        c.islower() for c in key[:-4]
-    )
+    has_mixed_case = any(c.isupper() for c in key) and any(c.islower() for c in key)
+    is_alphanumeric = all(c.isalnum() for c in key)
 
-    return has_underscore or has_mixed_case
+    # Accept any of these patterns as valid Zotero keys
+    return has_underscore or has_mixed_case or is_alphanumeric
 
 
 def is_better_bibtex_key(key: str) -> bool:
