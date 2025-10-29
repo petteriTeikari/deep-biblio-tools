@@ -45,6 +45,7 @@ deep-biblio = "src.cli:cli"
 deep-biblio-md2latex = "src.cli_md_to_latex:convert_markdown_to_latex"
 deep-biblio-to-lyx = "src.cli_to_lyx:cli"
 mcp-citation-quality = "mcp_servers.citation_quality.server:main"
+validate-markdown-kb = "src.kb_quality.cli:validate"
 
 [project.optional-dependencies]
 dev = [
