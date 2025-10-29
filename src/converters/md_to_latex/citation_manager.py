@@ -615,23 +615,27 @@ class CitationManager:
                 if zotero_data:
                     # Parse Zotero data to update citation fields
                     self._parse_zotero_data(citation, zotero_data)
-                    citation.raw_bibtex = self.zotero_client.format_bibtex(
-                        zotero_data
-                    )
-                    # Update citation key from BibTeX
-                    # Extract key from BibTeX without regex
-                    if (
-                        citation.raw_bibtex
-                        and "@" in citation.raw_bibtex
-                        and "{" in citation.raw_bibtex
-                    ):
-                        at_pos = citation.raw_bibtex.find("@")
-                        brace_pos = citation.raw_bibtex.find("{", at_pos)
-                        comma_pos = citation.raw_bibtex.find(",", brace_pos)
-                        if brace_pos > at_pos and comma_pos > brace_pos:
-                            citation.key = citation.raw_bibtex[
-                                brace_pos + 1 : comma_pos
-                            ].strip()
+
+                    # Only use format_bibtex() when Better BibTeX is disabled
+                    # (format_bibtex generates keys, which violates Better BibTeX principle)
+                    if not self.use_better_bibtex_keys:
+                        citation.raw_bibtex = self.zotero_client.format_bibtex(
+                            zotero_data
+                        )
+                        # Update citation key from BibTeX
+                        # Extract key from BibTeX without regex
+                        if (
+                            citation.raw_bibtex
+                            and "@" in citation.raw_bibtex
+                            and "{" in citation.raw_bibtex
+                        ):
+                            at_pos = citation.raw_bibtex.find("@")
+                            brace_pos = citation.raw_bibtex.find("{", at_pos)
+                            comma_pos = citation.raw_bibtex.find(",", brace_pos)
+                            if brace_pos > at_pos and comma_pos > brace_pos:
+                                citation.key = citation.raw_bibtex[
+                                    brace_pos + 1 : comma_pos
+                                ].strip()
                     logger.info(
                         f"Fetched metadata from Zotero for DOI: {citation.doi}"
                     )
@@ -657,23 +661,31 @@ class CitationManager:
                     if zotero_data:
                         # Parse Zotero data to update citation fields
                         self._parse_zotero_data(citation, zotero_data)
-                        citation.raw_bibtex = self.zotero_client.format_bibtex(
-                            zotero_data
-                        )
-                        # Update citation key from BibTeX
-                        # Extract key from BibTeX without regex
-                        if (
-                            citation.raw_bibtex
-                            and "@" in citation.raw_bibtex
-                            and "{" in citation.raw_bibtex
-                        ):
-                            at_pos = citation.raw_bibtex.find("@")
-                            brace_pos = citation.raw_bibtex.find("{", at_pos)
-                            comma_pos = citation.raw_bibtex.find(",", brace_pos)
-                            if brace_pos > at_pos and comma_pos > brace_pos:
-                                citation.key = citation.raw_bibtex[
-                                    brace_pos + 1 : comma_pos
-                                ].strip()
+
+                        # Only use format_bibtex() when Better BibTeX is disabled
+                        # (format_bibtex generates keys, which violates Better BibTeX principle)
+                        if not self.use_better_bibtex_keys:
+                            citation.raw_bibtex = (
+                                self.zotero_client.format_bibtex(zotero_data)
+                            )
+                            # Update citation key from BibTeX
+                            # Extract key from BibTeX without regex
+                            if (
+                                citation.raw_bibtex
+                                and "@" in citation.raw_bibtex
+                                and "{" in citation.raw_bibtex
+                            ):
+                                at_pos = citation.raw_bibtex.find("@")
+                                brace_pos = citation.raw_bibtex.find(
+                                    "{", at_pos
+                                )
+                                comma_pos = citation.raw_bibtex.find(
+                                    ",", brace_pos
+                                )
+                                if brace_pos > at_pos and comma_pos > brace_pos:
+                                    citation.key = citation.raw_bibtex[
+                                        brace_pos + 1 : comma_pos
+                                    ].strip()
                         logger.info(
                             f"Fetched metadata from Zotero for arXiv: {arxiv_id_match}"
                         )

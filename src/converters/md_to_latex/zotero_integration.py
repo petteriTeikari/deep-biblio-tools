@@ -406,12 +406,18 @@ class ZoteroClient:
     def format_bibtex(self, item_data: dict[str, Any]) -> str:
         """Convert Zotero item data to BibTeX format.
 
+        DEPRECATED: This method generates citation keys and violates Better BibTeX principle.
+        Only use when use_better_bibtex_keys=False.
+
         Args:
             item_data: Zotero item data
 
         Returns:
             BibTeX entry string
         """
+        logger.warning(
+            "format_bibtex() generates keys - should not be used with Better BibTeX mode"
+        )
         # Map Zotero item types to BibTeX types
         type_map = {
             "journalArticle": "article",
