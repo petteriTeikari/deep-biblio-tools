@@ -9,6 +9,8 @@ from typing import Any
 import bibtexparser
 import requests
 
+from src.converters.md_to_latex.author_enrichment import AuthorEnricher
+
 logger = logging.getLogger(__name__)
 
 
@@ -179,7 +181,13 @@ class ZoteroClient:
             logger.info(
                 f"Loaded {len(entries_dict)} entries with Better BibTeX keys from '{collection_name}'"
             )
-            return entries_dict
+
+            # Enrich entries with complete author lists
+            logger.info("Enriching BibTeX entries with complete author lists...")
+            enricher = AuthorEnricher()
+            enriched_dict = enricher.enrich_bibtex_entries(entries_dict)
+
+            return enriched_dict
 
         except Exception as e:
             logger.error(f"Failed to parse BibTeX export: {e}")
