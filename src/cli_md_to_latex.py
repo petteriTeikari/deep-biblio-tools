@@ -4,9 +4,13 @@ import logging
 from pathlib import Path
 
 import click
+from dotenv import load_dotenv
 
 from src.converters.md_to_latex import MarkdownToLatexConverter
 from src.converters.md_to_latex.concept_boxes import ConceptBoxStyle
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
