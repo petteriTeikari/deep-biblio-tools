@@ -1034,25 +1034,56 @@ def clean_pandoc_output(latex_content: str) -> str:
 
     latex_content = "\n".join(new_lines)
 
-    # Fix unescaped underscores in text mode (not in math mode)
-    # This is complex without regex - simplified approach
+    # Fix unescaped underscores in text mode (not in math mode or LaTeX command arguments)
+    # Must preserve underscores in citation keys, labels, refs, etc.
     result = []
     i = 0
     in_math = False
+    in_command_braces = 0  # Track depth inside LaTeX command arguments
 
     while i < len(latex_content):
         if latex_content[i] == "$":
             in_math = not in_math
             result.append(latex_content[i])
-        elif latex_content[i] == "_" and not in_math:
-            # Check if already escaped
-            if i > 0 and latex_content[i - 1] == "\\":
+            i += 1
+        elif latex_content[i] == "\\" and i + 1 < len(latex_content):
+            # Start of LaTeX command - check if it's followed by braces
+            result.append(latex_content[i])
+            i += 1
+            # Consume command name (letters only)
+            while i < len(latex_content) and latex_content[i].isalpha():
+                result.append(latex_content[i])
+                i += 1
+            # Check if next character is opening brace
+            if i < len(latex_content) and latex_content[i] == "{":
+                in_command_braces += 1
+                result.append(latex_content[i])
+                i += 1
+        elif latex_content[i] == "{" and in_command_braces > 0:
+            # Nested brace inside command argument
+            in_command_braces += 1
+            result.append(latex_content[i])
+            i += 1
+        elif latex_content[i] == "}" and in_command_braces > 0:
+            # Closing brace - exit command argument
+            in_command_braces -= 1
+            result.append(latex_content[i])
+            i += 1
+        elif latex_content[i] == "_":
+            # Underscore: only escape if NOT in math mode AND NOT in command argument
+            if in_math or in_command_braces > 0:
+                # Inside math or command argument - preserve as-is
+                result.append(latex_content[i])
+            elif i > 0 and latex_content[i - 1] == "\\":
+                # Already escaped - preserve
                 result.append(latex_content[i])
             else:
+                # Regular text underscore - escape it
                 result.append("\\_")
+            i += 1
         else:
             result.append(latex_content[i])
-        i += 1
+            i += 1
 
     latex_content = "".join(result)
 
