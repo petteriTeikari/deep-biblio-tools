@@ -112,7 +112,8 @@ class MarkdownToLatexConverter:
         self.use_better_bibtex_keys = use_better_bibtex_keys
         self.font_size = font_size
         self.debug_output_dir = debug_output_dir
-        self.collection_name = collection_name
+        # Use provided collection_name or fallback to environment variable
+        self.collection_name = collection_name or os.getenv("ZOTERO_COLLECTION", "dpp-fashion")
 
         # Initialize components
         self.citation_manager = CitationManager(
@@ -896,19 +897,17 @@ class MarkdownToLatexConverter:
             )
 
             # Step 3.5: Pre-populate from Zotero (API preferred, fallback to JSON)
-            collection_name = os.getenv("ZOTERO_COLLECTION", "dpp-fashion")
-
             if self.zotero_api_key and self.zotero_library_id:
                 # PREFERRED: Use Zotero Web API
                 if verbose:
                     pbar.set_description(
-                        f"Loading from Zotero API ({collection_name})"
+                        f"Loading from Zotero API ({self.collection_name})"
                     )
 
                 # STAGE 2: Zotero Matching Debug (CRITICAL)
                 debugger.log_stage(2, "Zotero Matching via BibTeX Export")
                 matched, missing = self._populate_from_zotero_bibtex(
-                    citations, collection_name
+                    citations, self.collection_name
                 )
 
                 # Log matching statistics
@@ -1298,13 +1297,13 @@ class MarkdownToLatexConverter:
             logger.info(
                 f"Raw pandoc output written to {raw_path} (size={len(latex_content)} chars)"
             )
-            logger.info(
-                f"Contains \\begin{{document}}: {r'\\begin{document}' in latex_content}, "
-                f"Contains \\end{{document}}: {r'\\end{document}' in latex_content}"
-            )
             # Correct check without r-string in the search
             has_begin = "\\begin{document}" in latex_content
             has_end = "\\end{document}" in latex_content
+            logger.info(
+                f"Contains \\begin{{document}}: {has_begin}, "
+                f"Contains \\end{{document}}: {has_end}"
+            )
             logger.info(f"CORRECTED: Has begin={has_begin}, has end={has_end}")
 
             # Process pandoc output and build document

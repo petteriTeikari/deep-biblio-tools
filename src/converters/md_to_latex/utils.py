@@ -867,8 +867,9 @@ def parse_citation_text(
 def clean_pandoc_output(latex_content: str) -> str:
     """Clean up common pandoc artifacts from LaTeX output."""
     # DIAGNOSTIC: Log input state
+    end_doc_marker = r'\\end{document}'
     logger.debug(
-        f"clean_pandoc_output: input size={len(latex_content)}; has_end={r'\\end{document}' in latex_content}"
+        f"clean_pandoc_output: input size={len(latex_content)}; has_end={end_doc_marker in latex_content}"
     )
 
     # Remove tightlist commands
@@ -1092,8 +1093,9 @@ def clean_pandoc_output(latex_content: str) -> str:
     cleaned = "".join(result)
 
     # DIAGNOSTIC: Log output state and detect if \end{document} was removed
+    end_doc_marker = r'\\end{document}'
     logger.debug(
-        f"clean_pandoc_output: output size={len(cleaned)}; has_end={r'\\end{document}' in cleaned}"
+        f"clean_pandoc_output: output size={len(cleaned)}; has_end={end_doc_marker in cleaned}"
     )
     if r"\end{document}" in latex_content and r"\end{document}" not in cleaned:
         debug_path = (
