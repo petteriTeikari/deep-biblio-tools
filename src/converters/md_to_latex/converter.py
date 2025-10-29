@@ -73,6 +73,8 @@ class MarkdownToLatexConverter:
         debug_output_dir: Path
         | None = None,  # Optional debug artifact directory
         collection_name: str | None = None,  # Zotero collection name for API
+        enable_auto_add: bool = True,  # Enable auto-add of missing citations
+        auto_add_dry_run: bool = True,  # Safe dry-run by default
     ):
         """Initialize the converter.
 
@@ -124,6 +126,8 @@ class MarkdownToLatexConverter:
             zotero_collection=self.collection_name,
             use_cache=self.use_cache,
             use_better_bibtex_keys=self.use_better_bibtex_keys,
+            enable_auto_add=enable_auto_add,
+            auto_add_dry_run=auto_add_dry_run,
         )
 
         # Use enhanced converter if encoding is specified
@@ -1537,7 +1541,27 @@ class MarkdownToLatexConverter:
                     "debug-06-pdf-validation.json",
                 )
 
-            # Step 9: Summary
+            # Step 9: Auto-add report (if enabled)
+            if self.citation_manager.zotero_auto_add:
+                # Generate auto-add report
+                report = self.citation_manager.zotero_auto_add.generate_report()
+                report_path = self.output_dir / "auto_add_report.txt"
+                report_path.write_text(report)
+
+                # Get statistics
+                stats = self.citation_manager.zotero_auto_add.get_statistics()
+
+                logger.info("=" * 60)
+                logger.info("AUTO-ADD SUMMARY")
+                logger.info("=" * 60)
+                logger.info(f"Total processed: {stats['total']}")
+                logger.info(f"Added: {stats['added']}")
+                logger.info(f"Dry-run: {stats['dry_run']}")
+                logger.info(f"Failed: {stats['translation_failed'] + stats['validation_failed']}")
+                logger.info(f"Report written to: {report_path}")
+                logger.info("=" * 60)
+
+            # Step 10: Summary
             if verbose:
                 pbar.set_description("Complete")
                 pbar.close()

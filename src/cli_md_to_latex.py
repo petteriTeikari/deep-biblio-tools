@@ -99,6 +99,16 @@ logger = logging.getLogger(__name__)
     default="11pt",
     help="Font size for document (10pt is common for arXiv)",
 )
+@click.option(
+    "--enable-auto-add/--no-auto-add",
+    default=True,
+    help="Enable automatic addition of missing citations to Zotero (default: enabled)",
+)
+@click.option(
+    "--auto-add-dry-run/--auto-add-real",
+    default=True,
+    help="Dry-run mode for auto-add (default: dry-run for safety)",
+)
 def convert_markdown_to_latex(
     markdown_file: Path,
     output_dir: Path | None,
@@ -115,6 +125,8 @@ def convert_markdown_to_latex(
     bibliography_style: str | None,
     verbose: bool,
     font_size: str,
+    enable_auto_add: bool,
+    auto_add_dry_run: bool,
 ):
     """Convert markdown file to LaTeX format with citations and concept boxes.
 
@@ -153,6 +165,8 @@ def convert_markdown_to_latex(
             zotero_library_id=zotero_library_id,
             bibliography_style=bibliography_style,
             font_size=font_size,
+            enable_auto_add=enable_auto_add,
+            auto_add_dry_run=auto_add_dry_run,
         )
 
         # Convert the file

@@ -32,6 +32,7 @@ from src.converters.md_to_latex.utils import (
     sanitize_latex,
 )
 from src.converters.md_to_latex.zotero_integration import ZoteroClient
+from src.converters.md_to_latex.zotero_auto_add import ZoteroAutoAdd
 
 logger = logging.getLogger(__name__)
 
@@ -246,6 +247,8 @@ class CitationManager:
         zotero_collection: str | None = None,
         use_cache: bool = True,
         use_better_bibtex_keys: bool = True,
+        enable_auto_add: bool = True,
+        auto_add_dry_run: bool = True,
     ):
         self.citations: dict[str, Citation] = {}
         self.cache_dir = cache_dir
@@ -307,6 +310,23 @@ class CitationManager:
         self._doi_validation_cache: dict[str, bool] = {}  # Cache DOI HEAD requests
         self._citation_errors: list[dict] = []  # Track all errors for end report
         self.citation_matcher = None  # Will be set if auto-add is enabled
+
+        # Initialize auto-add system (after zotero_client initialization)
+        self.zotero_auto_add = None
+        if enable_auto_add and self.zotero_client and zotero_collection:
+            try:
+                self.zotero_auto_add = ZoteroAutoAdd(
+                    zotero_client=self.zotero_client,
+                    collection_name=zotero_collection,
+                    translation_server_url="http://localhost:1969",
+                    dry_run=auto_add_dry_run,
+                    max_auto_add=50  # Threshold limit
+                )
+                mode = "DRY-RUN" if auto_add_dry_run else "REAL"
+                logger.info(f"Auto-add initialized in {mode} mode")
+            except Exception as e:
+                logger.warning(f"Auto-add initialization failed: {e}")
+                self.zotero_auto_add = None
 
     def _lookup_zotero_entry_by_url(
         self, url: str
@@ -1804,79 +1824,41 @@ class CitationManager:
         """Handle citation not found in Zotero.
 
         Flow:
-        1. Extract DOI from URL if present
-        2. Validate DOI (HEAD request to CrossRef)
-        3. If valid DOI:
-           a. Fetch metadata from CrossRef/arXiv
-           b. Attempt auto-add to Zotero (if citation_matcher available)
-           c. Wait 0.5s for Zotero to process
-           d. Re-fetch collection to get new key
-           e. Return Zotero key
-        4. If invalid DOI or no DOI:
-           a. Log CRITICAL error
-           b. Return Temp key as fallback
-           c. Add to error report
+        1. Attempt auto-add via ZoteroAutoAdd (if enabled)
+        2. If successful, return Better BibTeX key
+        3. If failed or disabled, fall back to Temp key
 
         Args:
             citation: Citation object
             url: Citation URL
 
         Returns:
-            Zotero key (if added) or Temp key (if failed)
+            Better BibTeX key (if added) or Temp key (if failed)
         """
-        # Extract DOI from URL
-        doi = self._extract_doi_from_url(url)
+        # Try auto-add if enabled
+        if self.zotero_auto_add:
+            logger.info(f"Attempting auto-add for: {url}")
 
-        if doi:
-            # Validate DOI before proceeding
-            if not self._validate_doi(doi):
-                self._citation_errors.append({
-                    "severity": "CRITICAL",
-                    "issue": "INVALID_DOI",
-                    "doi": doi,
-                    "url": url,
-                    "citation": citation.authors,
-                })
-                return self._generate_temp_key(citation)
+            key, warnings = self.zotero_auto_add.add_citation(url, citation.authors)
 
-            # Fetch metadata from CrossRef/arXiv
-            metadata = self._fetch_metadata(doi, url)
+            if key:
+                # Success! (either added or dry-run simulated)
+                if warnings:
+                    for warning in warnings:
+                        logger.warning(f"  Auto-add warning: {warning}")
+                return key
+            else:
+                # Validation failed or translation failed
+                logger.warning(f"Auto-add BLOCKED or failed for: {url}")
+                for warning in warnings:
+                    logger.warning(f"  {warning}")
+                # Fall through to Temp key
 
-            if not metadata or not metadata.get("title"):
-                self._citation_errors.append({
-                    "severity": "ERROR",
-                    "issue": "INCOMPLETE_METADATA",
-                    "doi": doi,
-                    "url": url,
-                })
-                return self._generate_temp_key(citation)
-
-            # Attempt auto-add to Zotero
-            if self.citation_matcher:
-                result = self.citation_matcher.add_to_zotero_library(url)
-
-                if result:
-                    # Wait for Zotero to process (avoid race condition)
-                    time.sleep(0.5)
-
-                    # Re-fetch collection to get new key
-                    new_entry = self._fetch_newly_added_entry(doi)
-
-                    if new_entry and "key" in new_entry:
-                        logger.info(
-                            f"Successfully added to Zotero: {doi} → {new_entry['key']}"
-                        )
-                        return new_entry["key"]
-                    else:
-                        logger.warning(
-                            f"Auto-add succeeded but couldn't fetch new key for {doi}"
-                        )
-                        return self._generate_temp_key(citation)
-
-        # Fallback: Temp key for citations without DOI or after failures
+        # Fallback: Generate Temp key
+        logger.info(f"Falling back to Temp key for: {url}")
         self._citation_errors.append({
             "severity": "WARNING",
-            "issue": "NO_DOI_OR_FAILED_ADD",
+            "issue": "NO_AUTO_ADD_OR_FAILED",
             "url": url,
         })
         return self._generate_temp_key(citation)
