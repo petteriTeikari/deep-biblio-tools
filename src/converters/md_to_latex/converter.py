@@ -20,6 +20,9 @@ from tqdm import tqdm
 
 # Local imports
 from src.converters.md_to_latex.bbl_transformer import BblTransformer
+from src.converters.md_to_latex.bibtex_entry_validator import (
+    BibTeXEntryValidator,
+)
 from src.converters.md_to_latex.citation_manager import CitationManager
 from src.converters.md_to_latex.citation_matcher import CitationMatcher
 from src.converters.md_to_latex.concept_boxes import (
@@ -74,7 +77,7 @@ class MarkdownToLatexConverter:
         | None = None,  # Optional debug artifact directory
         collection_name: str | None = None,  # Zotero collection name for API
         enable_auto_add: bool = True,  # Enable auto-add of missing citations
-        auto_add_dry_run: bool = True,  # Safe dry-run by default
+        auto_add_dry_run: bool = False,  # Actually add to Zotero by default (changed Oct 30, 2025)
     ):
         """Initialize the converter.
 
@@ -115,7 +118,9 @@ class MarkdownToLatexConverter:
         self.font_size = font_size
         self.debug_output_dir = debug_output_dir
         # Use provided collection_name or fallback to environment variable
-        self.collection_name = collection_name or os.getenv("ZOTERO_COLLECTION", "dpp-fashion")
+        self.collection_name = collection_name or os.getenv(
+            "ZOTERO_COLLECTION", "dpp-fashion"
+        )
 
         # Initialize components
         self.citation_manager = CitationManager(
@@ -767,6 +772,22 @@ class MarkdownToLatexConverter:
         debugger = PipelineDebugger(debug_dir)
         logger.info(f"Debug artifacts will be saved to: {debug_dir}")
 
+        # Warn user if auto-add is enabled in real mode
+        if self.enable_auto_add and not self.auto_add_dry_run:
+            logger.warning("=" * 70)
+            logger.warning("⚠️  AUTO-ADD ENABLED (REAL MODE)")
+            logger.warning(
+                "Missing citations will be ADDED to your Zotero library automatically."
+            )
+            logger.warning(
+                "Use --auto-add-dry-run to test without modifying Zotero."
+            )
+            logger.warning("=" * 70)
+        elif self.enable_auto_add and self.auto_add_dry_run:
+            logger.info(
+                "Auto-add enabled in DRY-RUN mode (safe, no Zotero changes)"
+            )
+
         # Auto-detect local citation sources if not explicitly provided
         # Fallback order (per OpenAI recommendations):
         # 1. MCP server (via API) - handled by zotero_api_key
@@ -1055,6 +1076,29 @@ class MarkdownToLatexConverter:
                 ],
                 "debug-03-citation-keys-generated.json",
             )
+
+            # INTEGRATION POINT 1: Validate no temporary keys before BibTeX generation
+            if verbose:
+                pbar.set_description("Validating citation keys")
+            logger.info(
+                "Validating citation keys (checking for temporary keys)..."
+            )
+
+            try:
+                temp_keys = self.citation_manager.validate_no_temp_keys(
+                    fail_on_temp=True,  # Fail-fast on temp keys
+                    include_dryrun=True,  # Also catch dryrun_ keys
+                )
+                logger.info(
+                    "✅ Citation key validation passed - all citations matched to Zotero"
+                )
+            except RuntimeError as e:
+                logger.error("❌ CITATION KEY VALIDATION FAILED")
+                logger.error(str(e))
+                raise RuntimeError(
+                    "Conversion blocked: Citations missing from Zotero. "
+                    "See error message above for details and fix suggestions."
+                ) from e
 
             # Collect failed citations for report
             failed_citations = []
@@ -1413,26 +1457,87 @@ class MarkdownToLatexConverter:
                 output_bib, show_progress=verbose
             )
 
+            # INTEGRATION POINT 2: Validate BibTeX quality before LaTeX compilation
+            if verbose:
+                pbar.set_description("Validating BibTeX quality")
+            logger.info("Validating BibTeX quality...")
+
+            validator = BibTeXEntryValidator()
+            validation_results = validator.validate_file(output_bib)
+
+            # Log validation summary
+            logger.info(
+                f"BibTeX validation: {validation_results['total_entries']} entries, "
+                f"{validation_results['critical_count']} CRITICAL, "
+                f"{validation_results['warning_count']} WARNING"
+            )
+
+            # Fail on CRITICAL issues
+            if validation_results["critical_count"] > 0:
+                logger.error("❌ BIBTEX QUALITY VALIDATION FAILED")
+                logger.error(
+                    f"   {validation_results['critical_count']} CRITICAL issues found:"
+                )
+
+                # Log first 10 issues for visibility
+                issue_count = 0
+                for key, issues in validation_results[
+                    "issues_by_entry"
+                ].items():
+                    critical_issues = [
+                        i for i in issues if i.startswith("CRITICAL")
+                    ]
+                    if critical_issues:
+                        logger.error(f"   Entry '{key}':")
+                        for issue in critical_issues:
+                            logger.error(f"     - {issue}")
+                        issue_count += 1
+                        if issue_count >= 10:
+                            remaining = (
+                                validation_results["critical_count"] - 10
+                            )
+                            if remaining > 0:
+                                logger.error(
+                                    f"   ... and {remaining} more issues"
+                                )
+                            break
+
+                raise RuntimeError(
+                    f"BibTeX quality validation failed with {validation_results['critical_count']} "
+                    f"CRITICAL issues. Common problems: stub titles ('Web page by X'), "
+                    f"domain names as titles ('Amazon.de'), temporary keys. "
+                    f"See logs above for details."
+                )
+
+            # Warn about non-critical issues
+            if validation_results["warning_count"] > 0:
+                logger.warning(
+                    f"⚠️  BibTeX has {validation_results['warning_count']} warnings "
+                    f"(non-blocking but worth reviewing)"
+                )
+
             # STAGE 4: BibTeX File Generation Debug
             debugger.log_stage(4, "BibTeX File Generation & Validation")
             bib_content = output_bib.read_text(encoding="utf-8")
             entry_count = bib_content.count("@")
-            unknown_count = bib_content.count("Unknown")
-            anonymous_count = bib_content.count("Anonymous")
+
+            # Note: Old string counting validation removed - now using proper validator above
             debugger.log_stats(
                 bib_file_size=len(bib_content),
                 entry_count=entry_count,
-                unknown_count=unknown_count,
-                anonymous_count=anonymous_count,
+                critical_issues=validation_results["critical_count"],
+                warnings=validation_results["warning_count"],
             )
             # Save copy of BibTeX for inspection
             debugger.dump_text(bib_content, "debug-04-references.bib")
             debugger.dump_json(
                 {
                     "entry_count": entry_count,
-                    "unknown_count": unknown_count,
-                    "anonymous_count": anonymous_count,
-                    "has_errors": unknown_count > 0 or anonymous_count > 0,
+                    "critical_issues": validation_results["critical_count"],
+                    "warnings": validation_results["warning_count"],
+                    "has_critical_errors": validation_results["critical_count"]
+                    > 0,
+                    "validation_details": validation_results["issues_by_entry"],
                 },
                 "debug-04-bibtex-validation.json",
             )
@@ -1557,7 +1662,9 @@ class MarkdownToLatexConverter:
                 logger.info(f"Total processed: {stats['total']}")
                 logger.info(f"Added: {stats['added']}")
                 logger.info(f"Dry-run: {stats['dry_run']}")
-                logger.info(f"Failed: {stats['translation_failed'] + stats['validation_failed']}")
+                logger.info(
+                    f"Failed: {stats['translation_failed'] + stats['validation_failed']}"
+                )
                 logger.info(f"Report written to: {report_path}")
                 logger.info("=" * 60)
 

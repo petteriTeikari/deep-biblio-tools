@@ -938,11 +938,23 @@ Based on critical analysis of OpenAI's suggestions and existing codebase audit, 
 - ✅ **Hypothesis #3**: Validation blind spots (Phases 1 & 2 close gaps)
 - ✅ **Hypothesis #6**: Better BibTeX key format (Phase 2 validates key length/format)
 
+### Integration Complete (October 30, 2025 - Later)
+
+After completing the validators, we integrated them into the conversion pipeline:
+
+1. ✅ **Added Integration Point 1** (converter.py:1060): `validate_no_temp_keys()` call after metadata fetching
+2. ✅ **Added Integration Point 2** (converter.py:1438): `BibTeXEntryValidator.validate_file()` call after BibTeX generation
+3. ✅ **Changed Auto-Add Default**: `auto_add_dry_run=False` (now actually adds to Zotero)
+4. ✅ **Added User Warning**: Prominent warning when auto-add runs in real mode
+5. ✅ **Removed Broken Validation**: Replaced string-counting with AST-based validation
+
+**Result**: Conversions now FAIL-FAST if quality issues detected. No more PDFs with stub titles or temp keys.
+
 ### What's Still TODO
 
-- [ ] **Integration**: Add validation calls to `converter.py` workflow
-- [ ] **CLI Flags**: Add `--allow-temp-keys` flag for bypass mode
-- [ ] **Documentation**: Update user documentation with new validation behavior
+- [ ] **CLI Flags**: Add `--allow-temp-keys` flag for bypass mode (if needed based on user feedback)
+- [ ] **Documentation**: Update user-facing README with new validation behavior
+- [ ] **Test with Real File**: Verify with mcp-draft-refined-v4.md that had 22 temp keys
 
 ### Performance Notes
 
