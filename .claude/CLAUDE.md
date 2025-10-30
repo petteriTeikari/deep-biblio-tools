@@ -5,12 +5,10 @@ Deep Biblio Tools is a Python library for processing LLM-generated bibliographie
 
 ## Forbidden Actions
 
+### Code Quality and File Management
 - **NEVER** use regex to parse structured formats (Markdown, LaTeX, BibTeX)
 - **NEVER** create files with version suffixes (`_new.py`, `_v2.py`, `_final.py`)
 - **NEVER** modify files in place without explicit user request
-- **NEVER** trust author names from LLM output without validation
-- **NEVER** switch to `plainnat` style or use numbered citations unless requested
-- **NEVER** convert "$50-200" to LaTeX math mode
 - **NEVER** import after sys.path modifications
 - **NEVER** move Claude guardrail files without updating GitHub Actions
 - **NEVER** implement directory cleaning operations - Claude Code cannot be trusted with this
@@ -18,6 +16,27 @@ Deep Biblio Tools is a Python library for processing LLM-generated bibliographie
   - ONLY remove specific, known output files (e.g., `output.pdf`) that will be regenerated
   - NEVER use `shutil.rmtree()`, `rm -rf`, or loop deletions of directory contents
   - If cleaning is absolutely necessary, only delete files with explicit extensions (`.pdf`, `.aux`, `.log`)
+
+### Bibliography Quality (CRITICAL - Added 2025-10-30)
+- **NEVER** claim conversion success without running `verify_bbl_quality.py`
+- **NEVER** claim conversion success without reading `.bbl` file contents with Read tool
+- **NEVER** claim conversion success without reading PDF output with Read tool
+- **NEVER** skip `bib_sanitizer.py` pre-processing step before BibTeX compilation
+- **NEVER** claim success based on "compilation succeeded" - verify ACTUAL output
+- **NEVER** trust intermediate steps (citations extracted, BibTeX generated, PDF compiled)
+  - The ONLY measure of success: PDF has ZERO (?) citations AND all citations are correct
+
+### Emergency Mode (RDF-Only, Added 2025-10-30)
+- **NEVER** allow web fetching when `emergency_mode=True`
+- **NEVER** proceed if RDF file is missing in emergency mode (MUST HARD CRASH)
+- **NEVER** proceed if RDF file is empty in emergency mode (MUST HARD CRASH)
+- **NEVER** auto-merge duplicate citations (FLAG only, require manual review)
+- **NEVER** allow >5 missing citations without WARNING (likely indicates matching bug)
+
+### Citation Processing
+- **NEVER** trust author names from LLM output without validation
+- **NEVER** switch to `plainnat` style or use numbered citations unless requested
+- **NEVER** convert "$50-200" to LaTeX math mode
 
 ## Required Patterns
 

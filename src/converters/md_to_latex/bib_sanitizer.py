@@ -411,6 +411,11 @@ def sanitize_bib(
             print("    This likely indicates a URL matching bug, not missing data.")
             print("    Expected: Maximum 5 missing citations in emergency mode.\n")
 
+    # Clean entries before writing (remove internal flags)
+    for entry in sanitized:
+        # Remove internal tracking fields
+        entry.pop('needs_manual_review', None)
+
     # Write sanitized file
     bib_data.entries = sanitized
     with open(output_bib, "w", encoding="utf8") as f:
