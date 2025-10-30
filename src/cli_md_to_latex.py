@@ -1,6 +1,7 @@
 """CLI interface for markdown to LaTeX converter."""
 
 import logging
+import sys
 from pathlib import Path
 
 import click
@@ -195,11 +196,11 @@ def convert_markdown_to_latex(
 
     except FileNotFoundError as e:
         click.echo(f"Error: {e}", err=True)
-        raise click.Exit(1)
+        sys.exit(1)
     except Exception as e:
         click.echo(f"Conversion failed: {e}", err=True)
         logger.exception("Conversion failed with exception:")
-        raise click.Exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
