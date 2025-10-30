@@ -152,7 +152,13 @@ def normalize_url(url: str) -> str:
 # --------------------------------------------------------------------
 
 def load_zotero_rdf(path: Path) -> List[Dict[str, Any]]:
-    """Extremely simple RDF parser (works with Zotero RDF exports)."""
+    """Simple RDF parser for Zotero RDF exports.
+
+    Handles multiple URL/identifier formats:
+    1. rdf:about attribute
+    2. Nested dcterms:URI/rdf:value
+    3. Simple dc:identifier text
+    """
     try:
         text = path.read_text(encoding="utf8", errors="ignore")
     except Exception as e:
@@ -160,21 +166,37 @@ def load_zotero_rdf(path: Path) -> List[Dict[str, Any]]:
 
     entries = []
 
-    # Find all RDF items
-    items = re.findall(
-        r'<bib:(?:Book|Article|ArticleJournal|Webpage|Document)[^>]*>(.*?)</(?:bib:Book|bib:Article|bib:ArticleJournal|bib:Webpage|bib:Document)>',
-        text,
-        re.DOTALL
-    )
+    # Find all RDF items with resource URI
+    pattern = r'<bib:(?:Book|Article|ArticleJournal|Webpage|Document)[^>]*rdf:about="([^"]*)"[^>]*>(.*?)</(?:bib:Book|bib:Article|bib:ArticleJournal|bib:Webpage|bib:Document)>'
 
-    for item in items:
+    for match in re.finditer(pattern, text, re.DOTALL):
+        rdf_about = match.group(1)  # Get rdf:about URL
+        item = match.group(2)  # Get item content
+
         # Extract title
         title_match = re.search(r'<dc:title>([^<]+)</dc:title>', item)
         title = title_match.group(1).strip() if title_match else ""
 
-        # Extract URL/identifier
-        url_match = re.search(r'<dc:identifier>([^<]+)</dc:identifier>', item)
-        url = url_match.group(1).strip() if url_match else ""
+        # Extract URL/identifier (try multiple formats)
+        url = ""
+
+        # 1. Try nested dcterms:URI/rdf:value structure (most common in Zotero)
+        url_match = re.search(r'<dcterms:URI>\s*<rdf:value>([^<]+)</rdf:value>', item, re.DOTALL)
+        if url_match:
+            url = url_match.group(1).strip()
+
+        # 2. Try simple dc:identifier
+        if not url:
+            url_match = re.search(r'<dc:identifier>([^<]+)</dc:identifier>', item)
+            if url_match:
+                identifier = url_match.group(1).strip()
+                # Skip DOI-only format (like "DOI 10.1234/5678")
+                if not identifier.startswith("DOI "):
+                    url = identifier
+
+        # 3. Fallback to rdf:about if it looks like a URL
+        if not url and (rdf_about.startswith("http://") or rdf_about.startswith("https://")):
+            url = rdf_about
 
         # Extract author (may be in <dc:creator> or <bib:authors>)
         creator_match = re.search(r'<(?:dc:creator|bib:authors)>.*?<rdf:li>([^<]+)</rdf:li>', item, re.DOTALL)
