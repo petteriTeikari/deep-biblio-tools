@@ -354,6 +354,30 @@ class CitationManager:
                 logger.warning(f"Auto-add initialization failed: {e}")
                 self.zotero_auto_add = None
 
+    def _normalize_amazon_url(self, url: str) -> str | None:
+        """Normalize Amazon URLs to extract just the ASIN/ISBN.
+
+        Amazon URLs have many variations:
+        - https://www.amazon.de/-/en/Craft-Use-Post-Growth-Kate-Fletcher/dp/1138021016
+        - https://www.amazon.de/dp/1138021016
+        - https://amazon.com/dp/1138021016?tag=foo
+
+        All these should normalize to the same ASIN: 1138021016
+        """
+        if "amazon" not in url.lower():
+            return None
+
+        # Extract ASIN from /dp/ pattern
+        if "/dp/" in url:
+            parts = url.split("/dp/")
+            if len(parts) > 1:
+                # Extract ASIN (10 characters, alphanumeric)
+                asin = parts[1].split("/")[0].split("?")[0].split("#")[0]
+                if len(asin) == 10:  # Valid ASIN length
+                    return f"amazon_dp_{asin}"
+
+        return None
+
     def _lookup_zotero_entry_by_url(
         self, url: str
     ) -> tuple[str, dict[str, Any]] | None:
@@ -370,6 +394,9 @@ class CitationManager:
 
         # Extract DOI if present in URL
         doi = extract_doi_from_url(url)
+
+        # Normalize Amazon URL if applicable
+        amazon_normalized = self._normalize_amazon_url(url)
 
         # Search through Zotero entries for matching URL or DOI
         for cite_key, entry in self.zotero_entries.items():
@@ -400,6 +427,15 @@ class CitationManager:
                         f"Found Zotero entry by normalized URL match: {cite_key}"
                     )
                     return (cite_key, entry)
+
+                # Match by Amazon ASIN (handle Amazon URL variations)
+                if amazon_normalized:
+                    entry_amazon_normalized = self._normalize_amazon_url(entry_url)
+                    if entry_amazon_normalized and amazon_normalized == entry_amazon_normalized:
+                        logger.debug(
+                            f"Found Zotero entry by Amazon ASIN match: {cite_key} (ASIN: {amazon_normalized})"
+                        )
+                        return (cite_key, entry)
 
         logger.debug(f"No Zotero entry found for URL: {url}")
         return None
