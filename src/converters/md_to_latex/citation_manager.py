@@ -17,6 +17,10 @@ from markdown_it.token import Token
 from tqdm import tqdm
 
 # Local imports
+from src.converters.md_to_latex.bibliography_sources import (
+    BiblographySource,
+    create_bibliography_source,
+)
 from src.converters.md_to_latex.citation_cache import CitationCache
 from src.converters.md_to_latex.citation_extractor_unified import (
     UnifiedCitationExtractor,
@@ -244,6 +248,7 @@ class CitationManager:
         zotero_api_key: str | None = None,
         zotero_library_id: str | None = None,
         zotero_collection: str | None = None,
+        bibliography_file_path: Path | str | None = None,  # NEW: Local bibliography file
         use_cache: bool = True,
         use_better_bibtex_keys: bool = True,
         enable_auto_add: bool = True,
@@ -261,49 +266,67 @@ class CitationManager:
         self.prefer_arxiv = prefer_arxiv  # Option to prefer arXiv metadata
         self.zotero_collection = zotero_collection  # Store collection name
 
-        # Initialize Zotero client if configured
-        self.zotero_client = None
+        # NEW: Use modular bibliography source architecture
+        self.bibliography_source: BiblographySource | None = None
         self.zotero_entries = {}  # Dict mapping citation keys to BibTeX entries
+        self.citation_matcher: CitationMatcher | None = None  # NEW: Production-grade matcher
 
-        # CRITICAL: If Zotero keys are required, credentials MUST be configured
-        if use_better_bibtex_keys and not (
-            zotero_api_key and zotero_library_id
-        ):
-            error_msg = (
-                "CRITICAL ERROR: Zotero keys are required but credentials are missing.\n"
-                "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env file.\n\n"
-                "Zotero keys prevent local key generation. Accepts two formats:\n"
-                "  - Web API keys: author_title_year (e.g., niinimaki_environmental_2020)\n"
-                "  - Better BibTeX plugin keys: authorTitleYear (e.g., adisornDigitalProductPassport2021)\n\n"
-                "Both are deterministic and from Zotero."
-            )
-            logger.error(error_msg)
-            raise ValueError(error_msg)
+        # Legacy Zotero client for backwards compatibility
+        self.zotero_client = None
 
-        if zotero_api_key or zotero_library_id:
-            self.zotero_client = ZoteroClient(
-                api_key=zotero_api_key, library_id=zotero_library_id
-            )
-            logger.info(
-                f"Initialized Zotero client with library_id: {zotero_library_id}"
+        try:
+            # Create bibliography source using factory
+            self.bibliography_source = create_bibliography_source(
+                zotero_api_key=zotero_api_key,
+                zotero_library_id=zotero_library_id,
+                collection_name=zotero_collection,
+                local_file_path=bibliography_file_path,
             )
 
-            # Load collection with Better BibTeX keys if specified
-            if zotero_collection:
-                try:
-                    self.zotero_entries = (
-                        self.zotero_client.load_collection_with_keys(
-                            zotero_collection
-                        )
-                    )
-                    logger.info(
-                        f"Loaded {len(self.zotero_entries)} entries from Zotero collection '{zotero_collection}'"
-                    )
-                except Exception as e:
-                    logger.error(
-                        f"Failed to load Zotero collection '{zotero_collection}': {e}"
-                    )
-                    # Continue without Zotero collection (will fall back to API lookups)
+            logger.info(f"Using bibliography source: {self.bibliography_source.source_name()}")
+
+            # Load entries from source
+            csl_entries = self.bibliography_source.load_entries()
+
+            # Convert CSL entries to internal format (dict keyed by citation key)
+            for entry in csl_entries:
+                cite_key = entry.get("id")
+                if cite_key:
+                    self.zotero_entries[cite_key] = entry
+
+            logger.info(f"Loaded {len(self.zotero_entries)} entries from bibliography source")
+
+            # Initialize production-grade CitationMatcher with loaded entries
+            # This handles DOI, arXiv, ISBN, and URL normalization
+            self.citation_matcher = CitationMatcher(
+                zotero_entries=csl_entries,
+                allow_zotero_write=enable_auto_add and not auto_add_dry_run,
+            )
+            logger.info("Initialized CitationMatcher with multi-strategy matching")
+
+            # Initialize legacy Zotero client if using API source (for backwards compatibility)
+            if zotero_api_key and zotero_library_id and not bibliography_file_path:
+                self.zotero_client = ZoteroClient(
+                    api_key=zotero_api_key, library_id=zotero_library_id
+                )
+
+        except ValueError as e:
+            # If no bibliography source is available, require Better BibTeX keys
+            if use_better_bibtex_keys:
+                error_msg = (
+                    f"CRITICAL ERROR: {str(e)}\n\n"
+                    "Bibliography source is required when use_better_bibtex_keys=True.\n"
+                    "Zotero keys prevent local key generation. Accepts two formats:\n"
+                    "  - Web API keys: author_title_year (e.g., niinimaki_environmental_2020)\n"
+                    "  - Better BibTeX plugin keys: authorTitleYear (e.g., adisornDigitalProductPassport2021)\n\n"
+                    "Both are deterministic and from Zotero."
+                )
+                logger.error(error_msg)
+                raise ValueError(error_msg) from e
+            else:
+                # Allow running without bibliography source if not requiring Better BibTeX keys
+                logger.warning("No bibliography source available, will generate keys locally")
+                self.zotero_entries = {}
 
         # No need to load cache explicitly - SQLite cache handles it
 
@@ -356,8 +379,9 @@ class CitationManager:
 
         # Search through Zotero entries for matching URL or DOI
         for cite_key, entry in self.zotero_entries.items():
-            entry_url = entry.get("url", "")
-            entry_doi = entry.get("doi", "")
+            # Handle both lowercase (legacy) and uppercase (CSL JSON standard) field names
+            entry_url = entry.get("url", entry.get("URL", ""))
+            entry_doi = entry.get("doi", entry.get("DOI", ""))
 
             # Match by DOI (most reliable)
             if doi and entry_doi and doi == entry_doi:

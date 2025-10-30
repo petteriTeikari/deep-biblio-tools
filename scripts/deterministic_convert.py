@@ -13,9 +13,15 @@ This script provides a deterministic, reproducible conversion workflow with:
 import argparse
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
+
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -188,13 +194,14 @@ def convert_with_fallbacks(
     # Create converter with explicit sources
     converter = MarkdownToLatexConverter(
         zotero_json_path=json_path if json_path else None,
+        output_dir=output_dir,  # Pass output_dir to constructor
     )
 
     # Perform conversion
     try:
         converter.convert(
             markdown_file=markdown_path,
-            output_dir=output_dir,
+            # output_dir is set in constructor, not here
         )
 
         # Compute hashes for reproducibility verification

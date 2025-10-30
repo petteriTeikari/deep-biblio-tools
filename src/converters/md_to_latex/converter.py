@@ -134,6 +134,7 @@ class MarkdownToLatexConverter:
             zotero_api_key=self.zotero_api_key,
             zotero_library_id=self.zotero_library_id,
             zotero_collection=self.collection_name,
+            bibliography_file_path=self.zotero_json_path,  # NEW: Pass local file path
             use_cache=self.use_cache,
             use_better_bibtex_keys=self.use_better_bibtex_keys,
             enable_auto_add=enable_auto_add,
