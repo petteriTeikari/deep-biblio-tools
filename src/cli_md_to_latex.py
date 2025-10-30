@@ -109,6 +109,11 @@ logger = logging.getLogger(__name__)
     default=True,
     help="Dry-run mode for auto-add (default: dry-run for safety)",
 )
+@click.option(
+    "--allow-failures",
+    is_flag=True,
+    help="Allow conversion to continue when citations fail (generates temp keys)",
+)
 def convert_markdown_to_latex(
     markdown_file: Path,
     output_dir: Path | None,
@@ -127,6 +132,7 @@ def convert_markdown_to_latex(
     font_size: str,
     enable_auto_add: bool,
     auto_add_dry_run: bool,
+    allow_failures: bool,
 ):
     """Convert markdown file to LaTeX format with citations and concept boxes.
 
@@ -167,6 +173,7 @@ def convert_markdown_to_latex(
             font_size=font_size,
             enable_auto_add=enable_auto_add,
             auto_add_dry_run=auto_add_dry_run,
+            allow_failures=allow_failures,
         )
 
         # Convert the file
@@ -176,6 +183,11 @@ def convert_markdown_to_latex(
             author=author,
             verbose=verbose,
         )
+
+        # Print failure report if there were any failures
+        if converter.citation_manager.failed_citations:
+            failure_report = converter.citation_manager.generate_failure_report()
+            click.echo(failure_report)
 
         if verbose:
             click.echo("\nConversion successful!")

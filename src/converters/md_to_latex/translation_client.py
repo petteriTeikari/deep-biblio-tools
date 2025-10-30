@@ -47,7 +47,8 @@ class TranslationClient:
         """
         try:
             resp = self.session.get(f"{self.server_url}/", timeout=2)
-            return resp.status_code == 200
+            # Server returns 404 for root endpoint but that means it's alive
+            return resp.status_code in (200, 404)
         except requests.RequestException as exc:
             logger.debug(f"Translation server health check failed: {exc}")
             return False

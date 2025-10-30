@@ -78,6 +78,7 @@ class MarkdownToLatexConverter:
         collection_name: str | None = None,  # Zotero collection name for API
         enable_auto_add: bool = True,  # Enable auto-add of missing citations
         auto_add_dry_run: bool = False,  # Actually add to Zotero by default (changed Oct 30, 2025)
+        allow_failures: bool = False,  # Allow conversion to continue when citations fail
     ):
         """Initialize the converter.
 
@@ -124,6 +125,7 @@ class MarkdownToLatexConverter:
         # Store auto-add settings
         self.enable_auto_add = enable_auto_add
         self.auto_add_dry_run = auto_add_dry_run
+        self.allow_failures = allow_failures
 
         # Initialize components
         self.citation_manager = CitationManager(
@@ -136,6 +138,7 @@ class MarkdownToLatexConverter:
             use_better_bibtex_keys=self.use_better_bibtex_keys,
             enable_auto_add=enable_auto_add,
             auto_add_dry_run=auto_add_dry_run,
+            allow_failures=allow_failures,
         )
 
         # Check translation server if auto-add is enabled

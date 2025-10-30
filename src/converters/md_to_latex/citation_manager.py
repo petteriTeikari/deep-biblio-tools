@@ -248,6 +248,7 @@ class CitationManager:
         use_better_bibtex_keys: bool = True,
         enable_auto_add: bool = True,
         auto_add_dry_run: bool = True,
+        allow_failures: bool = False,
     ):
         self.citations: dict[str, Citation] = {}
         self.cache_dir = cache_dir
@@ -314,6 +315,10 @@ class CitationManager:
             dict
         ] = []  # Track all errors for end report
         self.citation_matcher = None  # Will be set if auto-add is enabled
+
+        # Graceful degradation: allow conversion to continue even when citations fail
+        self.allow_failures = allow_failures
+        self.failed_citations: list[tuple[str, list[str]]] = []  # (url, reasons)
 
         # Initialize auto-add system (after zotero_client initialization)
         self.zotero_auto_add = None
@@ -1854,10 +1859,21 @@ class CitationManager:
                         logger.warning(f"  Auto-add warning: {warning}")
                 return key
             else:
-                # Validation failed or translation failed - FAIL IMMEDIATELY
+                # Validation failed or translation failed
                 logger.error(f"❌ Auto-add FAILED for: {url}")
                 error_details = "\n".join(f"  - {w}" for w in warnings) if warnings else "  - No details available"
 
+                # Track failure for reporting
+                self.failed_citations.append((url, warnings if warnings else ["No details available"]))
+
+                # If allow_failures is True, generate temp key and continue
+                if self.allow_failures:
+                    logger.warning("⚠️  Allow-failures enabled - generating temp key and continuing")
+                    temp_key = f"failedAutoAdd_{abs(hash(url)) % 1000000:06d}"
+                    logger.warning(f"  Temporary key: {temp_key}")
+                    return temp_key
+
+                # Otherwise, fail immediately (original behavior)
                 raise RuntimeError(
                     f"Failed to add citation to Zotero: {url}\n"
                     f"Reasons:\n{error_details}\n\n"
@@ -1865,16 +1881,29 @@ class CitationManager:
                     f"  1. Check if translation server is running\n"
                     f"  2. Verify URL is accessible\n"
                     f"  3. Manually add to Zotero collection: {self.zotero_collection}\n"
-                    f"  4. Check logs for validation errors"
+                    f"  4. Check logs for validation errors\n"
+                    f"  5. Use --allow-failures flag to continue despite errors"
                 )
 
-        # Auto-add disabled - FAIL IMMEDIATELY
+        # Auto-add disabled
+        error_msg = f"Citation not in Zotero and auto-add is DISABLED: {url}"
+        self.failed_citations.append((url, [error_msg]))
+
+        # If allow_failures is True, generate temp key and continue
+        if self.allow_failures:
+            logger.warning("⚠️  Allow-failures enabled - generating temp key and continuing")
+            temp_key = f"failedAutoAdd_{abs(hash(url)) % 1000000:06d}"
+            logger.warning(f"  Temporary key: {temp_key}")
+            return temp_key
+
+        # Otherwise, fail immediately
         raise RuntimeError(
-            f"Citation not in Zotero and auto-add is DISABLED: {url}\n\n"
+            f"{error_msg}\n\n"
             f"Possible fixes:\n"
             f"  1. Enable auto-add by removing --no-auto-add flag\n"
             f"  2. Manually add citation to Zotero collection: {self.zotero_collection}\n"
-            f"  3. Run conversion again after adding to Zotero"
+            f"  3. Run conversion again after adding to Zotero\n"
+            f"  4. Use --allow-failures flag to continue despite errors"
         )
 
     def _enforce_no_temp_key_for_valid_doi(self, citation: Citation) -> None:
@@ -2042,4 +2071,41 @@ class CitationManager:
             report.append("")
 
         report.append("=" * 80)
+        return "\n".join(report)
+
+    def generate_failure_report(self) -> str:
+        """Generate report of failed citations when allow_failures is enabled.
+
+        Returns:
+            Formatted failure report string with URLs and reasons
+        """
+        if not self.failed_citations:
+            return "✅ All citations resolved successfully (no failures)"
+
+        report = [
+            "",
+            "=" * 80,
+            "FAILED CITATIONS REPORT",
+            "=" * 80,
+            "",
+            f"Total failed: {len(self.failed_citations)}",
+            "",
+        ]
+
+        for i, (url, reasons) in enumerate(self.failed_citations, 1):
+            report.append(f"{i}. {url}")
+            for reason in reasons:
+                report.append(f"   - {reason}")
+            report.append("")
+
+        report.extend([
+            "=" * 80,
+            "NEXT STEPS:",
+            "1. Manually add these citations to your Zotero collection",
+            "2. Re-run conversion (failed citations should resolve automatically)",
+            "3. Repeat until zero failures",
+            "=" * 80,
+            ""
+        ])
+
         return "\n".join(report)
