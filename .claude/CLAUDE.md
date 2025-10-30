@@ -117,12 +117,16 @@ Deep Biblio Tools addresses the critical problem of LLM citation hallucinations 
   - If input is from `/path/to/input/file.md`
   - Save output to `/path/to/input/file_processed.md` or `/path/to/input/processed/file.md`
   - NEVER save to repository directories
-- **Exception for Temporary Debug Files**:
-  - ✅ CAN create temporary files in system temp directories for debugging
-  - ✅ These directories are already in `.gitignore`
-  - ✅ Use for: Quick tests, debugging output, intermediate processing
-  - ❌ But NOT for: Final outputs, processed data, or anything permanent
-  - Example: Use tempfile module or Path.cwd() / "temp" for troubleshooting
+- **MD→LaTeX Conversion Pipeline Output Locations (CRITICAL)**:
+  - **NEVER** use `/tmp` or any system temp directory for pipeline outputs
+  - **ALWAYS** create an `output/` subdirectory next to the input markdown file
+  - **Pattern**: Input at `/path/to/paper/file.md` → Output to `/path/to/paper/output/`
+  - **Example**:
+    - Input: `/home/petteri/Dropbox/.../mcp-review/mcp-draft-refined-v4.md`
+    - Output: `/home/petteri/Dropbox/.../mcp-review/output/mcp-draft-refined-v4.tex`
+    - Output: `/home/petteri/Dropbox/.../mcp-review/output/mcp-draft-refined-v4.pdf`
+  - This applies to ALL conversion artifacts: .tex, .pdf, .bib, .log, .aux, etc.
+  - User must be able to easily find outputs next to their source files
 
 ### 5. Generic Solutions Only
 - **NEVER** create paper-specific or file-specific solutions
