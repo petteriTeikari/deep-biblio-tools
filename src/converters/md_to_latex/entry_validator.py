@@ -32,7 +32,7 @@ class EntryValidator:
             "[truncated]",
             "Implementation plan",  # Specific to CRIS garbage from Oct 26
             "Abstract only",
-            "Full text unavailable"
+            "Full text unavailable",
         ]
 
         # Minimum acceptable title length
@@ -42,10 +42,7 @@ class EntryValidator:
         self.min_year = 1900
         self.max_year = 2030
 
-    def validate(
-        self,
-        metadata: dict[str, Any]
-    ) -> tuple[bool, list[str]]:
+    def validate(self, metadata: dict[str, Any]) -> tuple[bool, list[str]]:
         """Validate entry metadata and return (is_valid, issues).
 
         Args:
@@ -89,9 +86,7 @@ class EntryValidator:
         return True, issues
 
     def _validate_title(
-        self,
-        metadata: dict[str, Any],
-        issues: list[str]
+        self, metadata: dict[str, Any], issues: list[str]
     ) -> bool:
         """Validate title field. Returns False if critical issues found."""
         title = metadata.get("title", "").strip()
@@ -101,14 +96,50 @@ class EntryValidator:
             issues.append("CRITICAL: Title missing")
             return False
 
-        # Check 2: Minimum length
+        # Check 2: Stub titles (check BEFORE length check)
+        # These indicate translation server failed to extract proper title
+        stub_prefixes = ["Web page by ", "Webpage by ", "Web site by "]
+        for prefix in stub_prefixes:
+            if title.startswith(prefix):
+                issues.append(
+                    f"CRITICAL: Stub title detected: '{title}' - indicates metadata extraction failure"
+                )
+                return False
+
+        # Check 3: Domain names as titles (check BEFORE length check)
+        # Translation server sometimes returns domain instead of page title
+        domain_extensions = [".com", ".org", ".de", ".co.uk", ".eu", ".net"]
+        for ext in domain_extensions:
+            if title.endswith(ext):
+                issues.append(
+                    f"CRITICAL: Domain name as title: '{title}' - should be actual content title"
+                )
+                return False
+
+        # Check 4: Exact domain name matches (check BEFORE length check)
+        # Common cases where domain is used as title
+        known_domain_titles = [
+            "Amazon.de",
+            "Amazon.com",
+            "Amazon.co.uk",
+            "BBC.com",
+            "Bloomberg.com",
+            "Reuters.com",
+        ]
+        if title in known_domain_titles:
+            issues.append(
+                f"CRITICAL: Title is domain name '{title}' instead of content title"
+            )
+            return False
+
+        # Check 5: Minimum length
         if len(title) < self.min_title_length:
             issues.append(
                 f"CRITICAL: Title suspiciously short ({len(title)} chars): '{title}'"
             )
             return False
 
-        # Check 3: Truncation markers
+        # Check 6: Truncation markers
         for marker in self.truncation_markers:
             if marker in title:
                 issues.append(
@@ -116,7 +147,7 @@ class EntryValidator:
                 )
                 return False
 
-        # Check 4: All uppercase (often indicates poor metadata)
+        # Check 7: All uppercase (often indicates poor metadata)
         if title.isupper() and len(title) > 20:
             issues.append(
                 "WARNING: Title is all uppercase (may indicate poor metadata)"
@@ -124,11 +155,7 @@ class EntryValidator:
 
         return True
 
-    def _validate_creators(
-        self,
-        metadata: dict[str, Any],
-        issues: list[str]
-    ):
+    def _validate_creators(self, metadata: dict[str, Any], issues: list[str]):
         """Validate creators/authors. Only adds warnings."""
         creators = metadata.get("creators", [])
 
@@ -147,14 +174,10 @@ class EntryValidator:
             creator_type = creator.get("creatorType", "")
 
             if not last_name:
-                issues.append(
-                    f"WARNING: Creator {i} missing lastName field"
-                )
+                issues.append(f"WARNING: Creator {i} missing lastName field")
 
             if not creator_type:
-                issues.append(
-                    f"WARNING: Creator {i} missing creatorType field"
-                )
+                issues.append(f"WARNING: Creator {i} missing creatorType field")
 
             # Check for suspiciously short names
             if last_name and len(last_name) < 2:
@@ -162,11 +185,7 @@ class EntryValidator:
                     f"WARNING: Creator {i} has suspiciously short lastName: '{last_name}'"
                 )
 
-    def _validate_date(
-        self,
-        metadata: dict[str, Any],
-        issues: list[str]
-    ):
+    def _validate_date(self, metadata: dict[str, Any], issues: list[str]):
         """Validate date/year field. Only adds warnings."""
         date = metadata.get("date", "").strip()
 
@@ -216,11 +235,7 @@ class EntryValidator:
 
         return None
 
-    def _validate_doi_format(
-        self,
-        metadata: dict[str, Any],
-        issues: list[str]
-    ):
+    def _validate_doi_format(self, metadata: dict[str, Any], issues: list[str]):
         """Validate DOI format if present. Only adds warnings.
 
         Note: We don't do network validation (HEAD request) because
@@ -228,10 +243,10 @@ class EntryValidator:
         """
         # Check multiple possible fields (translation server inconsistent)
         doi = (
-            metadata.get("DOI") or
-            metadata.get("doi") or
-            metadata.get("Doi") or
-            ""
+            metadata.get("DOI")
+            or metadata.get("doi")
+            or metadata.get("Doi")
+            or ""
         ).strip()
 
         if not doi:
@@ -245,14 +260,10 @@ class EntryValidator:
 
         # Check for suspiciously short DOI
         if len(doi) < 7:  # Minimum realistic DOI like "10.1/x"
-            issues.append(
-                f"WARNING: DOI '{doi}' is suspiciously short"
-            )
+            issues.append(f"WARNING: DOI '{doi}' is suspiciously short")
 
     def _validate_item_type_specific(
-        self,
-        metadata: dict[str, Any],
-        issues: list[str]
+        self, metadata: dict[str, Any], issues: list[str]
     ):
         """Validate based on specific item types."""
         item_type = metadata.get("itemType", "")
@@ -269,9 +280,7 @@ class EntryValidator:
             # Web pages should have access date
             access_date = metadata.get("accessDate", "")
             if not access_date:
-                issues.append(
-                    "WARNING: Webpage without accessDate"
-                )
+                issues.append("WARNING: Webpage without accessDate")
 
         elif item_type == "journalArticle":
             # Journal articles should have publication name
@@ -284,9 +293,7 @@ class EntryValidator:
             # Should have DOI
             doi = metadata.get("DOI") or metadata.get("doi")
             if not doi:
-                issues.append(
-                    "WARNING: Journal article without DOI"
-                )
+                issues.append("WARNING: Journal article without DOI")
 
         elif item_type == "conferencePaper":
             # Conference papers should have proceedings name
