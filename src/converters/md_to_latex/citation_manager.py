@@ -258,6 +258,7 @@ class CitationManager:
             CitationCache(cache_dir=self.cache_dir) if use_cache else None
         )
         self.prefer_arxiv = prefer_arxiv  # Option to prefer arXiv metadata
+        self.zotero_collection = zotero_collection  # Store collection name
 
         # Initialize Zotero client if configured
         self.zotero_client = None
