@@ -135,6 +135,28 @@ class MarkdownToLatexConverter:
             auto_add_dry_run=auto_add_dry_run,
         )
 
+        # Check translation server if auto-add is enabled
+        if self.citation_manager.zotero_auto_add:
+            if not self._check_translation_server():
+                error_msg = (
+                    "\n" + "=" * 70 + "\n"
+                    "❌ TRANSLATION SERVER NOT RESPONDING\n"
+                    "\n"
+                    "Auto-add requires translation server at localhost:1969\n"
+                    "Server appears to be running but not responding correctly.\n"
+                    "\n"
+                    "To restart:\n"
+                    "  killall node  # Stop existing server\n"
+                    "  docker run -d -p 1969:1969 zotero/translation-server\n"
+                    "\n"
+                    "=" * 70
+                )
+                logger.warning(error_msg)
+                logger.warning("Continuing without auto-add functionality")
+                self.citation_manager.zotero_auto_add = None
+            else:
+                logger.info("✓ Translation server is responding")
+
         # Use enhanced converter if encoding is specified
         if self.concept_box_encoding:
             # Import here to avoid circular imports
@@ -168,6 +190,21 @@ class MarkdownToLatexConverter:
             )
 
         self.latex_builder = None
+
+    def _check_translation_server(self, url: str = "http://localhost:1969") -> bool:
+        """Check if translation server is accessible.
+
+        Returns:
+            True if server responds, False otherwise
+        """
+        try:
+            import requests
+            resp = requests.get(url, timeout=2)
+            # Server returns 404 for root but that means it's running
+            return resp.status_code in (200, 404)
+        except Exception as e:
+            logger.debug(f"Translation server check failed: {e}")
+            return False
 
     def _populate_from_zotero_json(self, citations: list) -> tuple[int, int]:
         """Populate citation metadata from local Zotero CSL JSON file.
@@ -1241,6 +1278,8 @@ class MarkdownToLatexConverter:
                         "--columns=80",
                         "--listings",  # Use listings for code blocks
                         "--no-highlight",  # Disable syntax highlighting
+                        "--top-level-division=section",  # Generate \section{} commands
+                        "--number-sections",  # Number sections
                         "-V",
                         "documentclass=article",
                         "-V",

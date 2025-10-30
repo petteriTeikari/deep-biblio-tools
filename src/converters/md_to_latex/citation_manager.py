@@ -387,24 +387,29 @@ class CitationManager:
         cache_data = self.cache.get(url)
         if cache_data:
             # Create Citation object from cached data
-            # TODO(Phase2): Replace temporary key with Zotero Better BibTeX key
-            temp_key = cache_data.get("key")
-            if not temp_key:
-                # Generate temporary placeholder key for cached entries
-                # This will be replaced with actual Zotero keys in Phase 2
-                authors = cache_data.get("authors", "Unknown")
-                year = cache_data.get("year", "0000")
-                title = cache_data.get("title", "TempCached")
-                # Create Better BibTeX-style key format
-                author_part = authors.split()[0] if authors else "temp"
-                title_part = title.split()[0] if title else "Cached"
-                temp_key = f"{author_part}{title_part}{year}"
+            # UPDATED Oct 30, 2025: Reject cached entries without proper Zotero keys
+            citation_key = cache_data.get("key")
 
+            # Validate cache has a proper Zotero key (not a temp key)
+            if not citation_key:
+                logger.warning(
+                    f"Cache entry for {url} has no key - invalidating cache"
+                )
+                return None  # Force re-fetch from Zotero
+
+            # Check if cached key looks like a temp key (contains "Temp" or is too short)
+            if "Temp" in citation_key or "temp" in citation_key or len(citation_key) < 15:
+                logger.warning(
+                    f"Cache entry for {url} has temp/invalid key '{citation_key}' - invalidating cache"
+                )
+                return None  # Force re-fetch from Zotero
+
+            # Cache has valid key - use it
             citation = Citation(
                 authors=cache_data.get("authors", ""),
                 year=cache_data.get("year", ""),
                 url=url,
-                key=temp_key,
+                key=citation_key,
                 use_better_bibtex=self.use_better_bibtex_keys,
             )
             citation.title = cache_data.get("title", "")
@@ -1727,41 +1732,29 @@ class CitationManager:
             return False
 
     def _generate_temp_key(self, citation: Citation) -> str:
-        """Generate temporary key for citation that couldn't be added to Zotero.
+        """DEPRECATED (Oct 30, 2025): Temp keys should never be generated.
+
+        This method is kept for backwards compatibility but will raise an error
+        if called. All code paths should now fail-fast instead of generating
+        temp keys.
 
         Args:
             citation: Citation object
 
-        Returns:
-            Temporary key like "authorTemp2021"
+        Raises:
+            RuntimeError: Always - temp keys are no longer allowed
         """
-        # Create temporary Better BibTeX-style key
-        first_author = (
-            citation.authors.split()[0] if citation.authors else "temp"
+        raise RuntimeError(
+            "DEPRECATED: _generate_temp_key() should never be called.\n"
+            f"Citation URL: {citation.url}\n"
+            f"Authors: {citation.authors}\n\n"
+            "Temp keys are no longer generated. Instead:\n"
+            "  1. Enable auto-add (--auto-add-real)\n"
+            "  2. Manually add citations to Zotero\n"
+            "  3. Fix translation server if it's failing\n\n"
+            "This error indicates a code path that still expects temp keys.\n"
+            "Please report this as a bug."
         )
-        clean_author = "".join(c for c in first_author if c.isalpha())
-        if clean_author:
-            clean_author = clean_author[0].lower() + clean_author[1:]
-        else:
-            clean_author = "temp"
-
-        # Use "Temp" as title part until we fetch real title
-        base_key = f"{clean_author}Temp{citation.year}"
-        key = base_key
-
-        # Handle duplicate keys with alphabetic suffixes
-        counter = 1
-        while key in self.citations:
-            suffix = ""
-            temp = counter
-            while temp > 0:
-                temp -= 1
-                suffix = chr(ord("a") + (temp % 26)) + suffix
-                temp //= 26
-            key = f"{base_key}{suffix}"
-            counter += 1
-
-        return key
 
     def _fetch_newly_added_entry(self, doi: str) -> dict[str, Any] | None:
         """Fetch newly added Zotero entry by DOI.
@@ -1830,17 +1823,20 @@ class CitationManager:
     def _handle_missing_citation(self, citation: Citation, url: str) -> str:
         """Handle citation not found in Zotero.
 
-        Flow:
+        Flow (UPDATED Oct 30, 2025 - NO MORE TEMP KEYS):
         1. Attempt auto-add via ZoteroAutoAdd (if enabled)
         2. If successful, return Better BibTeX key
-        3. If failed or disabled, fall back to Temp key
+        3. If failed or disabled, FAIL immediately (no temp key fallback)
 
         Args:
             citation: Citation object
             url: Citation URL
 
         Returns:
-            Better BibTeX key (if added) or Temp key (if failed)
+            Better BibTeX key (if successfully added to Zotero)
+
+        Raises:
+            RuntimeError: If citation cannot be added to Zotero
         """
         # Try auto-add if enabled
         if self.zotero_auto_add:
@@ -1857,22 +1853,28 @@ class CitationManager:
                         logger.warning(f"  Auto-add warning: {warning}")
                 return key
             else:
-                # Validation failed or translation failed
-                logger.warning(f"Auto-add BLOCKED or failed for: {url}")
-                for warning in warnings:
-                    logger.warning(f"  {warning}")
-                # Fall through to Temp key
+                # Validation failed or translation failed - FAIL IMMEDIATELY
+                logger.error(f"❌ Auto-add FAILED for: {url}")
+                error_details = "\n".join(f"  - {w}" for w in warnings) if warnings else "  - No details available"
 
-        # Fallback: Generate Temp key
-        logger.info(f"Falling back to Temp key for: {url}")
-        self._citation_errors.append(
-            {
-                "severity": "WARNING",
-                "issue": "NO_AUTO_ADD_OR_FAILED",
-                "url": url,
-            }
+                raise RuntimeError(
+                    f"Failed to add citation to Zotero: {url}\n"
+                    f"Reasons:\n{error_details}\n\n"
+                    f"Possible fixes:\n"
+                    f"  1. Check if translation server is running\n"
+                    f"  2. Verify URL is accessible\n"
+                    f"  3. Manually add to Zotero collection: {self.zotero_collection}\n"
+                    f"  4. Check logs for validation errors"
+                )
+
+        # Auto-add disabled - FAIL IMMEDIATELY
+        raise RuntimeError(
+            f"Citation not in Zotero and auto-add is DISABLED: {url}\n\n"
+            f"Possible fixes:\n"
+            f"  1. Enable auto-add by removing --no-auto-add flag\n"
+            f"  2. Manually add citation to Zotero collection: {self.zotero_collection}\n"
+            f"  3. Run conversion again after adding to Zotero"
         )
-        return self._generate_temp_key(citation)
 
     def _enforce_no_temp_key_for_valid_doi(self, citation: Citation) -> None:
         """Enforce policy: Temp keys only allowed for invalid/missing DOIs.
