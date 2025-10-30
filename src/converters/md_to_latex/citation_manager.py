@@ -1930,11 +1930,10 @@ class CitationManager:
             # Check for temporary key patterns (NO REGEX - string checks only)
             is_temp = False
 
-            if "Temp" in key:
+            # Case-insensitive check for "temp" anywhere in key
+            if "Temp" in key or "temp" in key:
                 is_temp = True
             elif include_dryrun and "dryrun_" in key:
-                is_temp = True
-            elif key.startswith("temp_"):
                 is_temp = True
 
             if is_temp:
