@@ -65,13 +65,12 @@ class MarkdownToLatexConverter:
         prefer_arxiv: bool = False,
         zotero_api_key: str | None = None,
         zotero_library_id: str | None = None,
-        zotero_json_path: Path
+        bibliography_rdf_file_path: Path
         | str
-        | None = None,  # Local Zotero CSL JSON export
+        | None = None,  # EMERGENCY MODE: RDF ONLY - .bib/.bibtex FORBIDDEN (drops URLs/ISBNs)
         bibliography_style: str
         | None = "spbasic_pt",  # arXiv-ready default (see CLAUDE.md)
         use_cache: bool = True,
-        use_better_bibtex_keys: bool = True,
         font_size: str = "11pt",
         debug_output_dir: Path
         | None = None,  # Optional debug artifact directory
@@ -94,7 +93,6 @@ class MarkdownToLatexConverter:
             zotero_library_id: Zotero library ID for searching user's library
             bibliography_style: Custom bibliography style (default: 'biblio-style-compact')
             use_cache: Whether to use SQLite cache for citation metadata (default True)
-            use_better_bibtex_keys: Whether to use Better BibTeX key format (default True)
             font_size: Font size for document (default '11pt', can be '10pt' for arXiv)
             debug_output_dir: Optional directory for debug artifacts (defaults to output_dir/debug)
             collection_name: Zotero collection name for API fetching
@@ -110,12 +108,12 @@ class MarkdownToLatexConverter:
         self.prefer_arxiv = prefer_arxiv
         self.zotero_api_key = zotero_api_key
         self.zotero_library_id = zotero_library_id
-        self.zotero_json_path = (
-            Path(zotero_json_path) if zotero_json_path else None
+        self.bibliography_rdf_file_path = (
+            Path(bibliography_rdf_file_path) if bibliography_rdf_file_path else None
         )
         self.bibliography_style = bibliography_style
         self.use_cache = use_cache
-        self.use_better_bibtex_keys = use_better_bibtex_keys
+        # REMOVED: use_better_bibtex_keys - BANNED (too problematic, simple keys preferred)
         self.font_size = font_size
         self.debug_output_dir = debug_output_dir
         # Use provided collection_name or fallback to environment variable
@@ -134,7 +132,7 @@ class MarkdownToLatexConverter:
             zotero_api_key=self.zotero_api_key,
             zotero_library_id=self.zotero_library_id,
             zotero_collection=self.collection_name,
-            bibliography_file_path=self.zotero_json_path,  # NEW: Pass local file path
+            bibliography_file_path=self.bibliography_rdf_file_path,  # RDF ONLY - .bib forbidden
             use_cache=self.use_cache,
             use_better_bibtex_keys=self.use_better_bibtex_keys,
             enable_auto_add=enable_auto_add,
@@ -223,18 +221,20 @@ class MarkdownToLatexConverter:
             Tuple of (matched_count, missing_count)
         """
 
-        if not self.zotero_json_path or not self.zotero_json_path.exists():
+        if not self.bibliography_rdf_file_path or not self.bibliography_rdf_file_path.exists():
             logger.warning(
-                f"Zotero JSON file not found: {self.zotero_json_path}"
+                f"Bibliography RDF file not found: {self.bibliography_rdf_file_path}"
             )
             return 0, len(citations)
 
-        # Load Zotero JSON
-        with open(self.zotero_json_path, encoding="utf-8") as f:
-            zotero_entries = json.load(f)
+        # Load RDF file using LocalFileSource parser (RDF ONLY - .bib forbidden)
+        from src.converters.md_to_latex.bibliography_sources import LocalFileSource
+
+        source = LocalFileSource(self.bibliography_rdf_file_path)
+        zotero_entries = source.load_entries()
 
         logger.info(
-            f"Loaded {len(zotero_entries)} entries from {self.zotero_json_path}"
+            f"Loaded {len(zotero_entries)} entries from RDF: {self.bibliography_rdf_file_path}"
         )
 
         # Use production CitationMatcher
@@ -833,25 +833,20 @@ class MarkdownToLatexConverter:
             )
 
         # Auto-detect local citation sources if not explicitly provided
-        # Fallback order (per OpenAI recommendations):
-        # 1. MCP server (via API) - handled by zotero_api_key
-        # 2. Local RDF file: {basename}.rdf
-        # 3. Local CSL JSON file: {basename}.json
-        if not self.zotero_json_path:
+        # EMERGENCY MODE: RDF ONLY - .bib forbidden (drops URLs/ISBNs)
+        if not self.bibliography_rdf_file_path:
             basename = markdown_file.stem
             directory = markdown_file.parent
 
-            # Check for JSON file first (easier to parse)
-            json_path = directory / f"{basename}.json"
-            if json_path.exists():
-                logger.info(f"Auto-detected Zotero CSL JSON file: {json_path}")
-                self.zotero_json_path = json_path
-
-            # TODO: Add RDF support
-            # rdf_path = directory / f"{basename}.rdf"
-            # if rdf_path.exists():
-            #     logger.info(f"Auto-detected Zotero RDF file: {rdf_path}")
-            #     self.zotero_rdf_path = rdf_path
+            # Check for RDF file ONLY
+            rdf_path = directory / f"{basename}.rdf"
+            if rdf_path.exists():
+                logger.info(f"Auto-detected Zotero RDF file: {rdf_path}")
+                self.bibliography_rdf_file_path = rdf_path
+            else:
+                logger.warning(
+                    f"No RDF file found: {rdf_path} - RDF REQUIRED for emergency mode"
+                )
 
         # Determine output name
         if output_name is None:
@@ -1060,22 +1055,22 @@ class MarkdownToLatexConverter:
                     logger.warning(
                         f"{missing} citations not found in Zotero - will fetch from APIs"
                     )
-            elif self.zotero_json_path:
-                # FALLBACK: Use local JSON (deprecated)
-                logger.warning(
-                    "Using local CSL JSON - consider migrating to Zotero API"
+            elif self.bibliography_rdf_file_path:
+                # EMERGENCY MODE: Use local RDF file
+                logger.info(
+                    "Using local RDF file (emergency mode - RDF ONLY, .bib forbidden)"
                 )
                 if verbose:
                     pbar.set_description(
-                        f"Loading {self.zotero_json_path.name}"
+                        f"Loading {self.bibliography_rdf_file_path.name}"
                     )
                 matched, missing = self._populate_from_zotero_json(citations)
                 logger.info(
-                    f"Matched {matched}/{len(citations)} citations from local Zotero JSON"
+                    f"Matched {matched}/{len(citations)} citations from local RDF"
                 )
                 if missing > 0:
                     logger.warning(
-                        f"{missing} citations not found in Zotero JSON - will fetch from APIs"
+                        f"{missing} citations not found in RDF - will fetch from APIs"
                     )
             else:
                 logger.warning(

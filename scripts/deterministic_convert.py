@@ -13,7 +13,6 @@ This script provides a deterministic, reproducible conversion workflow with:
 import argparse
 import hashlib
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -151,6 +150,7 @@ def convert_with_fallbacks(
     rdf_path: Path | None = None,
     json_path: Path | None = None,
     verify_reproducibility: bool = True,
+    allow_failures: bool = False,
 ) -> dict[str, Any]:
     """
     Convert markdown to LaTeX with explicit fallback chain.
@@ -191,10 +191,12 @@ def convert_with_fallbacks(
     if output_dir is None:
         output_dir = markdown_path.parent
 
-    # Create converter with explicit sources
+    # EMERGENCY MODE - RDF ONLY (rdf_path is guaranteed to exist by argument parser)
+    # Create converter with RDF source
     converter = MarkdownToLatexConverter(
-        zotero_json_path=json_path if json_path else None,
+        bibliography_rdf_file_path=rdf_path,  # RDF ONLY - .bib forbidden
         output_dir=output_dir,  # Pass output_dir to constructor
+        allow_failures=allow_failures,  # Allow partial success
     )
 
     # Perform conversion
@@ -259,20 +261,10 @@ def main():
     )
 
     parser.add_argument(
-        "--mcp",
-        help="MCP server base URL for citation lookup (optional)",
-    )
-
-    parser.add_argument(
         "--rdf",
         type=Path,
-        help="Local RDF file for citation lookup (auto-detected if not provided)",
-    )
-
-    parser.add_argument(
-        "--json",
-        type=Path,
-        help="Local CSL JSON file for citation lookup (auto-detected if not provided)",
+        required=True,
+        help="Local RDF file exported from Zotero (REQUIRED - this is emergency mode, RDF ONLY)",
     )
 
     parser.add_argument(
@@ -287,16 +279,29 @@ def main():
         help="Save conversion results as JSON to this file",
     )
 
+    parser.add_argument(
+        "--allow-failures",
+        action="store_true",
+        help="Continue conversion even if some citations fail to match",
+    )
+
     args = parser.parse_args()
 
-    # Perform conversion
+    # Verify RDF file exists
+    if not args.rdf.exists():
+        print(f"ERROR: RDF file not found: {args.rdf}")
+        print("EMERGENCY MODE REQUIRES RDF FILE - export from Zotero as RDF")
+        sys.exit(1)
+
+    # Perform conversion (EMERGENCY MODE - RDF ONLY)
     result = convert_with_fallbacks(
         markdown_path=args.markdown_file,
         output_dir=args.output_dir,
-        mcp_server=args.mcp,
-        rdf_path=args.rdf,
-        json_path=args.json,
+        mcp_server=None,  # Emergency mode - no MCP
+        rdf_path=args.rdf,  # RDF REQUIRED
+        json_path=None,  # No JSON in emergency mode
         verify_reproducibility=not args.no_verify,
+        allow_failures=args.allow_failures,
     )
 
     # Output results

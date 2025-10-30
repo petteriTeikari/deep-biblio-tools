@@ -137,7 +137,6 @@ class LocalFileSource(BiblographySource):
         """Load BibTeX format and convert to CSL JSON."""
         import bibtexparser
         from bibtexparser.bparser import BibTexParser
-        from bibtexparser.bibdatabase import COMMON_STRINGS
 
         with open(self.file_path, encoding="utf-8") as f:
             parser = BibTexParser(common_strings=True, ignore_nonstandard_types=False)
@@ -259,11 +258,222 @@ class LocalFileSource(BiblographySource):
 
     def _load_rdf(self) -> list[dict[str, Any]]:
         """Load RDF format and convert to CSL JSON."""
-        # TODO: Implement RDF parsing
-        # For now, raise NotImplementedError
-        raise NotImplementedError(
-            "RDF loading not yet implemented. " "Please export as CSL JSON from Zotero for now."
-        )
+        import xml.etree.ElementTree as ET
+
+        # Define namespaces used in Zotero RDF export
+        namespaces = {
+            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "bib": "http://purl.org/net/biblio#",
+            "dc": "http://purl.org/dc/elements/1.1/",
+            "dcterms": "http://purl.org/dc/terms/",
+            "foaf": "http://xmlns.com/foaf/0.1/",
+            "z": "http://www.zotero.org/namespaces/export#",
+            "link": "http://purl.org/rss/1.0/modules/link/",
+        }
+
+        try:
+            tree = ET.parse(self.file_path)
+            root = tree.getroot()
+        except ET.ParseError as e:
+            raise ValueError(f"Failed to parse RDF file: {e}") from e
+
+        csl_entries = []
+
+        # Find all bibliography items (Book, Article, etc.)
+        # These are typically at rdf:RDF/bib:* or rdf:RDF/z:*
+        for item_type in [
+            "Book",
+            "Article",
+            "ArticleJournal",
+            "ConferencePaper",
+            "Thesis",
+            "Report",
+            "WebPage",
+            "Document",
+        ]:
+            for item in root.findall(f"bib:{item_type}", namespaces):
+                entry = self._parse_rdf_item(item, namespaces)
+                if entry:
+                    csl_entries.append(entry)
+
+        logger.info(f"Loaded {len(csl_entries)} entries from RDF")
+        return csl_entries
+
+    def _parse_rdf_item(
+        self, item: Any, namespaces: dict[str, str]
+    ) -> dict[str, Any] | None:
+        """Parse a single RDF bibliography item to CSL JSON."""
+
+        # Extract rdf:about as the URL/identifier
+        item_url = item.get(f"{{{namespaces['rdf']}}}about", "")
+
+        # Extract title
+        title_elem = item.find("dc:title", namespaces)
+        title = title_elem.text if title_elem is not None else ""
+
+        if not title:
+            logger.warning(f"Skipping RDF item without title: {item_url}")
+            return None
+
+        # Create citation key from URL (will use this as 'id')
+        # For Amazon URLs like .../dp/1138021016, extract the identifier
+        citation_key = self._extract_citation_key_from_url(item_url, title)
+
+        # Build CSL JSON entry
+        csl_entry = {
+            "id": citation_key,
+            "title": title,
+            "URL": item_url,
+        }
+
+        # Extract item type
+        item_type_elem = item.find("z:itemType", namespaces)
+        if item_type_elem is not None:
+            zotero_type = item_type_elem.text or ""
+            csl_entry["type"] = self._map_zotero_rdf_type(zotero_type, item.tag)
+        else:
+            # Infer from RDF tag (bib:Book -> book, bib:Article -> article-journal)
+            tag_name = item.tag.split("}")[-1] if "}" in item.tag else item.tag
+            csl_entry["type"] = self._map_rdf_tag_to_csl_type(tag_name)
+
+        # Extract authors
+        authors_elem = item.find("bib:authors", namespaces)
+        if authors_elem is not None:
+            authors = []
+            # Authors are in rdf:Seq/rdf:li/foaf:Person
+            seq = authors_elem.find("rdf:Seq", namespaces)
+            if seq is not None:
+                for li in seq.findall("rdf:li", namespaces):
+                    person = li.find("foaf:Person", namespaces)
+                    if person is not None:
+                        surname_elem = person.find("foaf:surname", namespaces)
+                        given_elem = person.find("foaf:givenName", namespaces)
+
+                        author = {}
+                        if surname_elem is not None:
+                            author["family"] = surname_elem.text or ""
+                        if given_elem is not None:
+                            author["given"] = given_elem.text or ""
+
+                        if author:
+                            authors.append(author)
+
+            if authors:
+                csl_entry["author"] = authors
+
+        # Extract date
+        date_elem = item.find("dc:date", namespaces)
+        if date_elem is not None and date_elem.text:
+            # Try to extract year from various date formats
+            date_text = date_elem.text
+            year = self._extract_year_from_date(date_text)
+            if year:
+                csl_entry["issued"] = {"date-parts": [[year]]}
+
+        # Extract publisher
+        publisher_elem = item.find("dc:publisher", namespaces)
+        if publisher_elem is not None:
+            org = publisher_elem.find("foaf:Organization", namespaces)
+            if org is not None:
+                name_elem = org.find("foaf:name", namespaces)
+                if name_elem is not None:
+                    csl_entry["publisher"] = name_elem.text or ""
+
+        # Extract abstract
+        abstract_elem = item.find("dcterms:abstract", namespaces)
+        if abstract_elem is not None:
+            csl_entry["abstract"] = abstract_elem.text or ""
+
+        # Extract DOI (if present in identifier)
+        for identifier in item.findall("dc:identifier", namespaces):
+            uri = identifier.find("dcterms:URI", namespaces)
+            if uri is not None:
+                value_elem = uri.find("rdf:value", namespaces)
+                if value_elem is not None and value_elem.text:
+                    url = value_elem.text
+                    if "doi.org" in url:
+                        # Extract DOI from URL
+                        doi = url.split("doi.org/")[-1]
+                        csl_entry["DOI"] = doi
+
+        # Extract ISBN (for books)
+        isbn_elem = item.find("dc:identifier[@{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource]", namespaces)
+        if isbn_elem is not None:
+            isbn_text = isbn_elem.get(f"{{{namespaces['rdf']}}}resource", "")
+            if "isbn" in isbn_text.lower():
+                # Extract ISBN from urn:isbn: format
+                isbn = isbn_text.split(":")[-1]
+                csl_entry["ISBN"] = isbn
+
+        return csl_entry
+
+    def _extract_citation_key_from_url(self, url: str, title: str) -> str:
+        """Extract citation key from URL or generate from title."""
+        # For Amazon URLs: extract the ASIN/ISBN
+        if "amazon" in url and "/dp/" in url:
+            parts = url.split("/dp/")
+            if len(parts) > 1:
+                asin = parts[1].split("/")[0].split("?")[0]
+                return f"amazon_{asin}"
+
+        # For DOI URLs: extract DOI
+        if "doi.org/" in url:
+            doi = url.split("doi.org/")[-1]
+            # Sanitize DOI for use as key
+            safe_doi = doi.replace("/", "_").replace(".", "_")
+            return f"doi_{safe_doi}"
+
+        # For arXiv: extract arXiv ID
+        if "arxiv.org" in url:
+            if "/abs/" in url:
+                arxiv_id = url.split("/abs/")[-1]
+                return f"arxiv_{arxiv_id}"
+
+        # Fallback: create key from title
+        # Take first 3 words, lowercase, remove special chars
+        words = title.split()[:3]
+        key_base = "_".join(w.lower() for w in words if w.isalnum())
+        return key_base or "unknown_item"
+
+    def _extract_year_from_date(self, date_text: str) -> int | None:
+        """Extract year from various date format strings."""
+        # Try to find 4-digit year
+        for part in date_text.split():
+            # Remove common separators
+            part = part.replace(",", "").replace("-", "").replace("/", "")
+            if part.isdigit() and len(part) == 4:
+                year = int(part)
+                if 1900 <= year <= 2100:
+                    return year
+        return None
+
+    def _map_zotero_rdf_type(self, zotero_type: str, rdf_tag: str) -> str:
+        """Map Zotero itemType to CSL JSON type."""
+        mapping = {
+            "book": "book",
+            "journalArticle": "article-journal",
+            "conferencePaper": "paper-conference",
+            "thesis": "thesis",
+            "report": "report",
+            "webpage": "webpage",
+            "article": "article",
+            "patent": "patent",
+        }
+        return mapping.get(zotero_type.lower(), "article")
+
+    def _map_rdf_tag_to_csl_type(self, tag_name: str) -> str:
+        """Map RDF tag name to CSL JSON type."""
+        mapping = {
+            "Book": "book",
+            "Article": "article-journal",
+            "ArticleJournal": "article-journal",
+            "ConferencePaper": "paper-conference",
+            "Thesis": "thesis",
+            "Report": "report",
+            "WebPage": "webpage",
+            "Document": "article",
+        }
+        return mapping.get(tag_name, "article")
 
     def requires_credentials(self) -> bool:
         """Local files don't need credentials."""

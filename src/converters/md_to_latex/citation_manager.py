@@ -25,6 +25,7 @@ from src.converters.md_to_latex.citation_cache import CitationCache
 from src.converters.md_to_latex.citation_extractor_unified import (
     UnifiedCitationExtractor,
 )
+from src.converters.md_to_latex.citation_matcher import CitationMatcher
 from src.converters.md_to_latex.utils import (
     convert_html_entities,
     convert_unicode_to_latex,
@@ -63,20 +64,14 @@ class Citation:
         Raises:
             ValueError: If key is not provided or invalid format
         """
-        from src.converters.md_to_latex.utils import is_valid_zotero_key
-
         if not key:
             raise ValueError(
-                "Citation key is REQUIRED. Must come from Zotero (Web API or Better BibTeX plugin).\n"
-                "Use load_collection_with_keys() to get keys from Zotero."
+                "Citation key is REQUIRED. Accepts any format: simple keys (doi_*, amazon_*), "
+                "Zotero API keys, or local RDF-generated keys."
             )
 
-        # Validate Zotero key format (accepts both Web API and Better BibTeX)
-        if not is_valid_zotero_key(key):
-            logger.warning(
-                f"Citation key '{key}' does not match Zotero format. "
-                f"Expected: Web API (author_title_year) or Better BibTeX (authorTitleYear)"
-            )
+        # VALIDATION REMOVED: Better BibTeX is BANNED - accept all key formats
+        # Simple keys (doi_*, amazon_*, arxiv_*) are acceptable and preferred
 
         self.key = key
         self.authors = authors
@@ -250,7 +245,6 @@ class CitationManager:
         zotero_collection: str | None = None,
         bibliography_file_path: Path | str | None = None,  # NEW: Local bibliography file
         use_cache: bool = True,
-        use_better_bibtex_keys: bool = True,
         enable_auto_add: bool = True,
         auto_add_dry_run: bool = True,
         allow_failures: bool = False,
@@ -258,7 +252,7 @@ class CitationManager:
         self.citations: dict[str, Citation] = {}
         self.cache_dir = cache_dir
         self.use_cache = use_cache
-        self.use_better_bibtex_keys = use_better_bibtex_keys
+        # REMOVED: use_better_bibtex_keys - BANNED from repo (too problematic)
         # Initialize SQLite cache only if enabled
         self.cache = (
             CitationCache(cache_dir=self.cache_dir) if use_cache else None
