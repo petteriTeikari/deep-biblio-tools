@@ -9,56 +9,99 @@ Fix MD→LaTeX→PDF conversion to produce zero garbage citations. Iterate until
 Added CRITICAL RULE #1: `references.bib` is EPHEMERAL - never static, always regenerated.
 - Commit: fdb74c3
 
-### 2. Started Conversion with--allow-failures
-Running conversion with:
-- `--allow-failures`: Continue past citation failures
-- `--auto-add-real`: Actually add to Zotero (not dry-run)
-- Translation server: Running on localhost:1969 (responds with 404 on root - expected)
+### 2. Fixed click.Exit Bug
+- **Issue**: `click.Exit(1)` raised `AttributeError` in exception handler
+- **Fix**: Added `import sys` and replaced with `sys.exit(1)`
+- **Commit**: 491c561
 
-### 3. User's Critical Issue: Garbage BibTeX Entries
-User showed examples with KEY/CONTENT mismatches:
-```bibtex
-@article{david_m_rothschild_agentic_2025,
-  author = "David M. Rothschild...",
-  title = "On the momentum of gluons in Lattice Gauge Theory",  # WRONG TITLE!
-}
-```
+### 3. Conversion Strategy Change
+**Problem**: `--auto-add-real` mode too slow - calls translation server for every missing citation
+- First attempt with `--auto-add-real`: Ran 10+ minutes, hung at 25% (extracting citations)
+- Multiple competing processes were running, killed all
 
-This is CRITICAL - suggests either:
-1. Old stale references.bib being read
-2. Bug in BibTeX generation
-3. Garbage already in Zotero from bad auto-add
+**Current Approach**: Running with `--auto-add-dry-run`
+- Started: 14:50 UTC (process ID: 380811)
+- Status: Running 2+ minutes, still in citation extraction phase
+- Progress: Extracted 578 links, matching against 663 Zotero entries
+- Observation: Even dry-run calls translation server for missing citations (slow)
 
-### 4. Code Analysis
-Verified `generate_bibtex_file()` uses "w" mode (line 1680 in citation_manager.py) - SHOULD overwrite completely.
+### 4. Translation Server Issues Found
+From logs:
+- Server running on localhost:1969 (404 on root is expected) ✓
+- Many citations failing with HTTP 400 errors:
+  - `https://doi.org/10.1016/j.spc.2025.03.020`
+  - `https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1542`
+  - `https://cirpassproject.eu/results`
+- Each failed URL retried multiple times → significant slowdown
 
-## Current Status
+## Current Status (14:52 UTC)
 
-**Conversion Progress**: Running (6433be) - stuck at 25% (extracting citations)
-- Loaded 663 entries from Zotero successfully
-- Translation server responding
-- Using allow-failures mode
+**Conversion Progress**: Running (380811) - still extracting/matching citations
+- Loaded 663 entries from Zotero successfully ✓
+- Extracted 578 total links from markdown ✓
+- Calling translation server for missing citations (slow even in dry-run)
+- No PDF or references.bib generated yet
 
-**Old Background Processes**: ALL failed without --allow-failures (crashed on PDF URL)
+**Files Generated**:
+- `mcp-draft-refined-v4-TABLES.md` only (table stripping worked)
+
+## Known Issues from Previous Session
+
+1. **Garbage BibTeX Entries** (user-reported):
+   ```bibtex
+   @article{david_m_rothschild_agentic_2025,
+     author = "David M. Rothschild...",
+     title = "On the momentum of gluons in Lattice Gauge Theory",  # WRONG TITLE!
+   }
+   ```
+
+2. **Fletcher Rendering**: "Fletcher K (2016) Amazon.de" instead of full book title
+
+3. **Organization Names**: "Commission E" vs "European Commission"
+
+4. **Missing Hyperlinks**: Citations not clickable in PDF
+
+5. **Dryrun Keys**: `dryrun_1761780981742` appearing in old output
 
 ## Next Steps (Once Conversion Completes)
 
-1. Check generated `references.bib` for garbage entries
-2. If garbage found, trace source (Zotero vs code bug)
-3. Check generated PDF for (?) citations
-4. Fix identified issues
-5. Re-run conversion
-6. **ITERATE** until PDF has ZERO issues
+1. Wait for process 380811 to complete (may take 10-30 more minutes)
+2. Check generated `references.bib` for garbage entries
+3. Inspect PDF for (?) citations
+4. If issues found:
+   - Analyze root cause (Zotero data vs code bug vs LaTeX style)
+   - Fix code/data
+   - Re-run conversion
+5. Iterate until PDF has ZERO issues
+
+## Performance Observations
+
+**Problem**: Auto-add (even dry-run) is bottleneck
+- Translation server calls: ~2 seconds per URL (with retries)
+- Estimated missing citations: 100-200 based on past runs
+- Total time for auto-add phase: 3-10 minutes minimum
+
+**Possible Optimization** (for future):
+- Skip translation server calls entirely in dry-run
+- Generate temp keys immediately for missing citations
+- Only call translation server when `--auto-add-real` is used
 
 ## Files Modified This Session
-- `.claude/CLAUDE.md`: Added references.bib ephemeral warning
+- `.claude/CLAUDE.md`: Added references.bib ephemeral warning (fdb74c3)
+- `src/cli_md_to_latex.py`: Fixed click.Exit bug (491c561)
+- `docs/work-session-2025-10-30-afternoon.md`: This document
 
-## Known Issues to Fix
-- Fletcher rendering: "Fletcher K (2016) Amazon.de" instead of full title
-- Organization names: "Commission E" vs "European Commission"
-- Missing hyperlinks in PDF
-- Possible hallucinated arXiv titles
+## Commits This Session
+1. `fdb74c3`: docs: Add critical rule about references.bib being ephemeral
+2. `4fbb8c6`: docs: Add work session 2025-10-30 afternoon progress
+3. `491c561`: fix: Replace click.Exit with sys.exit for proper error handling
 
 ## Time Spent
-- Documentation updates: 10 min
-- Conversion monitoring: 30 min+ (still running)
+- Documentation updates: 15 min
+- Bug fixes: 10 min
+- Conversion attempts and monitoring: 40 min+ (ongoing)
+- **Total**: 65+ minutes (process still running)
+
+## Expected Completion
+- Conversion should complete: 15:05-15:20 UTC (another 15-30 min)
+- Will update this document when PDF is ready to inspect
