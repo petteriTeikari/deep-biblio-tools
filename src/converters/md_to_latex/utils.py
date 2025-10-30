@@ -507,25 +507,77 @@ def normalize_arxiv_url(url: str) -> str:
     return url
 
 
-def generate_citation_key(*args, **kwargs) -> str:
-    """FORBIDDEN: Citation keys must come from Zotero Better BibTeX.
+def generate_citation_key(
+    authors: str,
+    year: str | None,
+    title: str | None = None,
+    use_better_bibtex: bool = False,
+) -> str:
+    """Generate simple citation key from author, year, and optional title.
 
-    This function is intentionally disabled. Citation keys must ONLY come from
-    Zotero Better BibTeX export. Never generate keys locally.
+    IMPORTANT: Better BibTeX format is BANNED as of 2025-10-30.
+    This function ONLY generates simple keys in format: author_year or author_title_year
 
-    Raises:
-        RuntimeError: Always - this function must never be called
+    Args:
+        authors: Author name(s) (may include "et al.")
+        year: Publication year
+        title: Optional title for disambiguation
+        use_better_bibtex: IGNORED - Better BibTeX is BANNED
+
+    Returns:
+        Simple citation key: author_year or author_title_year
+
+    Examples:
+        generate_citation_key("Smith", "2020", None, False) -> "smith_2020"
+        generate_citation_key("Jones et al.", "2021", "Methods", False) -> "jones_methods_2021"
 
     See:
-        docs/better-bibtex-key-strategy.md for implementation details
-        .claude/CLAUDE.md for design principles
+        .claude/CLAUDE.md - Better BibTeX ban policy
     """
-    raise RuntimeError(
-        "Citation key generation is FORBIDDEN.\n"
-        "Keys must come from Zotero Better BibTeX export.\n"
-        "Use load_collection_with_keys() to get keys from Zotero.\n"
-        "See docs/better-bibtex-key-strategy.md"
-    )
+    # Extract first author's last name
+    if not authors:
+        author_part = "unknown"
+    else:
+        # Handle "Author et al." format
+        if " et al" in authors:
+            first_author = authors.split(" et al")[0].strip()
+        elif " and " in authors:
+            first_author = authors.split(" and ")[0].strip()
+        else:
+            first_author = authors.strip()
+
+        # Extract last name (last word)
+        parts = first_author.split()
+        if parts:
+            author_part = parts[-1].lower()
+        else:
+            author_part = "unknown"
+
+        # Sanitize: remove special characters, keep only alphanumeric
+        author_part = "".join(c for c in author_part if c.isalnum())
+
+    # Year part
+    year_part = year if year else "unknown"
+
+    # Title part (first significant word if provided)
+    title_part = None
+    if title:
+        # Extract first significant word (skip common words)
+        skip_words = {"a", "an", "the", "in", "on", "at", "to", "for", "of", "and"}
+        title_words = title.lower().split()
+        for word in title_words:
+            clean_word = "".join(c for c in word if c.isalnum())
+            if clean_word and clean_word not in skip_words and len(clean_word) > 2:
+                title_part = clean_word
+                break
+
+    # Construct key
+    if title_part:
+        key = f"{author_part}_{title_part}_{year_part}"
+    else:
+        key = f"{author_part}_{year_part}"
+
+    return key
 
 
 def is_valid_zotero_key(key: str) -> bool:

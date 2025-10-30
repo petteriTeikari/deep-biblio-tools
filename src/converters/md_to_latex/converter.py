@@ -1513,40 +1513,63 @@ class MarkdownToLatexConverter:
                 f"{validation_results['warning_count']} WARNING"
             )
 
-            # Fail on CRITICAL issues
+            # Fail on CRITICAL issues (unless allow_failures is enabled)
             if validation_results["critical_count"] > 0:
-                logger.error("❌ BIBTEX QUALITY VALIDATION FAILED")
-                logger.error(
-                    f"   {validation_results['critical_count']} CRITICAL issues found:"
-                )
-
-                # Log first 10 issues for visibility
-                issue_count = 0
-                for key, issues in validation_results[
-                    "issues_by_entry"
-                ].items():
-                    critical_issues = [
-                        i for i in issues if i.startswith("CRITICAL")
-                    ]
-                    if critical_issues:
-                        logger.error(f"   Entry '{key}':")
-                        for issue in critical_issues:
-                            logger.error(f"     - {issue}")
-                        issue_count += 1
-                        if issue_count >= 10:
-                            remaining = (
-                                validation_results["critical_count"] - 10
-                            )
-                            if remaining > 0:
-                                logger.error(
-                                    f"   ... and {remaining} more issues"
+                if self.allow_failures:
+                    logger.warning("⚠️  BIBTEX QUALITY VALIDATION ISSUES (continuing due to --allow-failures)")
+                    logger.warning(
+                        f"   {validation_results['critical_count']} CRITICAL issues found:"
+                    )
+                    # Log first 3 issues for awareness
+                    issue_count = 0
+                    for key, issues in validation_results[
+                        "issues_by_entry"
+                    ].items():
+                        critical_issues = [
+                            i for i in issues if i.startswith("CRITICAL")
+                        ]
+                        if critical_issues:
+                            logger.warning(f"   Entry '{key}': {critical_issues[0]}")
+                            issue_count += 1
+                            if issue_count >= 3:
+                                logger.warning(
+                                    f"   ... and {validation_results['critical_count'] - 3} more issues"
                                 )
-                            break
+                                break
+                    logger.warning("   Continuing anyway (--allow-failures enabled)")
+                else:
+                    logger.error("❌ BIBTEX QUALITY VALIDATION FAILED")
+                    logger.error(
+                        f"   {validation_results['critical_count']} CRITICAL issues found:"
+                    )
 
-                raise RuntimeError(
-                    f"BibTeX quality validation failed with {validation_results['critical_count']} "
-                    f"CRITICAL issues. Common problems: stub titles ('Web page by X'), "
-                    f"domain names as titles ('Amazon.de'), temporary keys. "
+                    # Log first 10 issues for visibility
+                    issue_count = 0
+                    for key, issues in validation_results[
+                        "issues_by_entry"
+                    ].items():
+                        critical_issues = [
+                            i for i in issues if i.startswith("CRITICAL")
+                        ]
+                        if critical_issues:
+                            logger.error(f"   Entry '{key}':")
+                            for issue in critical_issues:
+                                logger.error(f"     - {issue}")
+                            issue_count += 1
+                            if issue_count >= 10:
+                                remaining = (
+                                    validation_results["critical_count"] - 10
+                                )
+                                if remaining > 0:
+                                    logger.error(
+                                        f"   ... and {remaining} more issues"
+                                    )
+                                break
+
+                    raise RuntimeError(
+                        f"BibTeX quality validation failed with {validation_results['critical_count']} "
+                        f"CRITICAL issues. Common problems: stub titles ('Web page by X'), "
+                        f"domain names as titles ('Amazon.de'), temporary keys. "
                     f"See logs above for details."
                 )
 

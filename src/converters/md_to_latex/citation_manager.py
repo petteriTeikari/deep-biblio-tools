@@ -434,7 +434,7 @@ class CitationManager:
                 year=cache_data.get("year", ""),
                 url=url,
                 key=citation_key,
-                use_better_bibtex=self.use_better_bibtex_keys,
+                use_better_bibtex=False,  # BANNED - always use simple keys
             )
             citation.title = cache_data.get("title", "")
             citation.journal = cache_data.get("journal", "")
@@ -577,7 +577,7 @@ class CitationManager:
                 year=zotero_entry.get("year", year),
                 url=url,
                 key=cite_key,
-                use_better_bibtex=self.use_better_bibtex_keys,
+                use_better_bibtex=False,  # BANNED - always use simple keys
             )
 
             # Populate additional fields from Zotero
@@ -607,7 +607,7 @@ class CitationManager:
                 year,
                 url,
                 "temp",  # Will be replaced by _handle_missing_citation()
-                use_better_bibtex=self.use_better_bibtex_keys,
+                use_better_bibtex=False,  # BANNED - always use simple keys
             )
 
             # Try to auto-add to Zotero or generate appropriate temp key
@@ -619,7 +619,7 @@ class CitationManager:
                 year,
                 url,
                 key,
-                use_better_bibtex=self.use_better_bibtex_keys,
+                use_better_bibtex=False,  # BANNED - always use simple keys
             )
         citations_found.append(citation)
         self.citations[key] = citation
@@ -666,7 +666,7 @@ class CitationManager:
 
                     # Only use format_bibtex() when Better BibTeX is disabled
                     # (format_bibtex generates keys, which violates Better BibTeX principle)
-                    if not self.use_better_bibtex_keys:
+                    if True:  # BANNED - always use simple keys (removed Better BibTeX check)
                         citation.raw_bibtex = self.zotero_client.format_bibtex(
                             zotero_data
                         )
@@ -712,7 +712,7 @@ class CitationManager:
 
                         # Only use format_bibtex() when Better BibTeX is disabled
                         # (format_bibtex generates keys, which violates Better BibTeX principle)
-                        if not self.use_better_bibtex_keys:
+                        if True:  # BANNED - always use simple keys (removed Better BibTeX check)
                             citation.raw_bibtex = (
                                 self.zotero_client.format_bibtex(zotero_data)
                             )
@@ -785,8 +785,8 @@ class CitationManager:
         elif citation.url.startswith("http"):
             source = "web"
 
-        # Regenerate citation key with title if using Better BibTeX
-        if self.use_better_bibtex_keys and citation.title:
+        # Regenerate citation key with title if using Better BibTeX (BANNED - never do this)
+        if False:  # BANNED - Better BibTeX key regeneration disabled
             # Find the current registry key for this citation object
             current_registry_key = None
             for key, stored_citation in self.citations.items():
@@ -866,7 +866,7 @@ class CitationManager:
                             citation.authors,
                             citation.year,
                             citation.title,
-                            use_better_bibtex=self.use_better_bibtex_keys,
+                            use_better_bibtex=False,  # BANNED - always use simple keys
                         )
                         if citation.title:
                             # Add first significant word from title
