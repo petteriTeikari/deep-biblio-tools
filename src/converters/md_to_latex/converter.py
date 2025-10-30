@@ -121,6 +121,9 @@ class MarkdownToLatexConverter:
         self.collection_name = collection_name or os.getenv(
             "ZOTERO_COLLECTION", "dpp-fashion"
         )
+        # Store auto-add settings
+        self.enable_auto_add = enable_auto_add
+        self.auto_add_dry_run = auto_add_dry_run
 
         # Initialize components
         self.citation_manager = CitationManager(
