@@ -4,7 +4,6 @@
 import html
 import json
 import logging
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -31,8 +30,8 @@ from src.converters.md_to_latex.utils import (
     normalize_url,
     sanitize_latex,
 )
-from src.converters.md_to_latex.zotero_integration import ZoteroClient
 from src.converters.md_to_latex.zotero_auto_add import ZoteroAutoAdd
+from src.converters.md_to_latex.zotero_integration import ZoteroClient
 
 logger = logging.getLogger(__name__)
 
@@ -307,8 +306,12 @@ class CitationManager:
         # No need to load cache explicitly - SQLite cache handles it
 
         # Phase 1: Auto-add and policy enforcement infrastructure
-        self._doi_validation_cache: dict[str, bool] = {}  # Cache DOI HEAD requests
-        self._citation_errors: list[dict] = []  # Track all errors for end report
+        self._doi_validation_cache: dict[
+            str, bool
+        ] = {}  # Cache DOI HEAD requests
+        self._citation_errors: list[
+            dict
+        ] = []  # Track all errors for end report
         self.citation_matcher = None  # Will be set if auto-add is enabled
 
         # Initialize auto-add system (after zotero_client initialization)
@@ -320,7 +323,7 @@ class CitationManager:
                     collection_name=zotero_collection,
                     translation_server_url="http://localhost:1969",
                     dry_run=auto_add_dry_run,
-                    max_auto_add=50  # Threshold limit
+                    max_auto_add=50,  # Threshold limit
                 )
                 mode = "DRY-RUN" if auto_add_dry_run else "REAL"
                 logger.info(f"Auto-add initialized in {mode} mode")
@@ -1733,7 +1736,9 @@ class CitationManager:
             Temporary key like "authorTemp2021"
         """
         # Create temporary Better BibTeX-style key
-        first_author = citation.authors.split()[0] if citation.authors else "temp"
+        first_author = (
+            citation.authors.split()[0] if citation.authors else "temp"
+        )
         clean_author = "".join(c for c in first_author if c.isalpha())
         if clean_author:
             clean_author = clean_author[0].lower() + clean_author[1:]
@@ -1800,7 +1805,9 @@ class CitationManager:
 
                 # Extract metadata
                 metadata = {
-                    "title": message.get("title", [""])[0] if message.get("title") else "",
+                    "title": message.get("title", [""])[0]
+                    if message.get("title")
+                    else "",
                     "authors": [],
                 }
 
@@ -1809,7 +1816,9 @@ class CitationManager:
                     family = author.get("family", "")
                     given = author.get("given", "")
                     if family:
-                        metadata["authors"].append(f"{family}, {given}" if given else family)
+                        metadata["authors"].append(
+                            f"{family}, {given}" if given else family
+                        )
 
                 return metadata
         except Exception as e:
@@ -1818,9 +1827,7 @@ class CitationManager:
         # TODO: Add arXiv fetching if needed
         return None
 
-    def _handle_missing_citation(
-        self, citation: Citation, url: str
-    ) -> str:
+    def _handle_missing_citation(self, citation: Citation, url: str) -> str:
         """Handle citation not found in Zotero.
 
         Flow:
@@ -1839,7 +1846,9 @@ class CitationManager:
         if self.zotero_auto_add:
             logger.info(f"Attempting auto-add for: {url}")
 
-            key, warnings = self.zotero_auto_add.add_citation(url, citation.authors)
+            key, warnings = self.zotero_auto_add.add_citation(
+                url, citation.authors
+            )
 
             if key:
                 # Success! (either added or dry-run simulated)
@@ -1856,11 +1865,13 @@ class CitationManager:
 
         # Fallback: Generate Temp key
         logger.info(f"Falling back to Temp key for: {url}")
-        self._citation_errors.append({
-            "severity": "WARNING",
-            "issue": "NO_AUTO_ADD_OR_FAILED",
-            "url": url,
-        })
+        self._citation_errors.append(
+            {
+                "severity": "WARNING",
+                "issue": "NO_AUTO_ADD_OR_FAILED",
+                "url": url,
+            }
+        )
         return self._generate_temp_key(citation)
 
     def _enforce_no_temp_key_for_valid_doi(self, citation: Citation) -> None:
@@ -1886,6 +1897,89 @@ class CitationManager:
                 f"This citation should have been added to Zotero automatically."
             )
 
+    def validate_no_temp_keys(
+        self, fail_on_temp: bool = True, include_dryrun: bool = True
+    ) -> list[dict[str, str]]:
+        """Validate that no temporary citation keys exist.
+
+        Temporary keys indicate citations missing from Zotero:
+        - "Temp" keys: Generated when auto-add disabled or failed
+        - "dryrun_" keys: Generated when auto-add in dry-run mode
+
+        This is a CRITICAL validation step that should be run BEFORE
+        BibTeX generation to ensure all citations are properly matched
+        to Zotero entries.
+
+        Args:
+            fail_on_temp: Raise RuntimeError if temp keys found
+            include_dryrun: Also flag dryrun_ keys (default: True)
+
+        Returns:
+            List of dicts with temp key details: {key, url, authors, year}
+
+        Raises:
+            RuntimeError: If fail_on_temp=True and temp keys exist
+
+        Example:
+            >>> manager.validate_no_temp_keys(fail_on_temp=True)
+            # Raises RuntimeError if any Temp or dryrun_ keys found
+        """
+        temp_keys = []
+
+        for key, citation in self.citations.items():
+            # Check for temporary key patterns (NO REGEX - string checks only)
+            is_temp = False
+
+            if "Temp" in key:
+                is_temp = True
+            elif include_dryrun and "dryrun_" in key:
+                is_temp = True
+            elif key.startswith("temp_"):
+                is_temp = True
+
+            if is_temp:
+                temp_keys.append(
+                    {
+                        "key": key,
+                        "url": citation.url,
+                        "authors": citation.authors,
+                        "year": citation.year,
+                    }
+                )
+
+        if temp_keys and fail_on_temp:
+            # Build detailed error message
+            msg_lines = [
+                f"❌ VALIDATION FAILED: {len(temp_keys)} citations missing from Zotero",
+                "",
+                "Temporary keys found:",
+            ]
+
+            # Show first 10 entries
+            for item in temp_keys[:10]:
+                msg_lines.append(f"  - {item['key']}: {item['url']}")
+
+            if len(temp_keys) > 10:
+                msg_lines.append(f"  ... and {len(temp_keys) - 10} more")
+
+            msg_lines.extend(
+                [
+                    "",
+                    "Options to fix:",
+                    "  1. Run with --auto-add-real to add missing citations to Zotero automatically",
+                    "  2. Manually add these citations to your Zotero collection",
+                    "  3. Run with --allow-temp-keys to proceed anyway (NOT recommended)",
+                    "",
+                    "Temporary keys indicate:",
+                    "  - 'Temp' keys: Auto-add was disabled or metadata extraction failed",
+                    "  - 'dryrun_' keys: Auto-add was in dry-run mode (safe test mode)",
+                ]
+            )
+
+            raise RuntimeError("\n".join(msg_lines))
+
+        return temp_keys
+
     def generate_error_report(self) -> str:
         """Generate human-readable error report.
 
@@ -1906,9 +2000,13 @@ class CitationManager:
         ]
 
         # Group by severity
-        critical = [e for e in self._citation_errors if e["severity"] == "CRITICAL"]
+        critical = [
+            e for e in self._citation_errors if e["severity"] == "CRITICAL"
+        ]
         errors = [e for e in self._citation_errors if e["severity"] == "ERROR"]
-        warnings = [e for e in self._citation_errors if e["severity"] == "WARNING"]
+        warnings = [
+            e for e in self._citation_errors if e["severity"] == "WARNING"
+        ]
 
         # Report each severity level
         if critical:
@@ -1916,7 +2014,9 @@ class CitationManager:
                 f"🔴 CRITICAL ({len(critical)} issues) - Invalid DOIs from LLM hallucinations"
             )
             for err in critical:
-                report.append(f"  - {err['issue']}: {err.get('doi', err.get('url', 'N/A'))}")
+                report.append(
+                    f"  - {err['issue']}: {err.get('doi', err.get('url', 'N/A'))}"
+                )
                 report.append(f"    Citation: {err.get('citation', 'Unknown')}")
             report.append("")
 
@@ -1925,7 +2025,9 @@ class CitationManager:
                 f"⚠️  ERROR ({len(errors)} issues) - Missing/incomplete metadata"
             )
             for err in errors:
-                report.append(f"  - {err['issue']}: {err.get('doi', err.get('url', 'N/A'))}")
+                report.append(
+                    f"  - {err['issue']}: {err.get('doi', err.get('url', 'N/A'))}"
+                )
             report.append("")
 
         if warnings:
