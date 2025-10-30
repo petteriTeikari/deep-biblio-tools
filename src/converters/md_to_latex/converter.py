@@ -134,7 +134,7 @@ class MarkdownToLatexConverter:
             zotero_collection=self.collection_name,
             bibliography_file_path=self.bibliography_rdf_file_path,  # RDF ONLY - .bib forbidden
             use_cache=self.use_cache,
-            use_better_bibtex_keys=self.use_better_bibtex_keys,
+            # REMOVED: use_better_bibtex_keys - BANNED from repo
             enable_auto_add=enable_auto_add,
             auto_add_dry_run=auto_add_dry_run,
             allow_failures=allow_failures,
@@ -211,7 +211,7 @@ class MarkdownToLatexConverter:
             logger.debug(f"Translation server check failed: {e}")
             return False
 
-    def _populate_from_zotero_json(self, citations: list) -> tuple[int, int]:
+    def _populate_from_local_rdf(self, citations: list) -> tuple[int, int]:
         """Populate citation metadata from local Zotero CSL JSON file.
 
         Args:
@@ -552,8 +552,8 @@ class MarkdownToLatexConverter:
         new_key = generate_citation_key(
             citation.authors,
             citation.year,
-            citation.title if self.use_better_bibtex_keys else "",
-            use_better_bibtex=self.use_better_bibtex_keys,
+            citation.title,  # Always include title (Better BibTeX BANNED)
+            use_better_bibtex=False,  # BANNED - always use simple keys
         )
         # Update the citation key AND the registry
         old_key = citation.key
@@ -1064,7 +1064,7 @@ class MarkdownToLatexConverter:
                     pbar.set_description(
                         f"Loading {self.bibliography_rdf_file_path.name}"
                     )
-                matched, missing = self._populate_from_zotero_json(citations)
+                matched, missing = self._populate_from_local_rdf(citations)
                 logger.info(
                     f"Matched {matched}/{len(citations)} citations from local RDF"
                 )
@@ -1080,7 +1080,7 @@ class MarkdownToLatexConverter:
                     "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env for best results"
                 )
 
-            # Pre-fetch metadata for all citations to ensure Better BibTeX keys are generated
+            # Pre-fetch metadata for all citations
             if verbose:
                 pbar.set_description(
                     f"Fetching metadata for {len(citations)} citations"
