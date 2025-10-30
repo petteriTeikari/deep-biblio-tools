@@ -154,9 +154,22 @@ Deep Biblio Tools addresses the critical problem of LLM citation hallucinations 
 
 ## Bibliography Workflow - SINGLE SOURCE OF TRUTH
 
+### references.bib is EPHEMERAL - NEVER STATIC
+
+**CRITICAL RULE #1**: `references.bib` DOES NOT EXIST as a static file. It is ONLY generated during conversion.
+
+- ❌ **NEVER** assume `references.bib` exists on disk to read from
+- ❌ **NEVER** ask user to "check references.bib" - it doesn't exist until conversion runs
+- ❌ **NEVER** treat it as a source file - it's a build artifact
+- ✅ **ALWAYS** generate it fresh from Zotero API during each conversion
+- ✅ **DELETE** it before conversion if it exists (stale artifact from previous run)
+- ✅ Think of it like a `.pdf` or `.aux` file - ephemeral output only
+
+**If you find yourself wanting to read references.bib, STOP. You should be querying Zotero API instead.**
+
 ### Zotero Web API Only
 
-**CRITICAL RULE**: The ONLY source of bibliography data is the Zotero Web API. Period.
+**CRITICAL RULE #2**: The ONLY source of bibliography data is the Zotero Web API. Period.
 
 **FORBIDDEN** - NEVER use these:
 - ❌ Manual CSL JSON exports (`.json` files) - they get stale immediately
