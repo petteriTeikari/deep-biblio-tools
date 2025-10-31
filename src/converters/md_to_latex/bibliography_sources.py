@@ -278,28 +278,74 @@ class LocalFileSource(BiblographySource):
             raise ValueError(f"Failed to parse RDF file: {e}") from e
 
         csl_entries = []
+        seen_elements = set()  # Track element IDs to avoid duplicates
 
-        # Find all bibliography items (Book, Article, etc.)
-        # These are typically at rdf:RDF/bib:* or rdf:RDF/z:*
-        for item_type in [
-            "Book",
-            "BookSection",  # Added: RDF has 10 BookSection entries
-            "Article",
-            "ArticleJournal",
-            "ConferencePaper",
-            "Thesis",
-            "Report",
-            "WebPage",
-            "Document",
-            "Recording",  # Added: RDF has 1 Recording entry
-            "Patent",  # Added: RDF has 1 Patent entry
-        ]:
-            for item in root.findall(f"bib:{item_type}", namespaces):
-                entry = self._parse_rdf_item(item, namespaces)
-                if entry:
-                    csl_entries.append(entry)
+        # Valid bibliography item types (exclude attachments, collections, etc.)
+        valid_item_types = {
+            "journalArticle", "book", "bookSection", "conferencePaper",
+            "thesis", "report", "webpage", "preprint", "article",
+            "patent", "document", "recording",
+            # Additional types found in RDF
+            "magazineArticle", "newspaperArticle", "blogPost", "podcast",
+        }
 
-        logger.info(f"Loaded {len(csl_entries)} entries from RDF")
+        # Metadata types to exclude (these are NOT bibliography items)
+        excluded_bib_tags = {"Journal", "Series", "Periodical"}
+
+        # Simpler approach: Find ALL top-level children and process each once
+        # This includes both bib:* typed elements AND plain rdf:Description elements
+        for child in root:
+            # Get element memory ID to track if we've processed it
+            elem_id = id(child)
+            if elem_id in seen_elements:
+                continue
+            seen_elements.add(elem_id)
+
+            # Skip metadata entries like bib:Journal, bib:Series
+            if child.tag.startswith(f"{{{namespaces['bib']}}}"):
+                tag_name = child.tag.split("}")[-1]
+                if tag_name in excluded_bib_tags:
+                    continue
+
+            # Filter out non-bibliography entries
+            # Check 1: Must have a non-empty title
+            title_elem = child.find("dc:title", namespaces)
+            if title_elem is None or not title_elem.text:
+                continue
+
+            # Check 2: If has z:itemType, it must be a bibliography type (not "attachment")
+            item_type_elem = child.find("z:itemType", namespaces)
+            has_valid_item_type = False
+            if item_type_elem is not None:
+                item_type = item_type_elem.text or ""
+                if item_type.lower() not in valid_item_types:
+                    continue  # Skip attachments, collections, etc.
+                has_valid_item_type = True
+
+            # Check 3: Must have at least ONE of:
+            # - authors (bib:authors element)
+            # - valid z:itemType (already checked above)
+            # - OR be a specifically typed bib:* element (but not metadata)
+            has_authors = child.find("bib:authors", namespaces) is not None
+            is_bib_typed = child.tag.startswith(f"{{{namespaces['bib']}}}")
+
+            if not (has_authors or has_valid_item_type or is_bib_typed):
+                continue  # Not a real bibliography entry
+
+            # Parse the entry
+            entry = self._parse_rdf_item(child, namespaces)
+            if entry:
+                csl_entries.append(entry)
+            else:
+                # Debug: log why entry was skipped
+                tag_name = child.tag.split("}")[-1] if "}" in child.tag else child.tag
+                url = child.get(f"{{{namespaces['rdf']}}}about", "NO_URL")
+                logger.debug(f"Skipped {tag_name} entry with URL: {url}")
+
+        logger.info(
+            f"Loaded {len(csl_entries)} entries from RDF "
+            f"({len(root)} total elements processed)"
+        )
         return csl_entries
 
     def _parse_rdf_item(
