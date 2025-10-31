@@ -5,6 +5,38 @@ Deep Biblio Tools is a Python library for processing LLM-generated bibliographie
 
 ## Forbidden Actions
 
+### Development Workflow (CRITICAL - Added 2025-10-31)
+- **NEVER** make blind fixes without comprehensive search (Added 2025-10-31)
+  - **ALWAYS** search for ALL occurrences using grep/Glob/Grep tools before fixing
+  - **ALWAYS** document all locations found in a table or list
+  - **ALWAYS** fix ALL instances, not just the first hit
+  - User quote: "are you just getting the first hit that your search gives and be happy to fix that without doing any comprehensive / systematic testing of the issues"
+  - Example: Don't just fix one `fetch_citation_metadata()` call - grep for ALL calls
+  - Before fixing, ask: "Are there other places this pattern appears?"
+
+- **NEVER** claim success without verification (Added 2025-10-31)
+  - **ALWAYS** run developer smoke test BEFORE committing
+  - **ALWAYS** verify with grep/logs that the fix actually works
+  - **ALWAYS** use test-driven development (TDD) with comprehensive debug logging
+  - **NEVER** trust compilation success as measure of correctness
+  - **NEVER** trust "code looks right" - empirical verification only
+  - Pattern from SELF-REFLECTION-WHY-I-FAIL-2025-10-31.md:
+    - Research → Implement → **Verify** → Commit → User Confirms
+    - NOT: Research → Implement → Claim Done → User Finds Bugs
+
+- **ALWAYS** create programmatic tests (Added 2025-10-31)
+  - Tests should import from production code, not hard-code expectations
+  - Tests should detect regressions automatically
+  - Tests should run after each conversion to verify rules
+  - Example: `verify_citation_filtering.py` imports NON_ACADEMIC_DOMAINS to test
+
+- **ALWAYS** add comprehensive debug logging (Added 2025-10-31)
+  - Log at INFO level for important decisions
+  - Log at DEBUG level for detailed flow
+  - Include context in logs (line numbers, URLs, keys)
+  - Logs should make it immediately obvious when rules are violated
+  - Example: "Skipping non-academic link (GitHub): [Text](URL)" makes violations visible
+
 ### Code Quality and File Management
 - **NEVER** use regex to parse structured formats (Markdown, LaTeX, BibTeX)
 - **NEVER** create files with version suffixes (`_new.py`, `_v2.py`, `_final.py`)
