@@ -81,7 +81,9 @@ class LocalFileSource(BiblographySource):
         self.file_path = Path(file_path)
 
         if not self.file_path.exists():
-            raise FileNotFoundError(f"Bibliography file not found: {self.file_path}")
+            raise FileNotFoundError(
+                f"Bibliography file not found: {self.file_path}"
+            )
 
         # Determine format from extension
         suffix = self.file_path.suffix.lower()
@@ -139,7 +141,9 @@ class LocalFileSource(BiblographySource):
         from bibtexparser.bparser import BibTexParser
 
         with open(self.file_path, encoding="utf-8") as f:
-            parser = BibTexParser(common_strings=True, ignore_nonstandard_types=False)
+            parser = BibTexParser(
+                common_strings=True, ignore_nonstandard_types=False
+            )
             bib_database = bibtexparser.load(f, parser)
 
         # Convert BibTeX entries to CSL JSON format
@@ -148,19 +152,25 @@ class LocalFileSource(BiblographySource):
             # The citation key is the BibTeX ID
             cite_key = entry.get("ID", "")
             if not cite_key:
-                logger.warning(f"Entry missing ID, skipping: {entry.get('title', 'Unknown')}")
+                logger.warning(
+                    f"Entry missing ID, skipping: {entry.get('title', 'Unknown')}"
+                )
                 continue
 
             # Map BibTeX fields to CSL JSON
             csl_entry = {
                 "id": cite_key,  # This is the Better BibTeX key!
-                "type": self._map_bibtex_type(entry.get("ENTRYTYPE", "article")),
+                "type": self._map_bibtex_type(
+                    entry.get("ENTRYTYPE", "article")
+                ),
                 "title": entry.get("title", ""),
             }
 
             # Author field
             if "author" in entry:
-                csl_entry["author"] = self._parse_bibtex_authors(entry["author"])
+                csl_entry["author"] = self._parse_bibtex_authors(
+                    entry["author"]
+                )
 
             # Year
             if "year" in entry:
@@ -346,7 +356,9 @@ class LocalFileSource(BiblographySource):
                 seen_urls.add(item_url)
                 pass1_count += 1
 
-        logger.info(f"RDF Parser Pass 1 (rdf:Description): Found {pass1_count} entries")
+        logger.info(
+            f"RDF Parser Pass 1 (rdf:Description): Found {pass1_count} entries"
+        )
 
         # ---------- PASS 2: bib:* elements ----------
         # These are explicit bibliography items by their XML tag
@@ -519,7 +531,10 @@ class LocalFileSource(BiblographySource):
                         csl_entry["DOI"] = doi
 
         # Extract ISBN (for books)
-        isbn_elem = item.find("dc:identifier[@{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource]", namespaces)
+        isbn_elem = item.find(
+            "dc:identifier[@{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource]",
+            namespaces,
+        )
         if isbn_elem is not None:
             isbn_text = isbn_elem.get(f"{{{namespaces['rdf']}}}resource", "")
             if "isbn" in isbn_text.lower():
@@ -690,8 +705,12 @@ class ZoteroAPISource(BiblographySource):
                 # Extract CSL JSON from Zotero item
                 # This is a simplified conversion - proper implementation needs more work
                 csl_entry = {
-                    "id": data.get("key", ""),  # Temporary - should use Better BibTeX key
-                    "type": self._map_item_type(data.get("itemType", "article")),
+                    "id": data.get(
+                        "key", ""
+                    ),  # Temporary - should use Better BibTeX key
+                    "type": self._map_item_type(
+                        data.get("itemType", "article")
+                    ),
                     "title": data.get("title", ""),
                     # TODO: Add more field mappings
                 }
@@ -737,7 +756,9 @@ class ZoteroAPISource(BiblographySource):
         """Zotero API supports adding new items."""
         return True
 
-    def add_citation(self, url: str, metadata: dict[str, Any]) -> dict[str, Any] | None:
+    def add_citation(
+        self, url: str, metadata: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """
         Add a new citation to Zotero.
 

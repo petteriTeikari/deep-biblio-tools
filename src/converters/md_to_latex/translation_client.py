@@ -34,9 +34,11 @@ class TranslationClient:
         """
         self.server_url = server_url.rstrip("/")
         self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": "deep-biblio-tools/1.0 (https://github.com/yourusername/deep-biblio-tools)"
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": "deep-biblio-tools/1.0 (https://github.com/yourusername/deep-biblio-tools)"
+            }
+        )
         self.cache: dict[str, dict[str, Any]] = {}
 
     def check_health(self) -> bool:
@@ -54,9 +56,7 @@ class TranslationClient:
             return False
 
     def translate_url(
-        self,
-        url: str,
-        retry: bool = True
+        self, url: str, retry: bool = True
     ) -> dict[str, Any] | None:
         """Fetch metadata from URL using translation-server.
 
@@ -98,7 +98,7 @@ class TranslationClient:
                     f"{self.server_url}/web",
                     data=url,
                     headers={"Content-Type": "text/plain"},
-                    timeout=15
+                    timeout=15,
                 )
 
                 if resp.status_code == 200:
@@ -106,7 +106,9 @@ class TranslationClient:
                     items = resp.json()
 
                     if not items or len(items) == 0:
-                        logger.warning(f"Translation returned no items for: {url}")
+                        logger.warning(
+                            f"Translation returned no items for: {url}"
+                        )
                         return None
 
                     # Use first item
@@ -128,7 +130,9 @@ class TranslationClient:
                     # Response contains list of translator options
                     options = resp.json()
                     if not options or len(options) == 0:
-                        logger.warning(f"Got 300 but no translator options: {url}")
+                        logger.warning(
+                            f"Got 300 but no translator options: {url}"
+                        )
                         return None
 
                     # Select first translator (could be made smarter)
@@ -145,10 +149,10 @@ class TranslationClient:
                         data=url,
                         headers={
                             "Content-Type": "text/plain",
-                            "X-Zotero-Session": session_id
+                            "X-Zotero-Session": session_id,
                         },
                         params={"translator": selected_translator},
-                        timeout=15
+                        timeout=15,
                     )
 
                     if resp2.status_code == 200:
@@ -185,7 +189,9 @@ class TranslationClient:
                     delay *= 2.0
 
         # All attempts failed
-        logger.warning(f"Translation failed after {max_attempts} attempts: {url}")
+        logger.warning(
+            f"Translation failed after {max_attempts} attempts: {url}"
+        )
         return None
 
     def clear_cache(self):

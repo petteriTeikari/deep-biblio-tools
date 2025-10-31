@@ -4,8 +4,9 @@ This script reads a .bib file and checks if the citation keys match the actual
 author names and titles in the entries.
 """
 
-import bibtexparser
 from pathlib import Path
+
+import bibtexparser
 
 
 def diagnose_bib_file(bib_path: Path) -> None:
@@ -33,17 +34,22 @@ def diagnose_bib_file(bib_path: Path) -> None:
 
         # Extract first word from key (before underscore or number)
         key_parts = cite_key.replace("_", " ").split()
-        key_first_word = key_parts[0].lower() if key_parts else ""
+        key_parts[0].lower() if key_parts else ""
 
         # Check if first author appears in citation key
-        if first_author not in cite_key.lower() and "dryrun" not in cite_key.lower():
-            mismatches.append({
-                "key": cite_key,
-                "author": author[:80],
-                "title": title[:60] if title else "No title",
-                "year": year,
-                "expected_author": first_author
-            })
+        if (
+            first_author not in cite_key.lower()
+            and "dryrun" not in cite_key.lower()
+        ):
+            mismatches.append(
+                {
+                    "key": cite_key,
+                    "author": author[:80],
+                    "title": title[:60] if title else "No title",
+                    "year": year,
+                    "expected_author": first_author,
+                }
+            )
 
     print(f"Found {len(mismatches)} potential mismatches:\n")
     print("=" * 100)
@@ -59,10 +65,16 @@ def diagnose_bib_file(bib_path: Path) -> None:
         print(f"\n... and {len(mismatches) - 50} more mismatches")
 
     print("\n" + "=" * 100)
-    print(f"\nSummary: {len(mismatches)} / {len(bib_database.entries)} entries have mismatched keys")
-    print(f"Success rate: {100 * (len(bib_database.entries) - len(mismatches)) / len(bib_database.entries):.1f}%")
+    print(
+        f"\nSummary: {len(mismatches)} / {len(bib_database.entries)} entries have mismatched keys"
+    )
+    print(
+        f"Success rate: {100 * (len(bib_database.entries) - len(mismatches)) / len(bib_database.entries):.1f}%"
+    )
 
 
 if __name__ == "__main__":
-    bib_path = Path("/home/petteri/Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/output/references.bib")
+    bib_path = Path(
+        "/home/petteri/Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/output/references.bib"
+    )
     diagnose_bib_file(bib_path)

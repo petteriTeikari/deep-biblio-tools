@@ -10,18 +10,18 @@ Primary focus: Format validation (fast, suitable for pre-commit hooks).
 Network validation is optional and expensive (Phase 3).
 """
 
+import logging
+import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List
-import logging
-import re
 
 logger = logging.getLogger(__name__)
 
 
 class ValidationIssue(str, Enum):
     """Types of validation issues."""
+
     INVALID_ARXIV_FORMAT = "invalid_arxiv_format"
     INVALID_DOI_FORMAT = "invalid_doi_format"
     INVALID_URL_SCHEME = "invalid_url_scheme"
@@ -31,6 +31,7 @@ class ValidationIssue(str, Enum):
 @dataclass
 class CitationIssue:
     """Single citation validation issue."""
+
     line_number: int
     url: str
     citation_text: str  # Full [Author (Year)](URL)
@@ -56,7 +57,7 @@ class MarkdownKBValidator:
         """
         self.enable_network_checks = enable_network_checks
 
-    def validate_file(self, path: Path) -> List[CitationIssue]:
+    def validate_file(self, path: Path) -> list[CitationIssue]:
         """Validate all citations in a markdown file.
 
         Returns list of issues found (empty if all valid).
@@ -64,7 +65,7 @@ class MarkdownKBValidator:
         issues = []
 
         try:
-            with open(path, 'r', encoding='utf-8') as f:
+            with open(path, encoding="utf-8") as f:
                 for line_num, line in enumerate(f, start=1):
                     # Extract citations: [text](url)
                     citations = self._extract_citations(line)
@@ -77,24 +78,26 @@ class MarkdownKBValidator:
         except Exception as e:
             logger.error(f"Error reading {path}: {e}")
             # Return error as issue
-            issues.append(CitationIssue(
-                line_number=0,
-                url="",
-                citation_text="",
-                issue_type=ValidationIssue.INVALID_URL_SCHEME,
-                severity="CRITICAL",
-                message=f"Failed to read file: {e}"
-            ))
+            issues.append(
+                CitationIssue(
+                    line_number=0,
+                    url="",
+                    citation_text="",
+                    issue_type=ValidationIssue.INVALID_URL_SCHEME,
+                    severity="CRITICAL",
+                    message=f"Failed to read file: {e}",
+                )
+            )
 
         return issues
 
-    def _extract_citations(self, line: str) -> List[tuple]:
+    def _extract_citations(self, line: str) -> list[tuple]:
         """Extract all [text](url) patterns from line.
 
         Returns list of (citation_text, url) tuples.
         """
         # Pattern: [text](url)
-        pattern = r'\[([^\]]+)\]\(([^\)]+)\)'
+        pattern = r"\[([^\]]+)\]\(([^\)]+)\)"
         matches = re.findall(pattern, line)
         return matches
 
@@ -106,22 +109,22 @@ class MarkdownKBValidator:
         Returns CitationIssue if invalid, None if valid.
         """
         # Check basic URL scheme
-        if not url.startswith(('http://', 'https://')):
+        if not url.startswith(("http://", "https://")):
             return CitationIssue(
                 line_number=line_num,
                 url=url,
                 citation_text=f"[{citation_text}]({url})",
                 issue_type=ValidationIssue.INVALID_URL_SCHEME,
                 severity="CRITICAL",
-                message="URL must start with http:// or https://"
+                message="URL must start with http:// or https://",
             )
 
         # Check arXiv format
-        if 'arxiv.org/abs/' in url:
+        if "arxiv.org/abs/" in url:
             return self._validate_arxiv_url(url, citation_text, line_num)
 
         # Check DOI format
-        elif 'doi.org/' in url:
+        elif "doi.org/" in url:
             return self._validate_doi_url(url, citation_text, line_num)
 
         # Other URLs - basic validation passed
@@ -142,12 +145,14 @@ class MarkdownKBValidator:
         - https://arxiv.org/abs/2025.mpma (too short)
         """
         # Extract arXiv ID (numeric only)
-        match = re.search(r'arxiv\.org/abs/([0-9]+\.[0-9]+(?:v[0-9]+)?)', url)
+        match = re.search(r"arxiv\.org/abs/([0-9]+\.[0-9]+(?:v[0-9]+)?)", url)
 
         if not match:
             # Has arxiv.org/abs/ but no valid numeric ID
             # This catches October 26 patterns like "2025.mcp.taxonomy"
-            arxiv_id = url.split('arxiv.org/abs/')[-1] if '/abs/' in url else 'unknown'
+            arxiv_id = (
+                url.split("arxiv.org/abs/")[-1] if "/abs/" in url else "unknown"
+            )
             return CitationIssue(
                 line_number=line_num,
                 url=url,
@@ -155,12 +160,12 @@ class MarkdownKBValidator:
                 issue_type=ValidationIssue.INVALID_ARXIV_FORMAT,
                 severity="CRITICAL",
                 message=f"Invalid arXiv ID format: '{arxiv_id}'. Expected: YYMM.NNNNN (e.g., 2412.02646). Contains non-numeric characters.",
-                suggested_fix="Check if this is a hallucinated URL. Search arXiv for the actual paper."
+                suggested_fix="Check if this is a hallucinated URL. Search arXiv for the actual paper.",
             )
 
         # Validate year/month range
-        arxiv_id = match.group(1).rstrip('v0123456789')  # Remove version
-        year_month = arxiv_id.split('.')[0]
+        arxiv_id = match.group(1).rstrip("v0123456789")  # Remove version
+        year_month = arxiv_id.split(".")[0]
 
         try:
             year = int(year_month[:2])
@@ -175,7 +180,7 @@ class MarkdownKBValidator:
                     citation_text=f"[{citation_text}]({url})",
                     issue_type=ValidationIssue.INVALID_ARXIV_FORMAT,
                     severity="CRITICAL",
-                    message=f"Invalid year/month in arXiv ID: {year_month}. Year should be 07-30 (2007-2030), month 01-12."
+                    message=f"Invalid year/month in arXiv ID: {year_month}. Year should be 07-30 (2007-2030), month 01-12.",
                 )
         except (ValueError, IndexError):
             return CitationIssue(
@@ -184,7 +189,7 @@ class MarkdownKBValidator:
                 citation_text=f"[{citation_text}]({url})",
                 issue_type=ValidationIssue.INVALID_ARXIV_FORMAT,
                 severity="CRITICAL",
-                message=f"Malformed arXiv ID: {arxiv_id}"
+                message=f"Malformed arXiv ID: {arxiv_id}",
             )
 
         return None  # Valid
@@ -197,20 +202,20 @@ class MarkdownKBValidator:
         Valid: https://doi.org/10.XXXX/...
         """
         # DOI format: 10.XXXX/...
-        if not re.search(r'doi\.org/(10\.[0-9]+/[^\s]+)', url):
+        if not re.search(r"doi\.org/(10\.[0-9]+/[^\s]+)", url):
             return CitationIssue(
                 line_number=line_num,
                 url=url,
                 citation_text=f"[{citation_text}]({url})",
                 issue_type=ValidationIssue.INVALID_DOI_FORMAT,
                 severity="CRITICAL",
-                message="Invalid DOI format. Expected: https://doi.org/10.XXXX/..."
+                message="Invalid DOI format. Expected: https://doi.org/10.XXXX/...",
             )
 
         return None  # Valid
 
 
-def generate_report(issues: List[CitationIssue], total_citations: int) -> str:
+def generate_report(issues: list[CitationIssue], total_citations: int) -> str:
     """Generate human-readable quality report.
 
     Args:
@@ -230,7 +235,9 @@ def generate_report(issues: List[CitationIssue], total_citations: int) -> str:
 
     if not issues:
         report.append("✅ All citations validated successfully!")
-        report.append("✅ Knowledge base is clean and ready for LLM context engineering.")
+        report.append(
+            "✅ Knowledge base is clean and ready for LLM context engineering."
+        )
         report.append("=" * 80)
         return "\n".join(report)
 
@@ -240,7 +247,9 @@ def generate_report(issues: List[CitationIssue], total_citations: int) -> str:
     info = [i for i in issues if i.severity == "INFO"]
 
     if critical:
-        report.append(f"❌ CRITICAL ISSUES ({len(critical)}) - Likely hallucinations or format errors:")
+        report.append(
+            f"❌ CRITICAL ISSUES ({len(critical)}) - Likely hallucinations or format errors:"
+        )
         report.append("-" * 80)
         for issue in critical:
             report.append(f"\nLine {issue.line_number}:")

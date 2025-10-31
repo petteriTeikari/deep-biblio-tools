@@ -235,7 +235,9 @@ class BibSourceValidator:
         authors = [a.strip() for a in author_field.split(" and ") if a.strip()]
         return len(authors)
 
-    def _has_incomplete_authors(self, author: str, doi_metadata: dict | None = None) -> bool:
+    def _has_incomplete_authors(
+        self, author: str, doi_metadata: dict | None = None
+    ) -> bool:
         """Check if author field is incomplete.
 
         Updated logic to reduce false positives:
@@ -372,7 +374,9 @@ def validate_author_completeness(
                     f"INCOMPLETE_AUTHORS: has 'et al' but only {expected_count} expected"
                 )
         else:
-            issues.append("INCOMPLETE_AUTHORS: has 'others'/'et al' (check if acceptable)")
+            issues.append(
+                "INCOMPLETE_AUTHORS: has 'others'/'et al' (check if acceptable)"
+            )
         return issues
 
     # If no authors at all

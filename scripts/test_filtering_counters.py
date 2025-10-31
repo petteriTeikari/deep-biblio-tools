@@ -4,7 +4,10 @@
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-rdf_path = Path.home() / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+rdf_path = (
+    Path.home()
+    / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+)
 
 tree = ET.parse(rdf_path)
 root = tree.getroot()
@@ -17,9 +20,18 @@ namespaces = {
 }
 
 valid_item_types = {
-    "journalArticle", "book", "bookSection", "conferencePaper",
-    "thesis", "report", "webpage", "preprint", "article",
-    "patent", "document", "recording",
+    "journalArticle",
+    "book",
+    "bookSection",
+    "conferencePaper",
+    "thesis",
+    "report",
+    "webpage",
+    "preprint",
+    "article",
+    "patent",
+    "document",
+    "recording",
 }
 
 excluded_bib_tags = {"Journal", "Series", "Periodical"}
@@ -71,8 +83,12 @@ print(f"Total children in root: {total_children}")
 print(f"Filtered by metadata (Journal, etc.): {filtered_by_metadata}")
 print(f"Filtered by no/empty title: {filtered_by_no_title}")
 print(f"Filtered by invalid itemType: {filtered_by_invalid_itemtype}")
-print(f"Filtered by check #3 (no authors/itemtype/bibtyped): {filtered_by_check3}")
+print(
+    f"Filtered by check #3 (no authors/itemtype/bibtyped): {filtered_by_check3}"
+)
 print(f"Would be parsed: {would_be_parsed}")
 print()
-print(f"Total filtered: {filtered_by_metadata + filtered_by_no_title + filtered_by_invalid_itemtype + filtered_by_check3}")
+print(
+    f"Total filtered: {filtered_by_metadata + filtered_by_no_title + filtered_by_invalid_itemtype + filtered_by_check3}"
+)
 print(f"Expected: {total_children - would_be_parsed}")

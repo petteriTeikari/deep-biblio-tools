@@ -2,11 +2,14 @@
 """
 Analyze RDF structure to understand why only 313/665 entries are loading.
 """
-import xml.etree.ElementTree as ET
-from pathlib import Path
-from collections import Counter
 
-rdf_path = Path("/home/petteri/Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf")
+import xml.etree.ElementTree as ET
+from collections import Counter
+from pathlib import Path
+
+rdf_path = Path(
+    "/home/petteri/Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+)
 
 print(f"Analyzing RDF: {rdf_path}\n")
 
@@ -23,7 +26,9 @@ ns = {
 
 # Count all bibliographic item types
 print("📊 Counting all bib:* elements in RDF...")
-all_bib_elements = root.findall(".//*[@{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about]", ns)
+all_bib_elements = root.findall(
+    ".//*[@{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about]", ns
+)
 print(f"Total elements with rdf:about: {len(all_bib_elements)}\n")
 
 # Count by tag name
@@ -37,8 +42,17 @@ for tag, count in sorted(tag_counter.items(), key=lambda x: -x[1]):
     print(f"  {tag}: {count}")
 
 # Check what the parser is looking for
-parser_types = ["Book", "Article", "ArticleJournal", "ConferencePaper", "Thesis", "Report", "WebPage", "Document"]
-print(f"\n📋 Parser looks for these types:")
+parser_types = [
+    "Book",
+    "Article",
+    "ArticleJournal",
+    "ConferencePaper",
+    "Thesis",
+    "Report",
+    "WebPage",
+    "Document",
+]
+print("\n📋 Parser looks for these types:")
 for t in parser_types:
     print(f"  bib:{t}")
 
@@ -55,7 +69,7 @@ for t in parser_types:
 print(f"\n Total parser would find: {parser_would_find}")
 
 # Check for entries without titles
-print(f"\n🔍 Checking for entries without titles...")
+print("\n🔍 Checking for entries without titles...")
 entries_without_title = 0
 for t in parser_types:
     for item in root.findall(f"bib:{t}", ns):
@@ -69,8 +83,16 @@ print(f"\nEntries without title (would be skipped): {entries_without_title}")
 print(f"Expected loaded: {parser_would_find - entries_without_title}")
 
 # Look for other common Zotero types that might be missing
-print(f"\n🔍 Looking for other possible bibliographic types...")
-other_possible_types = ["BookSection", "JournalArticle", "Preprint", "BlogPost", "ForumPost", "Presentation", "Patent"]
+print("\n🔍 Looking for other possible bibliographic types...")
+other_possible_types = [
+    "BookSection",
+    "JournalArticle",
+    "Preprint",
+    "BlogPost",
+    "ForumPost",
+    "Presentation",
+    "Patent",
+]
 for t in other_possible_types:
     count = len(root.findall(f"bib:{t}", ns))
     if count > 0:

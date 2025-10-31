@@ -20,7 +20,10 @@ from converters.md_to_latex.bibliography_sources import LocalFileSource
 def test_rdf_parsing():
     """Test RDF parsing against actual file."""
 
-    rdf_path = Path.home() / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+    rdf_path = (
+        Path.home()
+        / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+    )
 
     print(f"Testing RDF parser with file: {rdf_path}")
     print(f"File size: {rdf_path.stat().st_size / 1024 / 1024:.1f} MB")
@@ -28,10 +31,11 @@ def test_rdf_parsing():
 
     # Count expected entries using grep
     import subprocess
+
     result = subprocess.run(
-        ["grep", "-c", '<rdf:Description rdf:about=', str(rdf_path)],
+        ["grep", "-c", "<rdf:Description rdf:about=", str(rdf_path)],
         capture_output=True,
-        text=True
+        text=True,
     )
     expected_count = int(result.stdout.strip())
     print(f"Expected entries (grep count): {expected_count}")
@@ -43,21 +47,28 @@ def test_rdf_parsing():
         entries = source.load_entries()
 
         print(f"Actual entries parsed: {len(entries)}")
-        print(f"Success rate: {len(entries)}/{expected_count} ({len(entries)/expected_count*100:.1f}%)")
+        print(
+            f"Success rate: {len(entries)}/{expected_count} ({len(entries) / expected_count * 100:.1f}%)"
+        )
         print()
 
         if len(entries) < expected_count:
-            print(f"❌ PARSER IS BROKEN!")
-            print(f"   Missing {expected_count - len(entries)} entries ({(expected_count - len(entries))/expected_count*100:.1f}% failure rate)")
+            print("❌ PARSER IS BROKEN!")
+            print(
+                f"   Missing {expected_count - len(entries)} entries ({(expected_count - len(entries)) / expected_count * 100:.1f}% failure rate)"
+            )
             print()
             print("First 5 entries found:")
             for i, entry in enumerate(entries[:5], 1):
-                print(f"  {i}. {entry.get('id', 'NO_ID')}: {entry.get('title', 'NO_TITLE')[:60]}...")
+                print(
+                    f"  {i}. {entry.get('id', 'NO_ID')}: {entry.get('title', 'NO_TITLE')[:60]}..."
+                )
 
             # Now let's check what structure the RDF actually uses
             print()
             print("Checking actual RDF structure...")
             import xml.etree.ElementTree as ET
+
             tree = ET.parse(rdf_path)
             root = tree.getroot()
 
@@ -74,13 +85,27 @@ def test_rdf_parsing():
 
             # Check for bib:* entries (what parser looks for)
             bib_entries_count = 0
-            for item_type in ["Book", "Article", "ArticleJournal", "ConferencePaper", "Thesis", "Report", "WebPage", "Document", "BookSection", "Recording", "Patent"]:
+            for item_type in [
+                "Book",
+                "Article",
+                "ArticleJournal",
+                "ConferencePaper",
+                "Thesis",
+                "Report",
+                "WebPage",
+                "Document",
+                "BookSection",
+                "Recording",
+                "Patent",
+            ]:
                 count = len(root.findall(f"bib:{item_type}", namespaces))
                 if count > 0:
                     print(f"bib:{item_type} entries: {count}")
                     bib_entries_count += count
 
-            print(f"Total bib:* entries (what parser looks for): {bib_entries_count}")
+            print(
+                f"Total bib:* entries (what parser looks for): {bib_entries_count}"
+            )
             print()
 
             # Check what entries are being filtered out
@@ -104,16 +129,38 @@ def test_rdf_parsing():
                     item_type = "NONE"
 
                 # Would this be filtered?
-                is_filtered = not (has_authors or is_bib_typed or item_type in ["journalArticle", "book", "bookSection", "conferencePaper", "thesis", "report", "webpage", "preprint", "article", "patent", "document", "recording"])
+                is_filtered = not (
+                    has_authors
+                    or is_bib_typed
+                    or item_type
+                    in [
+                        "journalArticle",
+                        "book",
+                        "bookSection",
+                        "conferencePaper",
+                        "thesis",
+                        "report",
+                        "webpage",
+                        "preprint",
+                        "article",
+                        "patent",
+                        "document",
+                        "recording",
+                    ]
+                )
 
                 if is_filtered and len(filtered_examples) < 5:
-                    filtered_examples.append({
-                        "title": title_elem.text[:60],
-                        "type": item_type,
-                        "has_authors": has_authors,
-                        "is_bib_typed": is_bib_typed,
-                        "tag": child.tag.split("}")[-1] if "}" in child.tag else child.tag
-                    })
+                    filtered_examples.append(
+                        {
+                            "title": title_elem.text[:60],
+                            "type": item_type,
+                            "has_authors": has_authors,
+                            "is_bib_typed": is_bib_typed,
+                            "tag": child.tag.split("}")[-1]
+                            if "}" in child.tag
+                            else child.tag,
+                        }
+                    )
                     filtered_count += 1
 
             print(f"Entries being filtered out: {filtered_count}")
@@ -121,7 +168,9 @@ def test_rdf_parsing():
                 print("Examples of filtered entries:")
                 for i, ex in enumerate(filtered_examples, 1):
                     print(f"  {i}. [{ex['tag']}] {ex['title']}...")
-                    print(f"     itemType={ex['type']}, has_authors={ex['has_authors']}, is_bib_typed={ex['is_bib_typed']}")
+                    print(
+                        f"     itemType={ex['type']}, has_authors={ex['has_authors']}, is_bib_typed={ex['is_bib_typed']}"
+                    )
 
             print()
             print("DIAGNOSIS:")
@@ -136,6 +185,7 @@ def test_rdf_parsing():
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
 
 

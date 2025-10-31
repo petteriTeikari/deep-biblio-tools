@@ -56,7 +56,9 @@ class AuthorEnricher:
 
             if self._has_truncated_authors(author_field):
                 self.stats["truncated_detected"] += 1
-                logger.debug(f"Detected truncated authors in {cite_key}: {author_field[:50]}...")
+                logger.debug(
+                    f"Detected truncated authors in {cite_key}: {author_field[:50]}..."
+                )
 
                 # Try to enrich from CrossRef/arXiv
                 enriched_entry = self._enrich_entry(entry)
@@ -96,9 +98,7 @@ class AuthorEnricher:
         author_lower = author_field.lower()
         return "and others" in author_lower or "et al" in author_lower
 
-    def _enrich_entry(
-        self, entry: dict[str, Any]
-    ) -> dict[str, Any] | None:
+    def _enrich_entry(self, entry: dict[str, Any]) -> dict[str, Any] | None:
         """Enrich a single entry with complete author list.
 
         Args:
@@ -117,7 +117,9 @@ class AuthorEnricher:
             if complete_authors:
                 enriched_entry = entry.copy()
                 enriched_entry["author"] = complete_authors
-                logger.debug(f"Enriched from CrossRef: {complete_authors[:100]}...")
+                logger.debug(
+                    f"Enriched from CrossRef: {complete_authors[:100]}..."
+                )
                 return enriched_entry
 
         # Try arXiv if CrossRef failed (if arXiv ID available)
@@ -126,7 +128,9 @@ class AuthorEnricher:
             if complete_authors:
                 enriched_entry = entry.copy()
                 enriched_entry["author"] = complete_authors
-                logger.debug(f"Enriched from arXiv: {complete_authors[:100]}...")
+                logger.debug(
+                    f"Enriched from arXiv: {complete_authors[:100]}..."
+                )
                 return enriched_entry
 
         # No DOI or arXiv ID, or both APIs failed
@@ -149,10 +153,14 @@ class AuthorEnricher:
         url = self.CROSSREF_API.format(doi)
 
         try:
-            response = requests.get(url, headers=self.HEADERS, timeout=self.TIMEOUT)
+            response = requests.get(
+                url, headers=self.HEADERS, timeout=self.TIMEOUT
+            )
 
             if response.status_code != 200:
-                logger.debug(f"CrossRef returned status {response.status_code} for DOI: {doi}")
+                logger.debug(
+                    f"CrossRef returned status {response.status_code} for DOI: {doi}"
+                )
                 return None
 
             data = response.json()
@@ -161,7 +169,9 @@ class AuthorEnricher:
             # Extract authors from CrossRef metadata
             authors = metadata.get("author", [])
             if not authors:
-                logger.debug(f"No authors found in CrossRef metadata for DOI: {doi}")
+                logger.debug(
+                    f"No authors found in CrossRef metadata for DOI: {doi}"
+                )
                 return None
 
             # Convert to BibTeX format: "Last1, First1 and Last2, First2 and ..."
@@ -177,7 +187,9 @@ class AuthorEnricher:
                         author_strings.append(family)
 
             if not author_strings:
-                logger.debug(f"Failed to parse author names from CrossRef for DOI: {doi}")
+                logger.debug(
+                    f"Failed to parse author names from CrossRef for DOI: {doi}"
+                )
                 return None
 
             bibtex_authors = " and ".join(author_strings)
@@ -191,7 +203,9 @@ class AuthorEnricher:
             logger.debug(f"CrossRef API error for DOI {doi}: {e}")
             return None
         except Exception as e:
-            logger.warning(f"Unexpected error fetching from CrossRef for DOI {doi}: {e}")
+            logger.warning(
+                f"Unexpected error fetching from CrossRef for DOI {doi}: {e}"
+            )
             return None
 
     def _fetch_authors_from_arxiv(self, arxiv_id: str) -> str | None:
@@ -212,10 +226,14 @@ class AuthorEnricher:
         url = self.ARXIV_API.format(arxiv_id)
 
         try:
-            response = requests.get(url, headers=self.HEADERS, timeout=self.TIMEOUT)
+            response = requests.get(
+                url, headers=self.HEADERS, timeout=self.TIMEOUT
+            )
 
             if response.status_code != 200:
-                logger.debug(f"arXiv returned status {response.status_code} for ID: {arxiv_id}")
+                logger.debug(
+                    f"arXiv returned status {response.status_code} for ID: {arxiv_id}"
+                )
                 return None
 
             # arXiv returns Atom XML
@@ -225,7 +243,9 @@ class AuthorEnricher:
             author_strings = self._parse_arxiv_authors(content)
 
             if not author_strings:
-                logger.debug(f"Failed to parse authors from arXiv for ID: {arxiv_id}")
+                logger.debug(
+                    f"Failed to parse authors from arXiv for ID: {arxiv_id}"
+                )
                 return None
 
             bibtex_authors = " and ".join(author_strings)
@@ -239,7 +259,9 @@ class AuthorEnricher:
             logger.debug(f"arXiv API error for ID {arxiv_id}: {e}")
             return None
         except Exception as e:
-            logger.warning(f"Unexpected error fetching from arXiv for ID {arxiv_id}: {e}")
+            logger.warning(
+                f"Unexpected error fetching from arXiv for ID {arxiv_id}: {e}"
+            )
             return None
 
     def _parse_arxiv_authors(self, xml_content: str) -> list[str]:
@@ -271,14 +293,16 @@ class AuthorEnricher:
                 break
 
             # Extract author block
-            author_block = xml_content[author_start + len(start_tag):author_end]
+            author_block = xml_content[
+                author_start + len(start_tag) : author_end
+            ]
 
             # Find <name> tag within author block
             name_start = author_block.find("<name>")
             name_end = author_block.find("</name>")
 
             if name_start != -1 and name_end != -1:
-                name = author_block[name_start + 6:name_end].strip()
+                name = author_block[name_start + 6 : name_end].strip()
 
                 # Convert "First Last" to "Last, First" format
                 # Split by last space (assumes last word is family name)
@@ -347,12 +371,16 @@ class AuthorEnricher:
         logger.info("Author Enrichment Statistics")
         logger.info("=" * 60)
         logger.info(f"Total entries processed: {stats['total_entries']}")
-        logger.info(f"Truncated authors detected: {stats['truncated_detected']}")
+        logger.info(
+            f"Truncated authors detected: {stats['truncated_detected']}"
+        )
         logger.info(f"Successfully enriched: {stats['enriched_success']}")
         logger.info(f"Failed to enrich: {stats['enriched_failed']}")
 
-        if stats['truncated_detected'] > 0:
-            success_rate = (stats['enriched_success'] / stats['truncated_detected']) * 100
+        if stats["truncated_detected"] > 0:
+            success_rate = (
+                stats["enriched_success"] / stats["truncated_detected"]
+            ) * 100
             logger.info(f"Success rate: {success_rate:.1f}%")
 
         logger.info("=" * 60)

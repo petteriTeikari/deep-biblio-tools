@@ -15,24 +15,25 @@ Run with:
 """
 
 import json
-import tempfile
-from pathlib import Path
-import pytest
-import bibtexparser
-
 import sys
+from pathlib import Path
+
+import bibtexparser
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from converters.md_to_latex.bib_sanitizer import (
-    sanitize_bib,
     is_domain_title,
     is_stub_title,
     normalize_url,
+    sanitize_bib,
 )
 
 # --------------------------------------------------------------------
 # Fixtures
 # --------------------------------------------------------------------
+
 
 @pytest.fixture
 def sample_bib(tmp_path: Path):
@@ -81,6 +82,7 @@ def sample_bib(tmp_path: Path):
     bibfile.write_text(bib_content)
     return bibfile
 
+
 @pytest.fixture
 def sample_rdf(tmp_path: Path):
     """Minimal RDF file that matches the domain_title entry."""
@@ -100,9 +102,11 @@ def sample_rdf(tmp_path: Path):
     rdf_file.write_text(rdf_text)
     return rdf_file
 
+
 # --------------------------------------------------------------------
 # Unit Tests
 # --------------------------------------------------------------------
+
 
 def test_is_domain_title():
     assert is_domain_title("example.com")
@@ -111,11 +115,13 @@ def test_is_domain_title():
     assert not is_domain_title("Nature")
     assert not is_domain_title("Circular economy in Europe")
 
+
 def test_is_stub_title():
     assert is_stub_title("Web page by axios")
     assert is_stub_title("Web article by bloomberg")
     assert is_stub_title("Added from URL: something")
     assert not is_stub_title("Real Article Title")
+
 
 def test_normalize_url():
     # Protocol and www removal
@@ -134,24 +140,33 @@ def test_normalize_url():
     assert normalize_url(url3) == "arxiv.org/abs/2401.12345"
     assert normalize_url(url4) == "arxiv.org/abs/2401.12345"
 
+
 # --------------------------------------------------------------------
 # Integration Tests
 # --------------------------------------------------------------------
+
 
 def test_sanitize_bib_with_rdf(sample_bib, sample_rdf, tmp_path):
     """Test sanitization with RDF file (normal mode)."""
     out_bib = tmp_path / "clean.bib"
     report_file = tmp_path / "report.json"
 
-    report = sanitize_bib(sample_bib, out_bib, rdf_path=sample_rdf, emergency_mode=False)
+    report = sanitize_bib(
+        sample_bib, out_bib, rdf_path=sample_rdf, emergency_mode=False
+    )
 
     # Write report
     report_file.write_text(json.dumps(report, indent=2))
 
     # Check report structure
     assert set(report.keys()) == {
-        "fixed_orgs", "fixed_arxiv", "domain_titles", "stub_titles",
-        "manual_review", "duplicates", "not_found_in_rdf"
+        "fixed_orgs",
+        "fixed_arxiv",
+        "domain_titles",
+        "stub_titles",
+        "manual_review",
+        "duplicates",
+        "not_found_in_rdf",
     }
 
     assert report["fixed_orgs"] >= 1  # European Commission
@@ -178,18 +193,23 @@ def test_sanitize_bib_with_rdf(sample_bib, sample_rdf, tmp_path):
     # Duplicate entries should be FLAGGED (not merged)
     duplicates = report["duplicates"]
     assert len(duplicates) >= 1
-    assert any("duplicate_a" in str(d.values()) and "duplicate_b" in str(d.values())
-               for d in duplicates)
+    assert any(
+        "duplicate_a" in str(d.values()) and "duplicate_b" in str(d.values())
+        for d in duplicates
+    )
 
     # Ensure duplicates were NOT merged (both should still exist)
     assert "duplicate_a" in entries
     assert "duplicate_b" in entries
 
+
 def test_sanitize_bib_without_rdf_marks_manual_review(sample_bib, tmp_path):
     """Test that domain titles are flagged for manual review when no RDF."""
     out_bib = tmp_path / "clean_no_rdf.bib"
 
-    report = sanitize_bib(sample_bib, out_bib, rdf_path=None, emergency_mode=False)
+    report = sanitize_bib(
+        sample_bib, out_bib, rdf_path=None, emergency_mode=False
+    )
 
     # Domain title should be flagged for manual review
     assert "domain_title" in report["manual_review"]
@@ -197,20 +217,29 @@ def test_sanitize_bib_without_rdf_marks_manual_review(sample_bib, tmp_path):
     # Stub title should also be flagged
     assert "stub_title" in report["manual_review"]
 
+
 def test_emergency_mode_requires_rdf(sample_bib, tmp_path):
     """Test that emergency mode crashes if RDF not provided."""
     out_bib = tmp_path / "clean_emergency.bib"
 
-    with pytest.raises(RuntimeError, match="EMERGENCY MODE: RDF file path is REQUIRED"):
+    with pytest.raises(
+        RuntimeError, match="EMERGENCY MODE: RDF file path is REQUIRED"
+    ):
         sanitize_bib(sample_bib, out_bib, rdf_path=None, emergency_mode=True)
+
 
 def test_emergency_mode_crashes_if_rdf_missing(sample_bib, tmp_path):
     """Test that emergency mode crashes if RDF file doesn't exist."""
     out_bib = tmp_path / "clean_emergency.bib"
     fake_rdf = tmp_path / "nonexistent.rdf"
 
-    with pytest.raises(FileNotFoundError, match="EMERGENCY MODE: RDF file not found"):
-        sanitize_bib(sample_bib, out_bib, rdf_path=fake_rdf, emergency_mode=True)
+    with pytest.raises(
+        FileNotFoundError, match="EMERGENCY MODE: RDF file not found"
+    ):
+        sanitize_bib(
+            sample_bib, out_bib, rdf_path=fake_rdf, emergency_mode=True
+        )
+
 
 def test_emergency_mode_crashes_if_rdf_empty(sample_bib, tmp_path):
     """Test that emergency mode crashes if RDF file is empty."""
@@ -218,15 +247,24 @@ def test_emergency_mode_crashes_if_rdf_empty(sample_bib, tmp_path):
     empty_rdf = tmp_path / "empty.rdf"
     empty_rdf.write_text("<rdf:RDF></rdf:RDF>")  # Empty but valid XML
 
-    with pytest.raises(RuntimeError, match="EMERGENCY MODE: RDF file contains no entries"):
-        sanitize_bib(sample_bib, out_bib, rdf_path=empty_rdf, emergency_mode=True)
+    with pytest.raises(
+        RuntimeError, match="EMERGENCY MODE: RDF file contains no entries"
+    ):
+        sanitize_bib(
+            sample_bib, out_bib, rdf_path=empty_rdf, emergency_mode=True
+        )
 
-def test_emergency_mode_outputs_not_found_list(sample_bib, sample_rdf, tmp_path, capsys):
+
+def test_emergency_mode_outputs_not_found_list(
+    sample_bib, sample_rdf, tmp_path, capsys
+):
     """Test that emergency mode outputs list of citations not in RDF."""
     out_bib = tmp_path / "clean_emergency.bib"
 
     # sample_bib has entries that won't be in sample_rdf
-    report = sanitize_bib(sample_bib, out_bib, rdf_path=sample_rdf, emergency_mode=True)
+    report = sanitize_bib(
+        sample_bib, out_bib, rdf_path=sample_rdf, emergency_mode=True
+    )
 
     # Should have not_found_in_rdf entries
     assert len(report["not_found_in_rdf"]) > 0
@@ -243,6 +281,7 @@ def test_emergency_mode_outputs_not_found_list(sample_bib, sample_rdf, tmp_path,
         assert "normalized_url" in item
         assert "title" in item
 
+
 def test_output_files_created(sample_bib, tmp_path, sample_rdf):
     """Test that output files are created correctly."""
     out_bib = tmp_path / "clean2.bib"
@@ -258,6 +297,7 @@ def test_output_files_created(sample_bib, tmp_path, sample_rdf):
 
     loaded_report = json.loads(report_path.read_text())
     assert "fixed_orgs" in loaded_report
+
 
 def test_duplicates_not_merged(sample_bib, sample_rdf, tmp_path):
     """CRITICAL: Test that duplicates are FLAGGED but NOT auto-merged."""

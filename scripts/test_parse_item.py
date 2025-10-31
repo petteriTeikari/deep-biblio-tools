@@ -2,14 +2,17 @@
 """Test _parse_rdf_item on bib:Article vs rdf:Description."""
 
 import sys
-from pathlib import Path
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from converters.md_to_latex.bibliography_sources import LocalFileSource
 
-rdf_path = Path.home() / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+rdf_path = (
+    Path.home()
+    / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+)
 
 tree = ET.parse(rdf_path)
 root = tree.getroot()
@@ -35,7 +38,9 @@ bib_articles = root.findall("bib:Article", namespaces)
 if bib_articles:
     article = bib_articles[0]
     title_elem = article.find("dc:title", namespaces)
-    print(f"Title: {title_elem.text[:60] if title_elem is not None and title_elem.text else 'NONE'}...")
+    print(
+        f"Title: {title_elem.text[:60] if title_elem is not None and title_elem.text else 'NONE'}..."
+    )
     rdf_about_key = f"{{{namespaces['rdf']}}}about"
     print(f"URL: {article.get(rdf_about_key, 'NO_URL')}")
     print()
@@ -59,7 +64,9 @@ descriptions = root.findall("rdf:Description", namespaces)
 if descriptions:
     desc = descriptions[0]
     title_elem = desc.find("dc:title", namespaces)
-    print(f"Title: {title_elem.text[:60] if title_elem is not None and title_elem.text else 'NONE'}...")
+    print(
+        f"Title: {title_elem.text[:60] if title_elem is not None and title_elem.text else 'NONE'}..."
+    )
     print(f"URL: {desc.get(rdf_about_key, 'NO_URL')}")
     print()
 

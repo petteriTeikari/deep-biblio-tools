@@ -11,12 +11,11 @@ Usage:
     python scripts/analyze_failed_citations.py /tmp/final_conversion.log --output failed-analysis.json
 """
 
-import sys
+import json
 import re
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
-from typing import Dict, List
-import json
 
 
 class FailedCitationAnalyzer:
@@ -36,7 +35,7 @@ class FailedCitationAnalyzer:
             "web_video": [],
             "web_documentation": [],
             "web_government": [],
-            "web_general": []
+            "web_general": [],
         }
 
     def extract_failed_urls(self):
@@ -81,7 +80,10 @@ class FailedCitationAnalyzer:
             return "academic_conference"
 
         # Government/EU/Standards organizations
-        if any(x in domain for x in ["europa.eu", "europarl.europa.eu", "eur-lex.europa.eu"]):
+        if any(
+            x in domain
+            for x in ["europa.eu", "europarl.europa.eu", "eur-lex.europa.eu"]
+        ):
             return "web_government"
         if "oecd.org" in domain:
             return "web_organization"
@@ -103,17 +105,29 @@ class FailedCitationAnalyzer:
             return "web_organization"
 
         # Tech company blogs/documentation
-        if any(x in domain for x in ["anthropic.com", "openai.com", "deepmind.com"]):
+        if any(
+            x in domain for x in ["anthropic.com", "openai.com", "deepmind.com"]
+        ):
             return "web_blog"
         if "developers.google" in domain or "googleblog.com" in domain:
             return "web_documentation"
         if "modelcontextprotocol.io" in domain:
             return "web_documentation"
-        if any(x in domain for x in ["developer.okta.com", "docs.github.com", "developer.mozilla.org"]):
+        if any(
+            x in domain
+            for x in [
+                "developer.okta.com",
+                "docs.github.com",
+                "developer.mozilla.org",
+            ]
+        ):
             return "web_documentation"
 
         # News/media
-        if any(x in domain for x in ["bbc.com", "bloomberg.com", "axios.com", "reuters.com"]):
+        if any(
+            x in domain
+            for x in ["bbc.com", "bloomberg.com", "axios.com", "reuters.com"]
+        ):
             return "web_news"
         if "fashionunited.com" in domain:
             return "web_news"
@@ -127,7 +141,10 @@ class FailedCitationAnalyzer:
             return "web_video"
 
         # Company/project pages
-        if any(x in domain for x in ["fibretrace.io", "circularise.com", "cirpassproject.eu"]):
+        if any(
+            x in domain
+            for x in ["fibretrace.io", "circularise.com", "cirpassproject.eu"]
+        ):
             return "web_organization"
         if "hmfoundation.com" in domain:
             return "web_organization"
@@ -145,7 +162,15 @@ class FailedCitationAnalyzer:
             return "web_documentation"
 
         # Company websites
-        if any(x in domain for x in ["ibm.com", "amazon.de", "rigaku.com", "sigmatechnology.com"]):
+        if any(
+            x in domain
+            for x in [
+                "ibm.com",
+                "amazon.de",
+                "rigaku.com",
+                "sigmatechnology.com",
+            ]
+        ):
             return "web_organization"
 
         # Default
@@ -157,20 +182,20 @@ class FailedCitationAnalyzer:
             category = self.categorize_url(url)
             self.categorized[category].append(url)
 
-    def generate_report(self) -> Dict:
+    def generate_report(self) -> dict:
         """Generate categorized report with recommendations."""
         report = {
             "summary": {
                 "total_failed": len(self.failed_urls),
                 "academic_sources": 0,
-                "web_sources": 0
+                "web_sources": 0,
             },
             "categories": {},
             "recommendations": {
                 "add_to_zotero": [],
                 "convert_to_footnote": [],
-                "review_required": []
-            }
+                "review_required": [],
+            },
         }
 
         # Count by category
@@ -178,35 +203,39 @@ class FailedCitationAnalyzer:
             if urls:
                 report["categories"][category] = {
                     "count": len(urls),
-                    "urls": urls
+                    "urls": urls,
                 }
 
                 # Academic sources should be added to Zotero
                 if category.startswith("academic_"):
                     report["summary"]["academic_sources"] += len(urls)
                     for url in urls:
-                        report["recommendations"]["add_to_zotero"].append({
-                            "url": url,
-                            "type": category,
-                            "action": "Add to Zotero manually"
-                        })
+                        report["recommendations"]["add_to_zotero"].append(
+                            {
+                                "url": url,
+                                "type": category,
+                                "action": "Add to Zotero manually",
+                            }
+                        )
 
                 # Web sources should be footnotes
                 elif category.startswith("web_"):
                     report["summary"]["web_sources"] += len(urls)
                     for url in urls:
-                        report["recommendations"]["convert_to_footnote"].append({
-                            "url": url,
-                            "type": category,
-                            "action": "Convert to footnote (not bibliography)"
-                        })
+                        report["recommendations"]["convert_to_footnote"].append(
+                            {
+                                "url": url,
+                                "type": category,
+                                "action": "Convert to footnote (not bibliography)",
+                            }
+                        )
 
         return report
 
     def save_report(self, output_path: Path):
         """Save report to JSON file."""
         report = self.generate_report()
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(report, f, indent=2)
         return report
 
@@ -214,7 +243,9 @@ class FailedCitationAnalyzer:
 def main():
     """Main entry point."""
     if len(sys.argv) < 2:
-        print("Usage: python scripts/analyze_failed_citations.py <conversion.log> [--output report.json]")
+        print(
+            "Usage: python scripts/analyze_failed_citations.py <conversion.log> [--output report.json]"
+        )
         sys.exit(1)
 
     log_file = Path(sys.argv[1])
@@ -240,19 +271,23 @@ def main():
     print("Generating report...")
     report = analyzer.save_report(output_file)
 
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print("FAILED CITATIONS ANALYSIS")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
     print(f"Total Failed: {report['summary']['total_failed']}")
-    print(f"  Academic Sources (add to Zotero): {report['summary']['academic_sources']}")
-    print(f"  Web Sources (convert to footnotes): {report['summary']['web_sources']}")
+    print(
+        f"  Academic Sources (add to Zotero): {report['summary']['academic_sources']}"
+    )
+    print(
+        f"  Web Sources (convert to footnotes): {report['summary']['web_sources']}"
+    )
     print()
     print("Categories:")
     for category, data in report["categories"].items():
         print(f"  {category}: {data['count']}")
     print()
     print(f"Report saved to: {output_file}")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
 
 if __name__ == "__main__":

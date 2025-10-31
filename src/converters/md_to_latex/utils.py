@@ -563,11 +563,26 @@ def generate_citation_key(
     title_part = None
     if title:
         # Extract first significant word (skip common words)
-        skip_words = {"a", "an", "the", "in", "on", "at", "to", "for", "of", "and"}
+        skip_words = {
+            "a",
+            "an",
+            "the",
+            "in",
+            "on",
+            "at",
+            "to",
+            "for",
+            "of",
+            "and",
+        }
         title_words = title.lower().split()
         for word in title_words:
             clean_word = "".join(c for c in word if c.isalnum())
-            if clean_word and clean_word not in skip_words and len(clean_word) > 2:
+            if (
+                clean_word
+                and clean_word not in skip_words
+                and len(clean_word) > 2
+            ):
                 title_part = clean_word
                 break
 
@@ -611,8 +626,8 @@ def is_valid_zotero_key(key: str) -> bool:
     # Use simple string scanning without regex
     has_year = False
     for i in range(len(key) - 3):
-        if key[i:i+4].isdigit():
-            year = int(key[i:i+4])
+        if key[i : i + 4].isdigit():
+            year = int(key[i : i + 4])
             # Reasonable year range for academic citations
             if 1900 <= year <= 2030:
                 has_year = True
@@ -626,7 +641,9 @@ def is_valid_zotero_key(key: str) -> bool:
     # 2. Has mixed case = Better BibTeX format (e.g., authorTitle2020)
     # 3. All lowercase/alphanumeric with year = Legacy Zotero format (e.g., author2020suffix)
     has_underscore = "_" in key
-    has_mixed_case = any(c.isupper() for c in key) and any(c.islower() for c in key)
+    has_mixed_case = any(c.isupper() for c in key) and any(
+        c.islower() for c in key
+    )
     is_alphanumeric = all(c.isalnum() for c in key)
 
     # Accept any of these patterns as valid Zotero keys
@@ -919,7 +936,7 @@ def parse_citation_text(
 def clean_pandoc_output(latex_content: str) -> str:
     """Clean up common pandoc artifacts from LaTeX output."""
     # DIAGNOSTIC: Log input state
-    end_doc_marker = r'\\end{document}'
+    end_doc_marker = r"\\end{document}"
     logger.debug(
         f"clean_pandoc_output: input size={len(latex_content)}; has_end={end_doc_marker in latex_content}"
     )
@@ -1176,7 +1193,7 @@ def clean_pandoc_output(latex_content: str) -> str:
     cleaned = "".join(result)
 
     # DIAGNOSTIC: Log output state and detect if \end{document} was removed
-    end_doc_marker = r'\\end{document}'
+    end_doc_marker = r"\\end{document}"
     logger.debug(
         f"clean_pandoc_output: output size={len(cleaned)}; has_end={end_doc_marker in cleaned}"
     )

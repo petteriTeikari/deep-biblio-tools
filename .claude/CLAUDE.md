@@ -26,8 +26,11 @@ Deep Biblio Tools is a Python library for processing LLM-generated bibliographie
 - **NEVER** trust intermediate steps (citations extracted, BibTeX generated, PDF compiled)
   - The ONLY measure of success: PDF has ZERO (?) citations AND all citations are correct
 
-### Emergency Mode (RDF-Only, Added 2025-10-30)
+### Emergency Mode (RDF-Only, Added 2025-10-30, Zero-Fetch Implemented 2025-10-31)
 - **NEVER** allow web fetching when `emergency_mode=True`
+  - GUARANTEED: Zero network calls when `emergency_mode=True` (implemented in `generate_bibtex_file()`)
+  - Uses ONLY RDF metadata, skips all `fetch_citation_metadata()` calls
+  - Expected performance: <30 seconds (was ~11 minutes with fetching)
 - **NEVER** proceed if RDF file is missing in emergency mode (MUST HARD CRASH)
 - **NEVER** proceed if RDF file is empty in emergency mode (MUST HARD CRASH)
 - **NEVER** auto-merge duplicate citations (FLAG only, require manual review)

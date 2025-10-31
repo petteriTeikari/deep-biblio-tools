@@ -84,7 +84,9 @@ class CitationMatcher:
                 self.doi_index[normalized_doi] = entry
                 # DIAGNOSTIC: Log first few DOIs
                 if len(self.doi_index) <= 3:
-                    logger.debug(f"Sample DOI indexed: {normalized_doi} -> {entry.get('title', 'NO_TITLE')[:60]}")
+                    logger.debug(
+                        f"Sample DOI indexed: {normalized_doi} -> {entry.get('title', 'NO_TITLE')[:60]}"
+                    )
             else:
                 entries_without_doi += 1
 
@@ -113,7 +115,9 @@ class CitationMatcher:
                     self.arxiv_index[arxiv_id.lower()] = entry
                     # DIAGNOSTIC: Log first few arXiv IDs
                     if len(self.arxiv_index) <= 3:
-                        logger.debug(f"Sample arXiv indexed: {arxiv_id} -> {entry.get('title', 'NO_TITLE')[:60]}")
+                        logger.debug(
+                            f"Sample arXiv indexed: {arxiv_id} -> {entry.get('title', 'NO_TITLE')[:60]}"
+                        )
 
             # URL index (normalized)
             if url:
@@ -122,7 +126,9 @@ class CitationMatcher:
                     self.url_index[normalized_url] = entry
                     # DIAGNOSTIC: Log first few URLs
                     if len(self.url_index) <= 3:
-                        logger.debug(f"Sample URL indexed: {normalized_url[:80]} -> {entry.get('title', 'NO_TITLE')[:60]}")
+                        logger.debug(
+                            f"Sample URL indexed: {normalized_url[:80]} -> {entry.get('title', 'NO_TITLE')[:60]}"
+                        )
             else:
                 entries_without_url += 1
 
@@ -153,7 +159,9 @@ class CitationMatcher:
         debug_this = self.stats["total_citations"] <= 5
 
         if debug_this:
-            logger.debug(f"\n=== Matching attempt #{self.stats['total_citations']} ===")
+            logger.debug(
+                f"\n=== Matching attempt #{self.stats['total_citations']} ==="
+            )
             logger.debug(f"Citation URL: {citation_url}")
 
         # Strategy 1: DOI matching (most reliable)
@@ -162,14 +170,18 @@ class CitationMatcher:
             normalized_doi = doi.lower().strip()
             if debug_this:
                 logger.debug(f"Extracted DOI: {normalized_doi}")
-                logger.debug(f"DOI in index? {normalized_doi in self.doi_index}")
+                logger.debug(
+                    f"DOI in index? {normalized_doi in self.doi_index}"
+                )
             if normalized_doi in self.doi_index:
                 self.stats["matched_by_doi"] += 1
                 if debug_this:
                     logger.debug(f"✓ MATCHED by DOI: {normalized_doi}")
                 return self.doi_index[normalized_doi], "doi"
             elif debug_this:
-                logger.debug(f"✗ DOI not in index (index has {len(self.doi_index)} DOIs)")
+                logger.debug(
+                    f"✗ DOI not in index (index has {len(self.doi_index)} DOIs)"
+                )
 
         # Strategy 2: ISBN matching (for books)
         isbn = extract_isbn_from_url(citation_url)
@@ -188,26 +200,34 @@ class CitationMatcher:
             normalized_arxiv = arxiv_id.lower()
             if debug_this:
                 logger.debug(f"Extracted arXiv ID: {normalized_arxiv}")
-                logger.debug(f"arXiv in index? {normalized_arxiv in self.arxiv_index}")
+                logger.debug(
+                    f"arXiv in index? {normalized_arxiv in self.arxiv_index}"
+                )
             if normalized_arxiv in self.arxiv_index:
                 self.stats["matched_by_arxiv"] += 1
                 logger.info(f"Matched by arXiv: {arxiv_id}")
                 return self.arxiv_index[normalized_arxiv], "arxiv"
             elif debug_this:
-                logger.debug(f"✗ arXiv not in index (index has {len(self.arxiv_index)} arXiv IDs)")
+                logger.debug(
+                    f"✗ arXiv not in index (index has {len(self.arxiv_index)} arXiv IDs)"
+                )
 
         # Strategy 4: URL matching (normalized)
         normalized_url = normalize_url(citation_url)
         if debug_this:
             logger.debug(f"Normalized URL: {normalized_url[:100]}")
-            logger.debug(f"URL in index? {normalized_url in self.url_index if normalized_url else False}")
+            logger.debug(
+                f"URL in index? {normalized_url in self.url_index if normalized_url else False}"
+            )
         if normalized_url and normalized_url in self.url_index:
             self.stats["matched_by_url"] += 1
             if debug_this:
-                logger.debug(f"✓ MATCHED by URL")
+                logger.debug("✓ MATCHED by URL")
             return self.url_index[normalized_url], "url"
         elif debug_this:
-            logger.debug(f"✗ URL not in index (index has {len(self.url_index)} URLs)")
+            logger.debug(
+                f"✗ URL not in index (index has {len(self.url_index)} URLs)"
+            )
 
         # Strategy 5: Fuzzy fallback (deterministic)
         # TODO: Implement fuzzy matching with author+year+title

@@ -20,7 +20,9 @@ import bibtexparser
 import requests
 
 from src.converters.md_to_latex.entry_validator import EntryValidator
-from src.converters.md_to_latex.site_author_mapping import augment_metadata_with_site_author
+from src.converters.md_to_latex.site_author_mapping import (
+    augment_metadata_with_site_author,
+)
 from src.converters.md_to_latex.translation_client import TranslationClient
 from src.converters.md_to_latex.zotero_integration import ZoteroClient
 
@@ -49,7 +51,7 @@ class ZoteroAutoAdd:
         collection_name: str,
         translation_server_url: str = "http://localhost:1969",
         dry_run: bool = True,  # Default to safe mode!
-        max_auto_add: int = 50
+        max_auto_add: int = 50,
     ):
         """Initialize auto-add system.
 
@@ -75,7 +77,9 @@ class ZoteroAutoAdd:
                 f"Translation server not responding at {translation_server_url}"
             )
             logger.warning("Auto-add will fail. Start translation server with:")
-            logger.warning("  docker run -d -p 1969:1969 zotero/translation-server")
+            logger.warning(
+                "  docker run -d -p 1969:1969 zotero/translation-server"
+            )
 
         # Statistics and audit trail
         self.audit: list[dict[str, Any]] = []
@@ -89,9 +93,7 @@ class ZoteroAutoAdd:
         )
 
     def add_citation(
-        self,
-        url: str,
-        citation_text: str
+        self, url: str, citation_text: str
     ) -> tuple[str | None, list[str]]:
         """Attempt to auto-add URL to Zotero collection.
 
@@ -199,7 +201,9 @@ class ZoteroAutoAdd:
 
         if not is_valid:
             # Shouldn't happen if we check critical issues, but safety check
-            logger.error(f"Validation failed but no critical issues? Blocking anyway.")
+            logger.error(
+                "Validation failed but no critical issues? Blocking anyway."
+            )
             self._record_audit(url, "validation_failed", warnings, metadata)
             return None, warnings
 
@@ -212,8 +216,12 @@ class ZoteroAutoAdd:
         if self.dry_run:
             # Simulate addition
             fake_key = f"dryrun_{int(time.time() * 1000)}"
-            logger.info(f"  [DRY-RUN] Would add entry. Simulated key: {fake_key}")
-            self._record_audit(url, "dry_run_added", warnings, metadata, fake_key)
+            logger.info(
+                f"  [DRY-RUN] Would add entry. Simulated key: {fake_key}"
+            )
+            self._record_audit(
+                url, "dry_run_added", warnings, metadata, fake_key
+            )
             return fake_key, warnings
 
         # REAL MODE: Actually add to Zotero
@@ -232,7 +240,9 @@ class ZoteroAutoAdd:
             better_bibtex_key = self._get_better_bibtex_key_for_item(item_key)
             logger.info(f"  Better BibTeX key: {better_bibtex_key}")
 
-            self._record_audit(url, "added", warnings, metadata, better_bibtex_key)
+            self._record_audit(
+                url, "added", warnings, metadata, better_bibtex_key
+            )
             return better_bibtex_key, warnings
 
         except Exception as exc:
@@ -255,7 +265,9 @@ class ZoteroAutoAdd:
             RuntimeError: If API calls fail
         """
         # Step 1: Find collection ID
-        collection_id = self.zotero_client._find_collection_id(self.collection_name)
+        collection_id = self.zotero_client._find_collection_id(
+            self.collection_name
+        )
         if not collection_id:
             raise RuntimeError(
                 f"Collection '{self.collection_name}' not found in Zotero library"
@@ -270,7 +282,7 @@ class ZoteroAutoAdd:
 
         headers = {
             "Zotero-API-Key": self.zotero_client.api_key,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         # Zotero API accepts array of items
@@ -314,10 +326,7 @@ class ZoteroAutoAdd:
 
         # Send item key to add to collection
         resp2 = requests.post(
-            collection_url,
-            json=[item_key],
-            headers=headers,
-            timeout=10
+            collection_url, json=[item_key], headers=headers, timeout=10
         )
 
         if resp2.status_code not in (200, 204):
@@ -387,7 +396,7 @@ class ZoteroAutoAdd:
         status: str,
         warnings: list[str],
         metadata: dict[str, Any] | None = None,
-        key: str | None = None
+        key: str | None = None,
     ):
         """Record action in audit trail for reporting.
 
@@ -405,10 +414,10 @@ class ZoteroAutoAdd:
             "metadata_sample": {
                 "title": metadata.get("title") if metadata else None,
                 "itemType": metadata.get("itemType") if metadata else None,
-                "creators": metadata.get("creators") if metadata else None
+                "creators": metadata.get("creators") if metadata else None,
             },
             "key": key,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
         self.audit.append(entry)
 
@@ -421,12 +430,17 @@ class ZoteroAutoAdd:
         # Group by status
         added = [a for a in self.audit if a["status"] == "added"]
         dry_run = [a for a in self.audit if a["status"] == "dry_run_added"]
-        failed = [a for a in self.audit if a["status"] in (
-            "translation_failed",
-            "validation_failed",
-            "add_failed",
-            "threshold_exceeded"
-        )]
+        failed = [
+            a
+            for a in self.audit
+            if a["status"]
+            in (
+                "translation_failed",
+                "validation_failed",
+                "add_failed",
+                "threshold_exceeded",
+            )
+        ]
         with_warnings = [a for a in self.audit if a["warnings"]]
 
         # Build report
@@ -434,7 +448,9 @@ class ZoteroAutoAdd:
         lines.append("=" * 70)
         lines.append("ZOTERO AUTO-ADD REPORT")
         lines.append("=" * 70)
-        lines.append(f"Mode: {'DRY-RUN (no actual changes)' if self.dry_run else 'REAL (added to Zotero)'}")
+        lines.append(
+            f"Mode: {'DRY-RUN (no actual changes)' if self.dry_run else 'REAL (added to Zotero)'}"
+        )
         lines.append(f"Collection: {self.collection_name}")
         lines.append("")
         lines.append(f"Total processed: {len(self.audit)}")
@@ -477,7 +493,11 @@ class ZoteroAutoAdd:
             lines.append("❌ FAILED TO ADD:")
             lines.append("")
             for a in failed:
-                title = a["metadata_sample"].get("title", "No title")[:60] if a["metadata_sample"].get("title") else "N/A"
+                title = (
+                    a["metadata_sample"].get("title", "No title")[:60]
+                    if a["metadata_sample"].get("title")
+                    else "N/A"
+                )
                 lines.append(f"  {a['url']}")
                 lines.append(f"    Status: {a['status']}")
                 lines.append(f"    Title: {title}")
@@ -501,9 +521,19 @@ class ZoteroAutoAdd:
         return {
             "total": len(self.audit),
             "added": len([a for a in self.audit if a["status"] == "added"]),
-            "dry_run": len([a for a in self.audit if a["status"] == "dry_run_added"]),
-            "translation_failed": len([a for a in self.audit if a["status"] == "translation_failed"]),
-            "validation_failed": len([a for a in self.audit if a["status"] == "validation_failed"]),
-            "add_failed": len([a for a in self.audit if a["status"] == "add_failed"]),
-            "threshold_exceeded": len([a for a in self.audit if a["status"] == "threshold_exceeded"]),
+            "dry_run": len(
+                [a for a in self.audit if a["status"] == "dry_run_added"]
+            ),
+            "translation_failed": len(
+                [a for a in self.audit if a["status"] == "translation_failed"]
+            ),
+            "validation_failed": len(
+                [a for a in self.audit if a["status"] == "validation_failed"]
+            ),
+            "add_failed": len(
+                [a for a in self.audit if a["status"] == "add_failed"]
+            ),
+            "threshold_exceeded": len(
+                [a for a in self.audit if a["status"] == "threshold_exceeded"]
+            ),
         }

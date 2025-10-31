@@ -4,7 +4,10 @@
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-rdf_path = Path.home() / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+rdf_path = (
+    Path.home()
+    / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+)
 
 tree = ET.parse(rdf_path)
 root = tree.getroot()
@@ -17,9 +20,18 @@ namespaces = {
 }
 
 valid_item_types = {
-    "journalArticle", "book", "bookSection", "conferencePaper",
-    "thesis", "report", "webpage", "preprint", "article",
-    "patent", "document", "recording",
+    "journalArticle",
+    "book",
+    "bookSection",
+    "conferencePaper",
+    "thesis",
+    "report",
+    "webpage",
+    "preprint",
+    "article",
+    "patent",
+    "document",
+    "recording",
 }
 
 excluded_bib_tags = {"Journal", "Series", "Periodical"}
@@ -48,7 +60,9 @@ if bib_articles:
     item_type_elem = article.find("z:itemType", namespaces)
     item_type = item_type_elem.text if item_type_elem is not None else None
     print(f"3. Item type: {item_type}")
-    print(f"   In valid types? {item_type in valid_item_types if item_type else 'N/A'}")
+    print(
+        f"   In valid types? {item_type in valid_item_types if item_type else 'N/A'}"
+    )
     has_valid_item_type = item_type in valid_item_types if item_type else False
     print(f"   has_valid_item_type = {has_valid_item_type}")
     print()
@@ -64,7 +78,9 @@ if bib_articles:
 
     passes_check3 = has_authors or has_valid_item_type or is_bib_typed
     print(f"6. Passes check #3? {passes_check3}")
-    print(f"   (has_authors={has_authors} OR has_valid_item_type={has_valid_item_type} OR is_bib_typed={is_bib_typed})")
+    print(
+        f"   (has_authors={has_authors} OR has_valid_item_type={has_valid_item_type} OR is_bib_typed={is_bib_typed})"
+    )
     print()
 
     url = article.get(f"{{{namespaces['rdf']}}}about", "")
@@ -72,4 +88,6 @@ if bib_articles:
     print()
 
     print("=" * 60)
-    print(f"SHOULD THIS ENTRY BE PARSED? {not tag_name in excluded_bib_tags and title_text and passes_check3}")
+    print(
+        f"SHOULD THIS ENTRY BE PARSED? {tag_name not in excluded_bib_tags and title_text and passes_check3}"
+    )

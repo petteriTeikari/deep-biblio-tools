@@ -3,6 +3,7 @@
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -70,7 +71,6 @@ print(f"\n📖 Checking bibliography: {bib_file}")
 bib_content = bib_file.read_text()
 
 # Count citation keys
-import re
 
 # No regex! Use string methods
 lines = bib_content.split("\n")
@@ -146,7 +146,9 @@ if invalid_keys:
 
 # Final verdict
 print("\n" + "=" * 80)
-total_zotero_keys = len(web_api_keys) + len(better_bibtex_keys) + len(legacy_zotero_keys)
+total_zotero_keys = (
+    len(web_api_keys) + len(better_bibtex_keys) + len(legacy_zotero_keys)
+)
 if total_zotero_keys > 0 and not invalid_keys:
     print("✅ SUCCESS: All keys are from Zotero!")
     print(

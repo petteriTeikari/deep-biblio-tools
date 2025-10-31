@@ -200,6 +200,7 @@ def convert_with_fallbacks(
         allow_failures=allow_failures,  # Allow partial success with temp keys
         enable_auto_add=False,  # NO Zotero API calls
         use_cache=False,  # NO cache - emergency mode uses only RDF
+        emergency_mode=True,  # NEW: Zero-fetch mode - RDF only, no network calls
     )
 
     # Perform conversion

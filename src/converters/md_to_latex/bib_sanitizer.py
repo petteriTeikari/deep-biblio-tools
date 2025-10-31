@@ -14,18 +14,20 @@ Usage:
     python bib_sanitizer.py references.bib --rdf zotero.rdf --emergency-mode
 """
 
-import re
-import json
 import argparse
+import json
+import re
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any
 
 # Optional RapidFuzz (faster), fallback to difflib
 try:
     from rapidfuzz import fuzz
+
     HAS_RAPIDFUZZ = True
 except ImportError:
     import difflib
+
     HAS_RAPIDFUZZ = False
 
 import bibtexparser
@@ -53,7 +55,7 @@ KNOWN_ORGS = [
 
 DOMAIN_PATTERN = re.compile(
     r"\b(?:[a-z0-9-]+\.)+(?:com|org|net|edu|gov|io|co|uk|de|fr|it|jp|cn)\b",
-    re.I
+    re.I,
 )
 
 STUB_TITLE_PATTERNS = [
@@ -69,9 +71,11 @@ LEGIT_SHORT_TITLES = {"Nature", "Science", "Cell", "PLOS", "Wired"}
 # --- Helpers --------------------------------------------------------
 # --------------------------------------------------------------------
 
+
 def normalize_text(s: str) -> str:
     """Simplify for fuzzy comparison."""
     return re.sub(r"[\W_]+", " ", s or "").lower().strip()
+
 
 def fuzzy_ratio(a: str, b: str) -> float:
     """Fuzzy string similarity (0-100)."""
@@ -81,6 +85,7 @@ def fuzzy_ratio(a: str, b: str) -> float:
         # Fallback to difflib
         return difflib.SequenceMatcher(None, a, b).ratio() * 100
 
+
 def is_domain_title(title: str) -> bool:
     """Detects when the title looks like a domain."""
     if not title:
@@ -88,6 +93,7 @@ def is_domain_title(title: str) -> bool:
     if title.strip() in LEGIT_SHORT_TITLES:
         return False
     return bool(DOMAIN_PATTERN.search(title))
+
 
 def is_stub_title(title: str) -> bool:
     """Detects stub titles like 'Web page by X'."""
@@ -98,26 +104,32 @@ def is_stub_title(title: str) -> bool:
             return True
     return False
 
+
 def author_jaccard(a: str, b: str) -> float:
     """Jaccard similarity on last names."""
+
     def extract_lastnames(s):
-        return {x.strip().split()[-1].lower()
-                for x in re.split(r"[,;]| and ", s) if x.strip()}
+        return {
+            x.strip().split()[-1].lower()
+            for x in re.split(r"[,;]| and ", s)
+            if x.strip()
+        }
 
     A, B = extract_lastnames(a), extract_lastnames(b)
     if not A or not B:
         return 0
     return len(A & B) / len(A | B)
 
-def is_duplicate(a: Dict[str, str], b: Dict[str, str]) -> bool:
+
+def is_duplicate(a: dict[str, str], b: dict[str, str]) -> bool:
     """Check if two entries are likely duplicates (fuzzy match)."""
     title_score = fuzzy_ratio(
-        normalize_text(a.get("title", "")),
-        normalize_text(b.get("title", ""))
+        normalize_text(a.get("title", "")), normalize_text(b.get("title", ""))
     )
     auth_overlap = author_jaccard(a.get("author", ""), b.get("author", ""))
 
     return title_score >= 92 and auth_overlap >= 0.8
+
 
 def normalize_url(url: str) -> str:
     """Drop protocol, params, trailing slashes, www."""
@@ -134,24 +146,28 @@ def normalize_url(url: str) -> str:
     url = url.rstrip("/")
 
     # Amazon-specific: normalize by ASIN/ISBN
-    if 'amazon.' in url.lower():
-        m = re.search(r'/dp/([A-Z0-9]{10})', url, re.I)
+    if "amazon." in url.lower():
+        m = re.search(r"/dp/([A-Z0-9]{10})", url, re.I)
         if m:
             return f"amazon.com/dp/{m.group(1)}"
 
     # arXiv-specific: normalize by ID
-    if 'arxiv.org' in url.lower():
-        m = re.search(r'arxiv\.org/(?:abs|pdf)/([0-9]{4}\.[0-9]{4,5})', url, re.I)
+    if "arxiv.org" in url.lower():
+        m = re.search(
+            r"arxiv\.org/(?:abs|pdf)/([0-9]{4}\.[0-9]{4,5})", url, re.I
+        )
         if m:
             return f"arxiv.org/abs/{m.group(1)}"
 
     return url.lower()
 
+
 # --------------------------------------------------------------------
 # --- RDF matching ---------------------------------------------------
 # --------------------------------------------------------------------
 
-def load_zotero_rdf(path: Path) -> List[Dict[str, Any]]:
+
+def load_zotero_rdf(path: Path) -> list[dict[str, Any]]:
     """Simple RDF parser for Zotero RDF exports.
 
     Handles multiple URL/identifier formats:
@@ -174,20 +190,24 @@ def load_zotero_rdf(path: Path) -> List[Dict[str, Any]]:
         item = match.group(2)  # Get item content
 
         # Extract title
-        title_match = re.search(r'<dc:title>([^<]+)</dc:title>', item)
+        title_match = re.search(r"<dc:title>([^<]+)</dc:title>", item)
         title = title_match.group(1).strip() if title_match else ""
 
         # Extract URL/identifier (try multiple formats)
         url = ""
 
         # 1. Try nested dcterms:URI/rdf:value structure (most common in Zotero)
-        url_match = re.search(r'<dcterms:URI>\s*<rdf:value>([^<]+)</rdf:value>', item, re.DOTALL)
+        url_match = re.search(
+            r"<dcterms:URI>\s*<rdf:value>([^<]+)</rdf:value>", item, re.DOTALL
+        )
         if url_match:
             url = url_match.group(1).strip()
 
         # 2. Try simple dc:identifier
         if not url:
-            url_match = re.search(r'<dc:identifier>([^<]+)</dc:identifier>', item)
+            url_match = re.search(
+                r"<dc:identifier>([^<]+)</dc:identifier>", item
+            )
             if url_match:
                 identifier = url_match.group(1).strip()
                 # Skip DOI-only format (like "DOI 10.1234/5678")
@@ -195,28 +215,39 @@ def load_zotero_rdf(path: Path) -> List[Dict[str, Any]]:
                     url = identifier
 
         # 3. Fallback to rdf:about if it looks like a URL
-        if not url and (rdf_about.startswith("http://") or rdf_about.startswith("https://")):
+        if not url and (
+            rdf_about.startswith("http://") or rdf_about.startswith("https://")
+        ):
             url = rdf_about
 
         # Extract author (may be in <dc:creator> or <bib:authors>)
-        creator_match = re.search(r'<(?:dc:creator|bib:authors)>.*?<rdf:li>([^<]+)</rdf:li>', item, re.DOTALL)
+        creator_match = re.search(
+            r"<(?:dc:creator|bib:authors)>.*?<rdf:li>([^<]+)</rdf:li>",
+            item,
+            re.DOTALL,
+        )
         author = creator_match.group(1).strip() if creator_match else ""
 
         # Extract year
-        date_match = re.search(r'<dc:date>([^<]+)</dc:date>', item)
+        date_match = re.search(r"<dc:date>([^<]+)</dc:date>", item)
         year = date_match.group(1)[:4] if date_match else ""
 
         if url:  # Only add entries with URLs
-            entries.append({
-                "url": url,
-                "title": title,
-                "author": author,
-                "year": year,
-            })
+            entries.append(
+                {
+                    "url": url,
+                    "title": title,
+                    "author": author,
+                    "year": year,
+                }
+            )
 
     return entries
 
-def find_in_rdf(url: str, rdf_entries: List[Dict[str, Any]]) -> Optional[Dict[str, str]]:
+
+def find_in_rdf(
+    url: str, rdf_entries: list[dict[str, Any]]
+) -> dict[str, str] | None:
     """Find RDF entry by normalized URL."""
     if not url:
         return None
@@ -230,17 +261,19 @@ def find_in_rdf(url: str, rdf_entries: List[Dict[str, Any]]) -> Optional[Dict[st
 
     return None
 
+
 # --------------------------------------------------------------------
 # --- Sanitization ---------------------------------------------------
 # --------------------------------------------------------------------
 
-def double_brace_orgs(entry: Dict[str, str]) -> Dict[str, str]:
+
+def double_brace_orgs(entry: dict[str, str]) -> dict[str, str]:
     """Wrap known organization names in double braces (exact match)."""
     author = entry.get("author", "")
 
     for org in KNOWN_ORGS:
         # Exact match with word boundaries, case-insensitive
-        pattern = re.compile(r'\b' + re.escape(org) + r'\b', re.IGNORECASE)
+        pattern = re.compile(r"\b" + re.escape(org) + r"\b", re.IGNORECASE)
         if pattern.search(author):
             # Replace with double-braced version
             author = pattern.sub(f"{{{{{org}}}}}", author)
@@ -248,14 +281,17 @@ def double_brace_orgs(entry: Dict[str, str]) -> Dict[str, str]:
     entry["author"] = author
     return entry
 
-def ensure_arxiv(entry: Dict[str, str]) -> Dict[str, str]:
+
+def ensure_arxiv(entry: dict[str, str]) -> dict[str, str]:
     """Ensure arXiv entries have eprint field."""
     content = " ".join(entry.get(k, "") for k in ["journal", "note", "url"])
 
     if "arxiv" in content.lower():
         if not entry.get("eprint"):
             # Try to extract from URL
-            m = re.search(r"arxiv\.org/(?:abs|pdf)/([0-9]{4}\.[0-9]{4,5})", content, re.I)
+            m = re.search(
+                r"arxiv\.org/(?:abs|pdf)/([0-9]{4}\.[0-9]{4,5})", content, re.I
+            )
             if m:
                 entry["eprint"] = m.group(1)
             else:
@@ -263,7 +299,10 @@ def ensure_arxiv(entry: Dict[str, str]) -> Dict[str, str]:
 
     return entry
 
-def sanitize_entry(entry: Dict[str, str], rdf_entries: List[Dict[str, Any]]) -> Dict[str, Any]:
+
+def sanitize_entry(
+    entry: dict[str, str], rdf_entries: list[dict[str, Any]]
+) -> dict[str, Any]:
     """Sanitize a single BibTeX entry."""
     # Fix organization names
     entry = double_brace_orgs(entry)
@@ -289,16 +328,18 @@ def sanitize_entry(entry: Dict[str, str], rdf_entries: List[Dict[str, Any]]) -> 
 
     return entry
 
+
 # --------------------------------------------------------------------
 # --- Main sanitize routine ------------------------------------------
 # --------------------------------------------------------------------
 
+
 def sanitize_bib(
     input_bib: Path,
     output_bib: Path,
-    rdf_path: Optional[Path] = None,
-    emergency_mode: bool = False
-) -> Dict[str, Any]:
+    rdf_path: Path | None = None,
+    emergency_mode: bool = False,
+) -> dict[str, Any]:
     """
     Sanitize a .bib file before LaTeX compilation.
 
@@ -352,7 +393,7 @@ def sanitize_bib(
         "stub_titles": 0,
         "manual_review": [],
         "duplicates": [],
-        "not_found_in_rdf": []
+        "not_found_in_rdf": [],
     }
 
     # Sanitize each entry
@@ -368,7 +409,9 @@ def sanitize_bib(
         if entry.get("eprint") and not original.get("eprint"):
             report["fixed_arxiv"] += 1
 
-        if any(f"{{{{{org}}}}}" in entry.get("author", "") for org in KNOWN_ORGS):
+        if any(
+            f"{{{{{org}}}}}" in entry.get("author", "") for org in KNOWN_ORGS
+        ):
             report["fixed_orgs"] += 1
 
         if is_domain_title(original.get("title", "")):
@@ -389,13 +432,15 @@ def sanitize_bib(
                 keypair = tuple(sorted((a["ID"], b["ID"])))
                 if keypair not in seen:
                     seen.add(keypair)
-                    report["duplicates"].append({
-                        "a": a["ID"],
-                        "b": b["ID"],
-                        "title_a": a.get("title", ""),
-                        "title_b": b.get("title", ""),
-                        "action": "MANUAL_REVIEW_REQUIRED"
-                    })
+                    report["duplicates"].append(
+                        {
+                            "a": a["ID"],
+                            "b": b["ID"],
+                            "title_a": a.get("title", ""),
+                            "title_b": b.get("title", ""),
+                            "action": "MANUAL_REVIEW_REQUIRED",
+                        }
+                    )
 
     # Check for citations not in RDF (EMERGENCY MODE)
     if emergency_mode and rdf_entries:
@@ -404,39 +449,49 @@ def sanitize_bib(
             if url:
                 match = find_in_rdf(url, rdf_entries)
                 if not match:
-                    report["not_found_in_rdf"].append({
-                        "key": entry["ID"],
-                        "url": url,
-                        "normalized_url": normalize_url(url),
-                        "title": entry.get("title", "Unknown")
-                    })
+                    report["not_found_in_rdf"].append(
+                        {
+                            "key": entry["ID"],
+                            "url": url,
+                            "normalized_url": normalize_url(url),
+                            "title": entry.get("title", "Unknown"),
+                        }
+                    )
 
     # Output list of missing citations (if any)
     if report["not_found_in_rdf"]:
-        print("\n" + "="*70)
-        print(f"=== Citations NOT found in RDF ({len(report['not_found_in_rdf'])} total) ===")
-        print("="*70)
+        print("\n" + "=" * 70)
+        print(
+            f"=== Citations NOT found in RDF ({len(report['not_found_in_rdf'])} total) ==="
+        )
+        print("=" * 70)
         for item in report["not_found_in_rdf"]:
             print(f"\nKey: {item['key']}")
             print(f"  Title: {item['title']}")
             print(f"  URL: {item['url']}")
             print(f"  Normalized: {item['normalized_url']}")
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("MANUAL REVIEW REQUIRED:")
         print("  1. Check if URL matching is broken (normalization issue)")
         print("  2. Or if these genuinely need to be added to Zotero")
-        print("="*70)
+        print("=" * 70)
 
         if len(report["not_found_in_rdf"]) > 5:
-            print(f"\n⚠️  WARNING: More than 5 missing ({len(report['not_found_in_rdf'])})")
-            print("    This likely indicates a URL matching bug, not missing data.")
-            print("    Expected: Maximum 5 missing citations in emergency mode.\n")
+            print(
+                f"\n⚠️  WARNING: More than 5 missing ({len(report['not_found_in_rdf'])})"
+            )
+            print(
+                "    This likely indicates a URL matching bug, not missing data."
+            )
+            print(
+                "    Expected: Maximum 5 missing citations in emergency mode.\n"
+            )
 
     # Clean entries before writing (remove internal flags)
     for entry in sanitized:
         # Remove internal tracking fields
-        entry.pop('needs_manual_review', None)
+        entry.pop("needs_manual_review", None)
 
     # Write sanitized file
     bib_data.entries = sanitized
@@ -444,6 +499,7 @@ def sanitize_bib(
         bibtexparser.dump(bib_data, f)
 
     return report
+
 
 # --------------------------------------------------------------------
 # --- CLI -------------------------------------------------------------
@@ -454,18 +510,33 @@ if __name__ == "__main__":
         description="Sanitize a .bib file before LaTeX compilation"
     )
     parser.add_argument("bibfile", type=Path, help="Input .bib file")
-    parser.add_argument("--rdf", type=Path, help="Zotero RDF file (required in emergency mode)")
-    parser.add_argument("--out", type=Path, default=Path("references.clean.bib"),
-                        help="Output sanitized file")
-    parser.add_argument("--report", type=Path, default=Path("bib_sanitizer_report.json"),
-                        help="Report JSON file")
-    parser.add_argument("--emergency-mode", action="store_true",
-                        help="Enable emergency mode (strict RDF validation, no web fetching)")
+    parser.add_argument(
+        "--rdf", type=Path, help="Zotero RDF file (required in emergency mode)"
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=Path("references.clean.bib"),
+        help="Output sanitized file",
+    )
+    parser.add_argument(
+        "--report",
+        type=Path,
+        default=Path("bib_sanitizer_report.json"),
+        help="Report JSON file",
+    )
+    parser.add_argument(
+        "--emergency-mode",
+        action="store_true",
+        help="Enable emergency mode (strict RDF validation, no web fetching)",
+    )
 
     args = parser.parse_args()
 
     try:
-        report = sanitize_bib(args.bibfile, args.out, args.rdf, args.emergency_mode)
+        report = sanitize_bib(
+            args.bibfile, args.out, args.rdf, args.emergency_mode
+        )
 
         # Write report
         with open(args.report, "w", encoding="utf8") as f:
@@ -475,12 +546,16 @@ if __name__ == "__main__":
         print(f"✅ Report written to {args.report}")
 
         if report["manual_review"]:
-            print(f"\n⚠️  Manual review needed for {len(report['manual_review'])} entries:")
+            print(
+                f"\n⚠️  Manual review needed for {len(report['manual_review'])} entries:"
+            )
             for key in report["manual_review"][:10]:  # Show first 10
                 print(f"    - {key}")
 
         if report["duplicates"]:
-            print(f"\n⚠️  Found {len(report['duplicates'])} potential duplicates:")
+            print(
+                f"\n⚠️  Found {len(report['duplicates'])} potential duplicates:"
+            )
             for dup in report["duplicates"][:5]:  # Show first 5
                 print(f"    - {dup['a']} vs {dup['b']}")
 

@@ -10,13 +10,15 @@ Test cases cover:
 - CrossRef metadata comparison
 """
 
-import pytest
-from scripts.validate_bib_source import count_bibtex_authors, validate_author_completeness
-
+from scripts.validate_bib_source import (
+    count_bibtex_authors,
+    validate_author_completeness,
+)
 
 # ----------------------
 # BibTeX Author Parsing Tests
 # ----------------------
+
 
 def test_count_bibtex_authors_single():
     """Test parsing single author."""
@@ -73,6 +75,7 @@ def test_count_bibtex_authors_with_et_al():
 # Author Validation Tests
 # ----------------------
 
+
 def test_validate_author_completeness_six_authors_no_issues():
     """Test that 6 complete authors are NOT flagged (duan2025 case)."""
     entry = {
@@ -117,7 +120,10 @@ def test_validate_author_completeness_single_author_with_others():
     issues = validate_author_completeness(entry)
 
     assert len(issues) > 0
-    assert any("et al" in issue.lower() or "others" in issue.lower() for issue in issues)
+    assert any(
+        "et al" in issue.lower() or "others" in issue.lower()
+        for issue in issues
+    )
 
 
 def test_validate_author_completeness_et_al_large_paper():
@@ -129,7 +135,9 @@ def test_validate_author_completeness_et_al_large_paper():
 
     # Mock DOI metadata with 20 expected authors
     doi_metadata = {
-        "author": [{"family": f"Author{i}", "given": f"First{i}"} for i in range(20)]
+        "author": [
+            {"family": f"Author{i}", "given": f"First{i}"} for i in range(20)
+        ]
     }
 
     issues = validate_author_completeness(entry, doi_metadata)
@@ -173,7 +181,10 @@ def test_validate_author_completeness_no_authors():
     issues = validate_author_completeness(entry)
 
     assert len(issues) > 0
-    assert any("no_authors" in issue.lower() or "empty" in issue.lower() for issue in issues)
+    assert any(
+        "no_authors" in issue.lower() or "empty" in issue.lower()
+        for issue in issues
+    )
 
 
 def test_validate_author_completeness_matches_doi_metadata():
@@ -217,6 +228,7 @@ def test_validate_author_completeness_no_doi_metadata():
 # ----------------------
 # Edge Cases
 # ----------------------
+
 
 def test_count_bibtex_authors_with_extra_whitespace():
     """Test parsing with extra whitespace."""
@@ -262,6 +274,7 @@ def test_validate_author_completeness_five_authors():
 # ----------------------
 # Real-World Examples
 # ----------------------
+
 
 def test_duan2025_not_flagged():
     """Regression test: duan2025 should NOT be flagged (was false positive)."""

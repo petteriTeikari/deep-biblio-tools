@@ -11,19 +11,19 @@ Test coverage:
 - CLI integration (exit codes, reports)
 """
 
-import pytest
-from pathlib import Path
 import tempfile
 import time
+from pathlib import Path
+
+import pytest
+from click.testing import CliRunner
+from src.kb_quality.cli import validate
 from src.kb_quality.url_validator import (
+    CitationIssue,
     MarkdownKBValidator,
     ValidationIssue,
-    CitationIssue,
     generate_report,
 )
-from src.kb_quality.cli import validate
-from click.testing import CliRunner
-
 
 # ============================================================================
 # October 26 Regression Tests - CRITICAL
@@ -46,7 +46,9 @@ class TestOctober26Regression:
         """Catch arXiv ID with non-numeric suffix: 2025.mcp.taxonomy"""
         validator = MarkdownKBValidator()
 
-        markdown = "[Zhao et al., 2025](https://arxiv.org/abs/2025.mcp.taxonomy)"
+        markdown = (
+            "[Zhao et al., 2025](https://arxiv.org/abs/2025.mcp.taxonomy)"
+        )
         citations = validator._extract_citations(markdown)
         assert len(citations) == 1
 
@@ -262,7 +264,10 @@ class TestURLSchemeValidation:
         """Valid URL schemes should pass"""
         validator = MarkdownKBValidator()
         issue = validator._validate_url(url, "Test", 1)
-        assert issue is None or issue.issue_type != ValidationIssue.INVALID_URL_SCHEME
+        assert (
+            issue is None
+            or issue.issue_type != ValidationIssue.INVALID_URL_SCHEME
+        )
 
     @pytest.mark.parametrize(
         "url",
@@ -294,7 +299,9 @@ class TestCitationExtraction:
     def test_extract_single_citation(self):
         """Extract single [text](url) citation"""
         validator = MarkdownKBValidator()
-        line = "See [Smith (2020)](https://arxiv.org/abs/2012.12345) for details"
+        line = (
+            "See [Smith (2020)](https://arxiv.org/abs/2012.12345) for details"
+        )
         citations = validator._extract_citations(line)
 
         assert len(citations) == 1
@@ -337,7 +344,9 @@ class TestPerformance:
             mode="w", suffix=".md", delete=False
         ) as f:
             for i in range(50):
-                f.write(f"[Author {i} (2024)](https://arxiv.org/abs/2412.{i:05d})\n")
+                f.write(
+                    f"[Author {i} (2024)](https://arxiv.org/abs/2412.{i:05d})\n"
+                )
             temp_path = Path(f.name)
 
         try:
@@ -345,7 +354,9 @@ class TestPerformance:
             validator.validate_file(temp_path)
             elapsed = (time.time() - start) * 1000  # Convert to ms
 
-            assert elapsed < 100, f"Validation took {elapsed:.2f}ms (target: <100ms)"
+            assert elapsed < 100, (
+                f"Validation took {elapsed:.2f}ms (target: <100ms)"
+            )
         finally:
             temp_path.unlink()
 

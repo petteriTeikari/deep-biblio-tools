@@ -250,6 +250,7 @@ class CitationManager:
         enable_auto_add: bool = True,
         auto_add_dry_run: bool = True,
         allow_failures: bool = False,
+        emergency_mode: bool = False,  # NEW: Zero-fetch mode flag
     ):
         self.citations: dict[str, Citation] = {}
         self.cache_dir = cache_dir
@@ -261,6 +262,13 @@ class CitationManager:
         )
         self.prefer_arxiv = prefer_arxiv  # Option to prefer arXiv metadata
         self.zotero_collection = zotero_collection  # Store collection name
+        self.emergency_mode = emergency_mode  # Zero-fetch mode (RDF only)
+
+        # Log emergency mode activation
+        if self.emergency_mode:
+            logger.warning(
+                "🚨 Emergency Mode active — skipping all network metadata fetching."
+            )
 
         # NEW: Use modular bibliography source architecture
         self.bibliography_source: BiblographySource | None = None
@@ -1742,6 +1750,8 @@ class CitationManager:
 
         EMERGENCY MODE REQUIREMENT: Excludes failedAutoAdd_* entries.
         Missing citations should appear as (?) in PDF, NOT get .bib entries.
+
+        In emergency mode, uses only RDF metadata and skips all fetching.
         """
         bibtex_entries = []
         citations_list = sorted(self.citations.items())
@@ -1780,8 +1790,10 @@ class CitationManager:
                     f"Fetching: {citation.authors[:30]}..."
                 )
 
-            # Fetch metadata if not already done
-            self.fetch_citation_metadata(citation)
+            # In emergency mode, use only RDF metadata and skip fetching
+            if not self.emergency_mode:
+                self.fetch_citation_metadata(citation)
+
             bibtex_entries.append(citation.to_bibtex())
 
         # Cache is now saved automatically after each citation fetch
@@ -1793,6 +1805,12 @@ class CitationManager:
         logger.info(
             f"Generated BibTeX file with {len(bibtex_entries)} entries: {output_path}"
         )
+
+        # Log emergency mode completion
+        if self.emergency_mode:
+            logger.info(
+                f"✅ Emergency mode complete: Used {len(bibtex_entries)} RDF entries, no metadata fetched."
+            )
 
     # ==================================================================================
     # Phase 1: Auto-Add Integration and Policy Enforcement

@@ -121,8 +121,7 @@ def extract_author_from_url(url: str) -> str | None:
 
 
 def augment_metadata_with_site_author(
-    metadata: dict[str, Any],
-    url: str
+    metadata: dict[str, Any], url: str
 ) -> dict[str, Any]:
     """Add author from site name if missing.
 
@@ -150,12 +149,11 @@ def augment_metadata_with_site_author(
     if site_author:
         # Add as single author with lastName = organization name
         metadata["creators"] = [
-            {
-                "creatorType": "author",
-                "lastName": site_author
-            }
+            {"creatorType": "author", "lastName": site_author}
         ]
-        logger.info(f"Augmented metadata with site author: {site_author} from {url}")
+        logger.info(
+            f"Augmented metadata with site author: {site_author} from {url}"
+        )
     else:
         logger.debug(f"No site author mapping found for: {url}")
 

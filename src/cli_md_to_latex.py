@@ -187,7 +187,9 @@ def convert_markdown_to_latex(
 
         # Print failure report if there were any failures
         if converter.citation_manager.failed_citations:
-            failure_report = converter.citation_manager.generate_failure_report()
+            failure_report = (
+                converter.citation_manager.generate_failure_report()
+            )
             click.echo(failure_report)
 
         if verbose:

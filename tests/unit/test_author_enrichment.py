@@ -3,8 +3,9 @@
 Tests automatic fetching of complete author lists from CrossRef and arXiv APIs.
 """
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 from src.converters.md_to_latex.author_enrichment import AuthorEnricher
 
 
@@ -61,6 +62,7 @@ def crossref_response_mock():
 # Detection Tests
 # ----------------------
 
+
 def test_has_truncated_authors_with_and_others(enricher):
     """Test detection of 'and others' truncation."""
     author = "Duan and others"
@@ -88,6 +90,7 @@ def test_has_truncated_authors_empty(enricher):
 # ----------------------
 # arXiv ID Extraction Tests
 # ----------------------
+
 
 def test_extract_arxiv_id_from_eprint(enricher):
     """Test extraction from eprint field."""
@@ -123,6 +126,7 @@ def test_extract_arxiv_id_not_found(enricher):
 # CrossRef Fetching Tests
 # ----------------------
 
+
 def test_fetch_authors_from_crossref_success(enricher, crossref_response_mock):
     """Test successful author fetching from CrossRef."""
     with patch("requests.get") as mock_get:
@@ -131,7 +135,9 @@ def test_fetch_authors_from_crossref_success(enricher, crossref_response_mock):
         mock_response.json.return_value = crossref_response_mock
         mock_get.return_value = mock_response
 
-        authors = enricher._fetch_authors_from_crossref("10.48550/arXiv.2506.17419")
+        authors = enricher._fetch_authors_from_crossref(
+            "10.48550/arXiv.2506.17419"
+        )
 
         assert authors is not None
         assert "Duan, Jinhao" in authors
@@ -171,11 +177,15 @@ def test_fetch_authors_from_crossref_caching(enricher, crossref_response_mock):
         mock_get.return_value = mock_response
 
         # First call - should hit API
-        authors1 = enricher._fetch_authors_from_crossref("10.48550/arXiv.2506.17419")
+        authors1 = enricher._fetch_authors_from_crossref(
+            "10.48550/arXiv.2506.17419"
+        )
         assert mock_get.call_count == 1
 
         # Second call - should use cache
-        authors2 = enricher._fetch_authors_from_crossref("10.48550/arXiv.2506.17419")
+        authors2 = enricher._fetch_authors_from_crossref(
+            "10.48550/arXiv.2506.17419"
+        )
         assert mock_get.call_count == 1  # Still only 1 call
 
         # Results should be the same
@@ -185,6 +195,7 @@ def test_fetch_authors_from_crossref_caching(enricher, crossref_response_mock):
 # ----------------------
 # arXiv Fetching Tests
 # ----------------------
+
 
 def test_fetch_authors_from_arxiv_success(enricher):
     """Test successful author fetching from arXiv."""
@@ -230,7 +241,10 @@ def test_parse_arxiv_authors(enricher):
 # Entry Enrichment Tests
 # ----------------------
 
-def test_enrich_entry_with_crossref(enricher, entry_with_truncated_authors, crossref_response_mock):
+
+def test_enrich_entry_with_crossref(
+    enricher, entry_with_truncated_authors, crossref_response_mock
+):
     """Test enriching an entry using CrossRef."""
     with patch("requests.get") as mock_get:
         mock_response = Mock()
@@ -279,7 +293,7 @@ def test_enrich_bibtex_entries_mixed(enricher, crossref_response_mock):
         mock_response.json.return_value = crossref_response_mock
         mock_get.return_value = mock_response
 
-        enriched_dict = enricher.enrich_bibtex_entries(entries)
+        enricher.enrich_bibtex_entries(entries)
 
         # Check statistics
         stats = enricher.get_stats()
@@ -301,6 +315,7 @@ def test_enrich_bibtex_entries_empty(enricher):
 # ----------------------
 # Statistics Tests
 # ----------------------
+
 
 def test_get_stats_initial(enricher):
     """Test initial statistics are zero."""

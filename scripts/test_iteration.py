@@ -4,7 +4,10 @@
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-rdf_path = Path.home() / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+rdf_path = (
+    Path.home()
+    / "Dropbox/LABs/open-mode/github/om-knowledge-base/publications/mcp-review/dpp-fashion-zotero.rdf"
+)
 
 tree = ET.parse(rdf_path)
 root = tree.getroot()
@@ -31,7 +34,9 @@ for tag, count in sorted(tag_counts.items(), key=lambda x: -x[1])[:20]:
 print()
 
 # Check specifically for bib:Article entries
-bib_article_by_iteration = sum(1 for child in root if child.tag.split("}")[-1] == "Article")
+bib_article_by_iteration = sum(
+    1 for child in root if child.tag.split("}")[-1] == "Article"
+)
 bib_article_by_findall = len(root.findall("bib:Article", namespaces))
 
 print(f"bib:Article found by iteration: {bib_article_by_iteration}")

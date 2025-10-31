@@ -158,7 +158,9 @@ class ZoteroClient:
         # Configure parser to accept ALL entry types (including patents, etc.)
         try:
             parser = bibtexparser.bparser.BibTexParser()
-            parser.ignore_nonstandard_types = False  # Accept patents and other non-standard types
+            parser.ignore_nonstandard_types = (
+                False  # Accept patents and other non-standard types
+            )
             parser.homogenize_fields = False  # Keep field names as-is
             bib_database = bibtexparser.loads(bibtex_content, parser=parser)
             entries_dict = {}
@@ -183,7 +185,9 @@ class ZoteroClient:
             )
 
             # Enrich entries with complete author lists
-            logger.info("Enriching BibTeX entries with complete author lists...")
+            logger.info(
+                "Enriching BibTeX entries with complete author lists..."
+            )
             enricher = AuthorEnricher()
             enriched_dict = enricher.enrich_bibtex_entries(entries_dict)
 
@@ -324,7 +328,9 @@ class ZoteroClient:
                 bibtex_chunk = response.text.strip()
 
                 if not bibtex_chunk:
-                    logger.debug(f"Empty response at start={params['start']}, stopping pagination")
+                    logger.debug(
+                        f"Empty response at start={params['start']}, stopping pagination"
+                    )
                     break
 
                 all_bibtex.append(bibtex_chunk)
@@ -346,7 +352,9 @@ class ZoteroClient:
 
                 # Safety limit: stop after 1000 pages (100,000 items)
                 if params["start"] > 100000:
-                    logger.warning("Hit safety limit of 100k items, stopping pagination")
+                    logger.warning(
+                        "Hit safety limit of 100k items, stopping pagination"
+                    )
                     break
 
             # Combine all BibTeX chunks

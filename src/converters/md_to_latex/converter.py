@@ -78,6 +78,7 @@ class MarkdownToLatexConverter:
         enable_auto_add: bool = True,  # Enable auto-add of missing citations
         auto_add_dry_run: bool = False,  # Actually add to Zotero by default (changed Oct 30, 2025)
         allow_failures: bool = False,  # Allow conversion to continue when citations fail
+        emergency_mode: bool = False,  # NEW: Zero-fetch mode (RDF only, no network calls)
     ):
         """Initialize the converter.
 
@@ -109,7 +110,9 @@ class MarkdownToLatexConverter:
         self.zotero_api_key = zotero_api_key
         self.zotero_library_id = zotero_library_id
         self.bibliography_rdf_file_path = (
-            Path(bibliography_rdf_file_path) if bibliography_rdf_file_path else None
+            Path(bibliography_rdf_file_path)
+            if bibliography_rdf_file_path
+            else None
         )
         self.bibliography_style = bibliography_style
         self.use_cache = use_cache
@@ -124,6 +127,7 @@ class MarkdownToLatexConverter:
         self.enable_auto_add = enable_auto_add
         self.auto_add_dry_run = auto_add_dry_run
         self.allow_failures = allow_failures
+        self.emergency_mode = emergency_mode  # Zero-fetch mode (RDF only)
 
         # Initialize components
         self.citation_manager = CitationManager(
@@ -138,6 +142,7 @@ class MarkdownToLatexConverter:
             enable_auto_add=enable_auto_add,
             auto_add_dry_run=auto_add_dry_run,
             allow_failures=allow_failures,
+            emergency_mode=self.emergency_mode,  # NEW: Pass emergency mode to citation manager
         )
 
         # Check translation server if auto-add is enabled
@@ -196,7 +201,9 @@ class MarkdownToLatexConverter:
 
         self.latex_builder = None
 
-    def _check_translation_server(self, url: str = "http://localhost:1969") -> bool:
+    def _check_translation_server(
+        self, url: str = "http://localhost:1969"
+    ) -> bool:
         """Check if translation server is accessible.
 
         Returns:
@@ -204,6 +211,7 @@ class MarkdownToLatexConverter:
         """
         try:
             import requests
+
             resp = requests.get(url, timeout=2)
             # Server returns 404 for root but that means it's running
             return resp.status_code in (200, 404)
@@ -221,14 +229,19 @@ class MarkdownToLatexConverter:
             Tuple of (matched_count, missing_count)
         """
 
-        if not self.bibliography_rdf_file_path or not self.bibliography_rdf_file_path.exists():
+        if (
+            not self.bibliography_rdf_file_path
+            or not self.bibliography_rdf_file_path.exists()
+        ):
             logger.warning(
                 f"Bibliography RDF file not found: {self.bibliography_rdf_file_path}"
             )
             return 0, len(citations)
 
         # Load RDF file using LocalFileSource parser (RDF ONLY - .bib forbidden)
-        from src.converters.md_to_latex.bibliography_sources import LocalFileSource
+        from src.converters.md_to_latex.bibliography_sources import (
+            LocalFileSource,
+        )
 
         source = LocalFileSource(self.bibliography_rdf_file_path)
         zotero_entries = source.load_entries()
@@ -1516,7 +1529,9 @@ class MarkdownToLatexConverter:
             # Fail on CRITICAL issues (unless allow_failures is enabled)
             if validation_results["critical_count"] > 0:
                 if self.allow_failures:
-                    logger.warning("⚠️  BIBTEX QUALITY VALIDATION ISSUES (continuing due to --allow-failures)")
+                    logger.warning(
+                        "⚠️  BIBTEX QUALITY VALIDATION ISSUES (continuing due to --allow-failures)"
+                    )
                     logger.warning(
                         f"   {validation_results['critical_count']} CRITICAL issues found:"
                     )
@@ -1529,14 +1544,18 @@ class MarkdownToLatexConverter:
                             i for i in issues if i.startswith("CRITICAL")
                         ]
                         if critical_issues:
-                            logger.warning(f"   Entry '{key}': {critical_issues[0]}")
+                            logger.warning(
+                                f"   Entry '{key}': {critical_issues[0]}"
+                            )
                             issue_count += 1
                             if issue_count >= 3:
                                 logger.warning(
                                     f"   ... and {validation_results['critical_count'] - 3} more issues"
                                 )
                                 break
-                    logger.warning("   Continuing anyway (--allow-failures enabled)")
+                    logger.warning(
+                        "   Continuing anyway (--allow-failures enabled)"
+                    )
                 else:
                     logger.error("❌ BIBTEX QUALITY VALIDATION FAILED")
                     logger.error(
@@ -1570,8 +1589,8 @@ class MarkdownToLatexConverter:
                         f"BibTeX quality validation failed with {validation_results['critical_count']} "
                         f"CRITICAL issues. Common problems: stub titles ('Web page by X'), "
                         f"domain names as titles ('Amazon.de'), temporary keys. "
-                    f"See logs above for details."
-                )
+                        f"See logs above for details."
+                    )
 
             # Warn about non-critical issues
             if validation_results["warning_count"] > 0:
