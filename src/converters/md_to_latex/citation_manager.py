@@ -1636,10 +1636,23 @@ class CitationManager:
                                         break
 
                         if href:
+                            # FILTER: Skip non-academic links during replacement
+                            # These are regular inline hyperlinks, not citations
+                            # This prevents them from being logged as "missing citations"
+                            extractor = UnifiedCitationExtractor()
+                            if not extractor._is_academic_url(href):
+                                logger.debug(
+                                    f"Skipping non-academic link during replacement: {href}"
+                                )
+                                i += 1
+                                continue
+
                             # Normalize the URL for lookup
                             # CRITICAL: Must match normalization in _build_normalized_url_lookup() (line 1539)
                             # arXiv first (strip versions, /html/ → /abs/), then general normalization
-                            normalized_href = normalize_url(normalize_arxiv_url(href))
+                            normalized_href = normalize_url(
+                                normalize_arxiv_url(href)
+                            )
 
                             # Find the citation key
                             key = url_to_key.get(normalized_href)

@@ -94,7 +94,6 @@ class UnifiedCitationExtractor:
         "github.com",
         "gitlab.com",
         "bitbucket.org",
-
         # === Social Media ===
         "x.com",
         "twitter.com",
@@ -103,7 +102,6 @@ class UnifiedCitationExtractor:
         "instagram.com",
         "youtube.com",
         "reddit.com",
-
         # === Tech Blogs and Developer Sites ===
         "medium.com",
         "substack.com",
@@ -111,12 +109,10 @@ class UnifiedCitationExtractor:
         "towardsdatascience.com",
         "hackernoon.com",
         "thenewstack.io",
-
         # === Q&A and Community Sites ===
         "stackoverflow.com",
         "stackexchange.com",
         "quora.com",
-
         # === News and Media ===
         "bbc.com",
         "bbc.co.uk",
@@ -129,7 +125,6 @@ class UnifiedCitationExtractor:
         "forbes.com",
         "wired.com",
         "techcrunch.com",
-
         # === Government and International Organizations ===
         "europa.eu",
         "ec.europa.eu",
@@ -141,7 +136,6 @@ class UnifiedCitationExtractor:
         "oecd.org",
         "who.int",
         "wto.org",
-
         # === Industry Organizations and Standards Bodies ===
         "wbcsd.org",
         "iso.org",
@@ -149,12 +143,10 @@ class UnifiedCitationExtractor:
         "ietf.org",
         "opengroup.org",
         "gs1.eu",
-
         # === Documentation Sites ===
         "docs.",  # Catches docs.google.com, docs.python.org, etc.
         "developer.",  # Catches developer.mozilla.org, etc.
         "documentation.",
-
         # === Company Blogs and Tech Companies ===
         "anthropic.com",
         "openai.com",
@@ -163,7 +155,6 @@ class UnifiedCitationExtractor:
         "amazon.com",  # Main site
         "aws.amazon.com",  # AWS blog
         "blog.",  # Generic blog subdomain
-
         # === Fashion Industry Companies (from missing-citations.txt) ===
         "haelixa.com",
         "oritain.com",
@@ -281,7 +272,9 @@ class UnifiedCitationExtractor:
             # This prevents GitHub/company/social links from being treated as citations
             for non_academic_domain in self.NON_ACADEMIC_DOMAINS:
                 if non_academic_domain in domain:
-                    logger.info(f"[EXCLUDE] URL blocked by NON_ACADEMIC_DOMAINS: {url} (matched: {non_academic_domain})")
+                    logger.info(
+                        f"[EXCLUDE] URL blocked by NON_ACADEMIC_DOMAINS: {url} (matched: {non_academic_domain})"
+                    )
                     return False
 
             # Check against known academic domains
@@ -492,7 +485,9 @@ class UnifiedCitationExtractor:
                 )
                 continue
 
-            logger.info(f"[KEEP] Citation accepted: [{authors}, {year}]({citation.url})")
+            logger.info(
+                f"[KEEP] Citation accepted: [{authors}, {year}]({citation.url})"
+            )
 
             logger.info(
                 f"Parsed citation: authors='{authors}', year={year}, url={citation.url}"
