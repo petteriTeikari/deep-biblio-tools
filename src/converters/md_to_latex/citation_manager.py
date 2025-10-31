@@ -331,7 +331,8 @@ class CitationManager:
         self._citation_errors: list[
             dict
         ] = []  # Track all errors for end report
-        self.citation_matcher = None  # Will be set if auto-add is enabled
+        # REMOVED: self.citation_matcher = None  - BUG! This overwrote the CitationMatcher initialized above
+        # CitationMatcher is already initialized at lines 293-299 with production-grade multi-strategy matching
 
         # Graceful degradation: allow conversion to continue even when citations fail
         self.allow_failures = allow_failures
@@ -381,7 +382,7 @@ class CitationManager:
     def _lookup_zotero_entry_by_url(
         self, url: str
     ) -> tuple[str, dict[str, Any]] | None:
-        """Look up Zotero entry by URL or DOI.
+        """Look up Zotero entry by URL or DOI using production-grade CitationMatcher.
 
         Args:
             url: The URL or DOI URL to lookup
@@ -389,8 +390,26 @@ class CitationManager:
         Returns:
             Tuple of (citation_key, entry_dict) if found, None otherwise
         """
+        # Use CitationMatcher if available (production-grade multi-strategy matching)
+        if self.citation_matcher:
+            entry, strategy = self.citation_matcher.match(url)
+            if entry:
+                cite_key = entry.get("id")
+                if cite_key:
+                    logger.debug(
+                        f"Found Zotero entry via CitationMatcher (strategy: {strategy}): {cite_key}"
+                    )
+                    return (cite_key, entry)
+                else:
+                    logger.warning(f"CitationMatcher found entry but no 'id' field: {entry.get('title', 'NO_TITLE')[:60]}")
+            return None
+
+        # FALLBACK: Legacy lookup if CitationMatcher not initialized
+        # This should rarely happen - CitationMatcher is initialized when zotero_entries exist
         if not self.zotero_entries:
             return None
+
+        logger.debug("Using legacy lookup (CitationMatcher not available)")
 
         # Extract DOI if present in URL
         doi = extract_doi_from_url(url)
