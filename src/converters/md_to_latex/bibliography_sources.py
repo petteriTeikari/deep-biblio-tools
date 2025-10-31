@@ -384,13 +384,18 @@ class LocalFileSource(BiblographySource):
         if abstract_elem is not None:
             csl_entry["abstract"] = abstract_elem.text or ""
 
-        # Extract DOI (if present in identifier)
+        # Extract DOI and URL from nested dcterms:URI/rdf:value structure
+        # This is where Zotero stores the actual URL, not just in rdf:about!
         for identifier in item.findall("dc:identifier", namespaces):
             uri = identifier.find("dcterms:URI", namespaces)
             if uri is not None:
                 value_elem = uri.find("rdf:value", namespaces)
                 if value_elem is not None and value_elem.text:
                     url = value_elem.text
+                    # Store URL if we don't have one yet or if this is more specific
+                    if not item_url or len(url) > len(item_url):
+                        item_url = url
+                        csl_entry["URL"] = url
                     if "doi.org" in url:
                         # Extract DOI from URL
                         doi = url.split("doi.org/")[-1]
