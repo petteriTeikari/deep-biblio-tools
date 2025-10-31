@@ -390,8 +390,32 @@ class LocalFileSource(BiblographySource):
     ) -> dict[str, Any] | None:
         """Parse a single RDF bibliography item to CSL JSON."""
 
-        # Extract rdf:about as the URL/identifier
-        item_url = item.get(f"{{{namespaces['rdf']}}}about", "")
+        # Primary identifier: rdf:about (often urn:isbn or internal ID)
+        item_url = item.get(f"{{{namespaces['rdf']}}}about", "").strip()
+
+        # Secondary: dc:identifier → dcterms:URI → rdf:value (actual web URL)
+        # Zotero embeds real URLs here when rdf:about is a URN
+        candidate_urls = []
+        for identifier in item.findall("dc:identifier", namespaces):
+            uri_elem = identifier.find("dcterms:URI", namespaces)
+            if uri_elem is None:
+                continue
+            value_elem = uri_elem.find("rdf:value", namespaces)
+            if value_elem is not None and value_elem.text:
+                candidate_urls.append(value_elem.text.strip())
+
+        # Prefer any http(s) URL found in dc:identifier over rdf:about
+        # This handles cases like Amazon books where rdf:about="urn:isbn:..."
+        # but the actual Amazon URL is in dc:identifier
+        extra_urls = []
+        for candidate in candidate_urls:
+            if candidate.startswith(("http://", "https://")):
+                if not item_url.startswith(("http://", "https://")):
+                    # rdf:about is URN/internal ID, use this URL instead
+                    item_url = candidate
+                else:
+                    # Already have a URL, track this as alternative
+                    extra_urls.append(candidate)
 
         # Extract title
         title_elem = item.find("dc:title", namespaces)
@@ -402,7 +426,10 @@ class LocalFileSource(BiblographySource):
             return None
 
         # Create citation key from URL (will use this as 'id')
-        # For Amazon URLs like .../dp/1138021016, extract the identifier
+        # Now item_url is guaranteed to be the best available identifier:
+        # - http(s) URL from dc:identifier if available (Amazon, DOI, etc.)
+        # - OR http(s) URL from rdf:about if available
+        # - OR URN/internal ID from rdf:about as fallback
         citation_key = self._extract_citation_key_from_url(item_url, title)
 
         # Build CSL JSON entry
@@ -411,6 +438,10 @@ class LocalFileSource(BiblographySource):
             "title": title,
             "URL": item_url,
         }
+
+        # Add alternative URLs if found (for citation matching)
+        if extra_urls:
+            csl_entry["extra_urls"] = extra_urls
 
         # Extract item type
         item_type_elem = item.find("z:itemType", namespaces)
