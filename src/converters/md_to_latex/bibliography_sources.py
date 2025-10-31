@@ -257,7 +257,16 @@ class LocalFileSource(BiblographySource):
         return authors
 
     def _load_rdf(self) -> list[dict[str, Any]]:
-        """Load RDF format and convert to CSL JSON."""
+        """
+        Load RDF format and convert to CSL JSON.
+
+        Two-pass approach (recommended by OpenAI/Gemini):
+        - Pass 1: Process rdf:Description elements (require itemType validation)
+        - Pass 2: Process bib:* elements (validated by XML tag, not itemType)
+
+        This separates two different validation strategies and avoids filtering
+        bib:* entries based on their z:itemType metadata.
+        """
         import xml.etree.ElementTree as ET
 
         # Define namespaces used in Zotero RDF export
@@ -275,77 +284,105 @@ class LocalFileSource(BiblographySource):
             tree = ET.parse(self.file_path)
             root = tree.getroot()
         except ET.ParseError as e:
+            logger.error(f"Failed to parse RDF XML: {e}")
             raise ValueError(f"Failed to parse RDF file: {e}") from e
 
         csl_entries = []
-        seen_elements = set()  # Track element IDs to avoid duplicates
+        seen_urls = set()  # Track URLs to avoid duplicates
 
-        # Valid bibliography item types (exclude attachments, collections, etc.)
+        # Valid bibliography item types for rdf:Description elements
+        # These need validation because rdf:Description is ambiguous
+        # NOTE: All lowercase for case-insensitive matching
         valid_item_types = {
-            "journalArticle", "book", "bookSection", "conferencePaper",
-            "thesis", "report", "webpage", "preprint", "article",
-            "patent", "document", "recording",
-            # Additional types found in RDF
-            "magazineArticle", "newspaperArticle", "blogPost", "podcast",
+            "journalarticle",
+            "book",
+            "booksection",
+            "conferencepaper",
+            "thesis",
+            "report",
+            "webpage",
+            "preprint",
+            "article",
+            "patent",
+            "document",
+            "recording",
+            "magazinearticle",
+            "newspaperarticle",
+            "blogpost",
+            "podcast",
         }
 
         # Metadata types to exclude (these are NOT bibliography items)
         excluded_bib_tags = {"Journal", "Series", "Periodical"}
 
-        # Simpler approach: Find ALL top-level children and process each once
-        # This includes both bib:* typed elements AND plain rdf:Description elements
-        for child in root:
-            # Get element memory ID to track if we've processed it
-            elem_id = id(child)
-            if elem_id in seen_elements:
-                continue
-            seen_elements.add(elem_id)
+        # Get bib namespace URI for Pass 2
+        bib_uri = namespaces["bib"]
 
-            # Skip metadata entries like bib:Journal, bib:Series
-            if child.tag.startswith(f"{{{namespaces['bib']}}}"):
-                tag_name = child.tag.split("}")[-1]
-                if tag_name in excluded_bib_tags:
-                    continue
+        # ---------- PASS 1: rdf:Description elements ----------
+        # These are ambiguous and MUST be validated by z:itemType
+        pass1_count = 0
+        for desc in root.findall("rdf:Description", namespaces):
+            # Get URL from rdf:about attribute
+            item_url = desc.get(f"{{{namespaces['rdf']}}}about", "")
+            if not item_url:
+                continue  # Skip if no identifier
 
-            # Filter out non-bibliography entries
-            # Check 1: Must have a non-empty title
-            title_elem = child.find("dc:title", namespaces)
-            if title_elem is None or not title_elem.text:
+            # Check z:itemType to filter out attachments, etc.
+            item_type_elem = desc.find("z:itemType", namespaces)
+            if item_type_elem is None or not item_type_elem.text:
+                # rdf:Description without itemType - skip for safety
                 continue
 
-            # Check 2: If has z:itemType, it must be a bibliography type (not "attachment")
-            item_type_elem = child.find("z:itemType", namespaces)
-            has_valid_item_type = False
-            if item_type_elem is not None:
-                item_type = item_type_elem.text or ""
-                if item_type.lower() not in valid_item_types:
-                    continue  # Skip attachments, collections, etc.
-                has_valid_item_type = True
+            item_type = item_type_elem.text.strip().lower()
 
-            # Check 3: Must have at least ONE of:
-            # - authors (bib:authors element)
-            # - valid z:itemType (already checked above)
-            # - OR be a specifically typed bib:* element (but not metadata)
-            has_authors = child.find("bib:authors", namespaces) is not None
-            is_bib_typed = child.tag.startswith(f"{{{namespaces['bib']}}}")
-
-            if not (has_authors or has_valid_item_type or is_bib_typed):
-                continue  # Not a real bibliography entry
+            # Only parse if it's a valid bibliography type
+            if item_type not in valid_item_types:
+                continue  # Skip attachments, collections, etc.
 
             # Parse the entry
-            entry = self._parse_rdf_item(child, namespaces)
-            if entry:
+            entry = self._parse_rdf_item(desc, namespaces)
+            if entry and item_url not in seen_urls:
                 csl_entries.append(entry)
-            else:
-                # Debug: log why entry was skipped
-                tag_name = child.tag.split("}")[-1] if "}" in child.tag else child.tag
-                url = child.get(f"{{{namespaces['rdf']}}}about", "NO_URL")
-                logger.debug(f"Skipped {tag_name} entry with URL: {url}")
+                seen_urls.add(item_url)
+                pass1_count += 1
 
+        logger.info(f"RDF Parser Pass 1 (rdf:Description): Found {pass1_count} entries")
+
+        # ---------- PASS 2: bib:* elements ----------
+        # These are explicit bibliography items by their XML tag
+        # We DON'T validate by z:itemType - the tag itself is the validation
+        pass2_count = 0
+        for child in root:
+            # Check if the tag is in the 'bib' namespace
+            if not child.tag.startswith(f"{{{bib_uri}}}"):
+                continue
+
+            # Get the tag name (e.g., "Article", "Book", "Journal")
+            tag_name = child.tag.split("}")[-1]
+
+            # Skip if it's an excluded metadata tag
+            if tag_name in excluded_bib_tags:
+                continue
+
+            # Get URL from rdf:about attribute
+            item_url = child.get(f"{{{namespaces['rdf']}}}about", "")
+            if not item_url:
+                continue  # Should have a URL
+
+            # At this point, it's a valid bib entry (Article, Book, etc.)
+            # Parse it directly WITHOUT checking z:itemType
+            entry = self._parse_rdf_item(child, namespaces)
+            if entry and item_url not in seen_urls:
+                csl_entries.append(entry)
+                seen_urls.add(item_url)
+                pass2_count += 1
+
+        logger.info(f"RDF Parser Pass 2 (bib:*): Found {pass2_count} entries")
         logger.info(
-            f"Loaded {len(csl_entries)} entries from RDF "
-            f"({len(root)} total elements processed)"
+            f"RDF Parser Total: {len(csl_entries)} entries "
+            f"(Pass 1: {pass1_count}, Pass 2: {pass2_count})"
         )
+
         return csl_entries
 
     def _parse_rdf_item(
