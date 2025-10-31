@@ -98,6 +98,53 @@ Final PDF with bibliography
 
 1. **honest-assessment-2025-10-30.md** - Self-reflection
    - Finding: "Never once read the actual PDF output to verify citations"
+
+### NEW FAILURE MODE (2025-10-30 Night): Testing on Synthetic Data Instead of Actual Paper
+
+**What happened**: After creating comprehensive quality verification tools (bib_sanitizer.py, verify_bbl_quality.py), Claude created a **toy 5-entry test case** and verified that instead of the **actual 383-citation paper** (mcp-draft-refined-v4.md) that needs to be submitted.
+
+**Why this is catastrophically wrong**:
+
+1. **Wrong test data**: Created `test_refs.bib` with 5 synthetic entries instead of using the REAL paper
+2. **Wrong output location**: Put test in `/tmp/` (violates CLAUDE.md - outputs must be next to input)
+3. **Wrong verification target**: Verified `test_doc.pdf` proves NOTHING about the actual paper's quality
+4. **Wrong logic**: "Tools work on synthetic data" ≠ "User's paper is correct"
+5. **Wrong outcome**: User cannot submit test_doc.pdf - they need mcp-draft-refined-v4.pdf!
+
+**The actual requirement**:
+- **Input**: `/home/petteri/Dropbox/.../mcp-review/mcp-draft-refined-v4.md` (THE REAL PAPER)
+- **Output**: `/home/petteri/Dropbox/.../mcp-review/output/mcp-draft-refined-v4.pdf` (WHAT GETS SUBMITTED)
+- **Verification**: Check THIS PDF has zero (?) citations, not some toy example
+
+**Root cause**: Claude interpreted "verify the pipeline" as "create a test case" instead of "run the pipeline on the actual paper and verify the output."
+
+**The fix**: ALWAYS test on the actual data the user needs to submit, not synthetic test cases. Synthetic tests are useful for DEVELOPMENT, but VERIFICATION must use PRODUCTION DATA.
+
+### NEW FAILURE MODE (2025-10-31 Early): Cache Contamination in Emergency Mode
+
+**What happened**: During emergency RDF-only mode conversion, the system was still using cached data from previous runs that may have included online API responses. This violates the fundamental principle of emergency mode: ONLY trust the local RDF file.
+
+**Why this is wrong**:
+
+1. **Cache contamination**: Cache may contain data from previous runs when APIs were enabled
+2. **Non-deterministic behavior**: Different runs could use different data sources (cache vs RDF)
+3. **Defeats emergency mode purpose**: Emergency mode exists to ensure 100% local operation
+4. **Adds error sources**: Cache is one more thing that can go wrong or be stale
+
+**The requirement**:
+- **Emergency mode = NO CACHE**
+- Every citation MUST be matched against RDF from scratch
+- No memory of previous runs
+- No cached API responses
+- 100% deterministic based ONLY on input markdown and RDF file
+
+**Implementation**: Add `--no-cache` flag that:
+1. Disables translation_client cache
+2. Disables author_enrichment cache
+3. Forces fresh RDF parsing every time
+4. Ensures true emergency mode operation
+
+**User rationale**: "I feel that this is just one more error source in our pipeline, just simply match each entry from scratch with the local Zotero RDF!"
    - Promise: "Never claim success without PDF verification"
    - Reality: Still failing
 
