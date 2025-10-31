@@ -283,6 +283,7 @@ class LocalFileSource(BiblographySource):
         # These are typically at rdf:RDF/bib:* or rdf:RDF/z:*
         for item_type in [
             "Book",
+            "BookSection",  # Added: RDF has 10 BookSection entries
             "Article",
             "ArticleJournal",
             "ConferencePaper",
@@ -290,6 +291,8 @@ class LocalFileSource(BiblographySource):
             "Report",
             "WebPage",
             "Document",
+            "Recording",  # Added: RDF has 1 Recording entry
+            "Patent",  # Added: RDF has 1 Patent entry
         ]:
             for item in root.findall(f"bib:{item_type}", namespaces):
                 entry = self._parse_rdf_item(item, namespaces)
