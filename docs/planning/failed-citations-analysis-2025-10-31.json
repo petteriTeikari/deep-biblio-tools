@@ -1,0 +1,1847 @@
+{
+  "summary": {
+    "total_failed": 296,
+    "academic_sources": 237,
+    "web_sources": 59
+  },
+  "categories": {
+    "academic_journal": {
+      "count": 74,
+      "urls": [
+        "https://doi.org/10.1007/978-3-031-70262-4_5",
+        "https://doi.org/10.1007/978-3-030-01614-2_19",
+        "https://doi.org/10.1016/j.procir.2024.12.030",
+        "https://doi.org/10.1109/NTMS65597.2025.11076730",
+        "https://doi.org/10.1016/j.jii.2022.100345",
+        "https://doi.org/10.1108/JOCM-09-2020-0299",
+        "https://doi.org/10.1108/SCM-03-2024-0192",
+        "https://doi.org/10.2139/ssrn.5227972",
+        "https://doi.org/10.1109/TIV.2023.3332675",
+        "https://doi.org/10.1016/j.aei.2025.103179",
+        "https://doi.org/10.1145/3690624.3709346",
+        "https://doi.org/10.1016/j.jclepro.2020.122596",
+        "https://doi.org/10.1016/j.jclepro.2019.02.085",
+        "https://doi.org/10.1111/jpim.12544",
+        "https://doi.org/10.1007/978-3-030-63076-8_11",
+        "https://doi.org/10.1145/3589334.3645678",
+        "https://doi.org/10.1109/ICSA59870.2024.00023",
+        "https://doi.org/10.1145/1168092.1168097",
+        "https://doi.org/10.1145/2843043.2843048",
+        "https://doi.org/10.1134/S1054661825010145",
+        "https://doi.org/10.1016/j.worlddev.2018.05.025",
+        "https://doi.org/10.1080/17543266.2025.2529158",
+        "https://doi.org/10.1111/poms.13115",
+        "https://doi.org/10.1007/b106715",
+        "https://doi.org/10.1016/j.compind.2021.107130",
+        "https://doi.org/10.1146/annurev-statistics-040720-031104",
+        "https://doi.org/10.1111/jiec.13305",
+        "https://doi.org/10.1016/j.jnca.2023.103672",
+        "https://doi.org/10.1108/SCM-10-2018-0357",
+        "https://doi.org/10.1016/j.jik.2025.100764",
+        "https://doi.org/10.1016/j.jretai.2014.03.004",
+        "https://doi.org/10.1002/bse.4269",
+        "https://doi.org/10.1016/j.spc.2025.03.020",
+        "https://doi.org/10.3390/su15065398",
+        "https://doi.org/10.1007/978-3-030-22018-1_14",
+        "https://doi.org/10.1007/978-3-319-38756-7_4",
+        "https://doi.org/10.3390/machines13020109",
+        "https://doi.org/10.1016/j.sca.2024.100075",
+        "https://doi.org/10.1016/j.cie.2023.109768",
+        "https://doi.org/10.1016/j.hcc.2025.100303",
+        "https://doi.org/10.1111/exsy.13467",
+        "https://doi.org/10.1109/IS61756.2024.10705183",
+        "https://doi.org/10.1002/bse.70038",
+        "https://doi.org/10.7717/peerj-cs.1943",
+        "https://doi.org/10.1080/13675567.2024.2324895",
+        "https://doi.org/10.1016/j.jfineco.2024.103792",
+        "https://doi.org/10.1145/3707640.3731929",
+        "https://doi.org/10.1007/s11095-007-9511-1",
+        "https://doi.org/10.7717/peerj-cs.2877",
+        "https://doi.org/10.1016/j.cose.2021.102402",
+        "https://doi.org/10.1016/j.jclepro.2019.119299",
+        "https://doi.org/10.1109/ICMC60390.2024.00014",
+        "https://doi.org/10.1109/BIGCOMP.2016.7425981",
+        "https://doi.org/10.4204/EPTCS.362.5",
+        "https://doi.org/10.1109/MC.2024.3414368",
+        "https://doi.org/10.1145/3643915.3644090",
+        "https://doi.org/10.1016/j.asoc.2024.112475",
+        "https://doi.org/10.14778/3659437.3659459",
+        "https://doi.org/10.1016/j.future.2024.107639",
+        "https://doi.org/10.1016/j.jbi.2024.104661",
+        "https://doi.org/10.1057/9780230274907",
+        "https://doi.org/10.4324/9781315648088",
+        "https://doi.org/10.1177/0040517517723028",
+        "https://doi.org/10.1007/s41061-017-0165-0",
+        "https://doi.org/10.1177/0022242919825649",
+        "https://doi.org/10.1207/s15327663jcp1401&2_19",
+        "https://doi.org/10.1016/j.jclepro.2018.02.266",
+        "https://doi.org/10.1016/j.compind.2024.104039",
+        "https://doi.org/10.1016/j.ijpe.2024.109175",
+        "https://doi.org/10.3390/info12020050",
+        "https://doi.org/10.1109/ACCESS.2021.3060617",
+        "https://doi.org/10.1016/j.knosys.2024.111234",
+        "https://doi.org/10.1016/j.eswa.2023.122045",
+        "https://doi.org/10.1007/s43621-025-01466-5"
+      ]
+    },
+    "academic_conference": {
+      "count": 4,
+      "urls": [
+        "https://link.springer.com/article/10.1007/s10479-023-05477-1",
+        "https://aclanthology.org/2025.coling-main.533",
+        "https://proceedings.mlr.press/v97/recht19a.html",
+        "https://link.springer.com/article/10.1007/s10676-024-09757-7"
+      ]
+    },
+    "academic_preprint": {
+      "count": 157,
+      "urls": [
+        "https://arxiv.org/abs/2509.25370",
+        "https://arxiv.org/abs/2503.13657",
+        "https://arxiv.org/abs/2508.19504",
+        "https://arxiv.org/abs/2509.24272",
+        "https://arxiv.org/abs/2401.13178",
+        "https://arxiv.org/abs/2410.10762",
+        "https://arxiv.org/abs/2304.03442",
+        "https://arxiv.org/abs/2510.04618",
+        "https://arxiv.org/abs/2508.12538",
+        "https://arxiv.org/abs/2510.15994",
+        "https://arxiv.org/abs/2508.10991",
+        "https://arxiv.org/abs/2508.03858",
+        "https://arxiv.org/abs/2508.13220",
+        "https://arxiv.org/abs/2505.22852",
+        "https://arxiv.org/abs/2107.07511",
+        "https://arxiv.org/abs/2412.02646",
+        "https://arxiv.org/abs/2410.15758",
+        "https://arxiv.org/abs/2309.07864",
+        "https://arxiv.org/abs/2504.18875",
+        "https://arxiv.org/abs/2510.10991",
+        "https://arxiv.org/abs/2508.17536",
+        "https://arxiv.org/abs/2510.01499",
+        "https://arxiv.org/abs/2005.00039",
+        "https://arxiv.org/abs/2401.09379",
+        "https://arxiv.org/abs/2505.12490",
+        "https://arxiv.org/abs/2505.10609",
+        "https://arxiv.org/abs/2506.13590",
+        "https://arxiv.org/abs/2510.16572",
+        "https://arxiv.org/abs/2507.10644",
+        "https://arxiv.org/abs/2507.21105",
+        "https://arxiv.org/abs/2412.01719",
+        "https://arxiv.org/abs/2307.10222",
+        "https://arxiv.org/abs/2509.10691",
+        "https://arxiv.org/abs/2503.07231",
+        "https://arxiv.org/abs/2406.04845",
+        "https://www.arxiv.org/abs/2408.10434",
+        "https://arxiv.org/abs/2505.24716",
+        "https://arxiv.org/abs/2410.24105",
+        "https://arxiv.org/abs/2501.08686",
+        "https://arxiv.org/abs/2402.08088",
+        "https://www.researchgate.net/publication/220381679_An_ontology-based_architecture_for_implementing_semantic_integration_of_supply_chain_management",
+        "https://arxiv.org/abs/2505.20020",
+        "https://arxiv.org/abs/2403.14442",
+        "https://arxiv.org/abs/2502.02533",
+        "https://arxiv.org/abs/2506.12508",
+        "https://arxiv.org/abs/2508.12683",
+        "https://arxiv.org/abs/2507.06250",
+        "https://arxiv.org/abs/2505.11154",
+        "https://arxiv.org/abs/2510.04851",
+        "https://arxiv.org/abs/2509.11914",
+        "https://arxiv.org/abs/2509.04439",
+        "https://arxiv.org/abs/2410.20199",
+        "https://arxiv.org/abs/2412.05563",
+        "https://arxiv.org/abs/2009.14193",
+        "https://arxiv.org/abs/1905.03222",
+        "https://arxiv.org/abs/1904.06019",
+        "https://arxiv.org/abs/2305.18404",
+        "https://arxiv.org/abs/2401.12794",
+        "https://arxiv.org/abs/2506.23464",
+        "https://arxiv.org/abs/1705.08500",
+        "https://arxiv.org/abs/2310.11689",
+        "https://arxiv.org/abs/2409.18645",
+        "https://arxiv.org/abs/2502.06884",
+        "https://arxiv.org/abs/2402.15610",
+        "https://arxiv.org/abs/2509.12527",
+        "https://arxiv.org/abs/2004.13912",
+        "https://arxiv.org/abs/1703.04977",
+        "https://openreview.net/forum?id=9Jq7wNrpUI",
+        "https://arxiv.org/abs/2311.08718",
+        "https://arxiv.org/abs/2402.10189",
+        "https://arxiv.org/abs/2412.20892",
+        "https://arxiv.org/abs/2509.22272",
+        "https://arxiv.org/abs/2505.20295",
+        "https://arxiv.org/abs/2402.19460",
+        "https://arxiv.org/abs/2503.15850",
+        "https://arxiv.org/abs/2508.08204",
+        "https://arxiv.org/abs/2503.00172",
+        "https://arxiv.org/abs/2509.13813",
+        "https://arxiv.org/abs/2510.10409",
+        "https://arxiv.org/abs/2509.24202",
+        "https://arxiv.org/abs/1803.09010",
+        "https://arxiv.org/abs/2303.08774",
+        "https://arxiv.org/abs/2307.15475",
+        "https://arxiv.org/abs/2406.14758",
+        "https://arxiv.org/abs/2405.06258",
+        "https://arxiv.org/abs/2505.15918",
+        "https://openreview.net/forum?id=2GEipEDZB0",
+        "https://arxiv.org/abs/2504.03692",
+        "https://arxiv.org/abs/2204.06972",
+        "https://arxiv.org/abs/2509.03811",
+        "https://ssrn.com/abstract=2847806",
+        "https://arxiv.org/abs/2409.08006",
+        "https://arxiv.org/abs/2311.14570",
+        "https://arxiv.org/abs/2508.18765",
+        "https://arxiv.org/abs/2508.18725",
+        "https://arxiv.org/abs/2509.23864",
+        "https://arxiv.org/abs/2510.03469",
+        "https://arxiv.org/abs/2510.05156",
+        "https://arxiv.org/abs/2509.18934",
+        "https://arxiv.org/abs/2509.24698",
+        "https://arxiv.org/abs/2405.02580",
+        "https://arxiv.org/abs/2412.08603",
+        "https://arxiv.org/abs/2508.08997",
+        "https://arxiv.org/abs/2506.04133",
+        "https://arxiv.org/abs/2510.15103",
+        "https://arxiv.org/abs/2506.03320",
+        "https://arxiv.org/abs/2508.07407",
+        "https://arxiv.org/abs/2410.01767",
+        "https://arxiv.org/abs/2510.05566",
+        "https://arxiv.org/abs/2510.15233",
+        "https://arxiv.org/abs/2510.13297",
+        "https://arxiv.org/abs/2508.07556",
+        "https://arxiv.org/abs/2504.15722",
+        "https://arxiv.org/abs/2506.17419",
+        "https://arxiv.org/abs/2509.02401",
+        "https://arxiv.org/abs/2402.00809",
+        "https://arxiv.org/abs/2507.15439",
+        "https://openreview.net/forum?id=sLQb8q0sUi",
+        "https://arxiv.org/abs/2311.05304",
+        "https://arxiv.org/abs/2504.00587",
+        "https://arxiv.org/abs/2502.14743",
+        "https://arxiv.org/abs/2504.09772",
+        "https://openreview.net/forum?id=G89r8Mgi5r",
+        "https://arxiv.org/abs/2507.07957",
+        "https://arxiv.org/abs/2502.12110",
+        "https://arxiv.org/abs/2506.09038",
+        "https://arxiv.org/abs/2407.18418",
+        "https://arxiv.org/abs/2506.01333",
+        "https://arxiv.org/abs/2510.10390",
+        "https://arxiv.org/abs/2410.15393",
+        "https://arxiv.org/abs/2508.06225",
+        "https://arxiv.org/abs/2510.15186",
+        "https://arxiv.org/abs/2411.15594",
+        "https://arxiv.org/abs/2505.02279",
+        "https://arxiv.org/abs/2509.01063",
+        "https://arxiv.org/abs/2501.07913",
+        "https://arxiv.org/abs/2508.08544",
+        "https://arxiv.org/abs/2504.03255",
+        "https://arxiv.org/abs/2505.15799",
+        "https://arxiv.org/abs/2401.10895",
+        "https://arxiv.org/abs/2502.17125",
+        "https://arxiv.org/abs/2409.00088",
+        "https://arxiv.org/abs/2508.06760",
+        "https://arxiv.org/abs/2501.10685",
+        "https://arxiv.org/abs/2410.05613",
+        "https://arxiv.org/abs/2501.11549",
+        "https://arxiv.org/abs/2507.02648",
+        "https://arxiv.org/abs/2406.08695",
+        "https://arxiv.org/abs/2509.05985",
+        "https://arxiv.org/abs/2505.05428",
+        "https://arxiv.org/abs/2505.02861",
+        "https://arxiv.org/abs/2507.12311",
+        "https://arxiv.org/abs/2505.19591",
+        "https://arxiv.org/abs/2505.21594",
+        "https://arxiv.org/abs/2506.24045",
+        "https://arxiv.org/abs/2507.19550",
+        "https://arxiv.org/abs/2504.06418"
+      ]
+    },
+    "academic_book": {
+      "count": 2,
+      "urls": [
+        "https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018",
+        "https://www.amazon.de/-/en/Introduction-MultiAgent-Systems-Second/dp/0470519460"
+      ]
+    },
+    "web_organization": {
+      "count": 21,
+      "urls": [
+        "https://spec-untp-fbb45f.opensource.unicc.org",
+        "https://www.wbcsd.org",
+        "https://gs1.eu/wp-content/uploads/2020/04/Circular-Economy-Plan-1.pdf",
+        "https://hmfoundation.com/2025/10/22/from-signals-to-systems-change",
+        "https://asiagarmenthub.net",
+        "https://bhr.stern.nyu.edu/rana-plaza",
+        "https://www.fashionrevolution.org/about/transparency",
+        "https://www.standardsmap.org",
+        "https://cirpassproject.eu/results",
+        "https://sigmatechnology.com/dpp-analysis",
+        "https://www.ibm.com/thought-leadership/institute-business-value/en-us/report/supply-chain-ai-automation-oracle",
+        "https://fibretrace.io",
+        "https://www.oecd.org/en/publications/trends-in-trade-in-counterfeit-and-pirated-goods_g2g9f533-en.html",
+        "https://www.gs1.org/standards/epcis",
+        "https://www.circularise.com/blogs/eu-battery-passport-regulation-requirements",
+        "https://cirpassproject.eu",
+        "https://www.ellenmacarthurfoundation.org/the-fashion-remodel/overview",
+        "https://www.ellenmacarthurfoundation.org/transforming-fashion-for-a-nature-positive-impact-gucci",
+        "https://www.oecd.org/en/publications/sme-digitalisation-to-manage-shocks-and-transitions_eb4ec9ac-en.html",
+        "https://www.oecd.org/en/publications/extended-producer-responsibility-in-the-garments-sector_8ee5adb2-en.html",
+        "https://www.fashionrevolution.org/wff-2024"
+      ]
+    },
+    "web_blog": {
+      "count": 1,
+      "urls": [
+        "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+      ]
+    },
+    "web_news": {
+      "count": 4,
+      "urls": [
+        "https://fashionunited.com/news/business/h-m-zalando-join-eu-digital-product-passport-pilot",
+        "https://www.darkreading.com/vulnerabilities-threats/figma-mcp-server-agentic-ai-compromise",
+        "https://www.axios.com/2025/02/20/ai-agi-timeline-promises-openai-anthropic-deepmind",
+        "https://www.bloomberg.com/news/articles/2018-03-27/h-m-s-4-3-billion-problem-is-a-bunch-of-clothes-nobody-wants"
+      ]
+    },
+    "web_video": {
+      "count": 1,
+      "urls": [
+        "https://www.youtube.com/watch?v=lXUZvyajciY"
+      ]
+    },
+    "web_documentation": {
+      "count": 6,
+      "urls": [
+        "https://modelcontextprotocol.io/docs/concepts/architecture",
+        "https://developers.google.com/agent-to-agent",
+        "https://developer.okta.com/blog/2025/09/03/cross-app-access",
+        "https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability",
+        "https://github.com/EvanZhuang/knowledge_flow",
+        "https://interpret.ml"
+      ]
+    },
+    "web_government": {
+      "count": 11,
+      "urls": [
+        "https://commission.europa.eu/energy-climate-change-environment/standards-tools-and-labels/products-labelling-rules-and-requirements/ecodesign-sustainable-products-regulation_en",
+        "https://www.europarl.europa.eu/news/en/press-room",
+        "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1542",
+        "https://www.europarl.europa.eu/RegData/etudes",
+        "https://www.nist.gov/publications/modeling-supply-chain-reference-ontology-based-top-level-ontology",
+        "https://www.fda.gov/about-fda/center-drug-evaluation-and-research-cder/artificial-intelligence-drug-development",
+        "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
+        "https://www.sec.gov/rules/final/2012/34-67716.pdf",
+        "https://www.federalregister.gov/documents/2023/02/21/2023-03444/voluntary-consensus-standards-update-formaldehyde-emission-standards-for-composite-wood-products",
+        "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/13682-Ecodesign-for-sustainable-products-working-plan_en",
+        "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1781"
+      ]
+    },
+    "web_general": {
+      "count": 15,
+      "urls": [
+        "https://sustainability.aboutamazon.com",
+        "https://www.nber.org/system/files/chapters/c15309/c15309.pdf",
+        "https://www.sciencedirect.com/science/article/abs/pii/S1544612325004738",
+        "https://simonwillison.net/2025/Oct/16/claude-skills",
+        "https://www.insurancetimes.co.uk/news/technology-obsolescence-is-biggest-digital-threat-in-2024-beazley/1452976.article",
+        "https://ourworldindata.org/artificial-intelligence",
+        "https://fsc.org/en/chain-of-custody",
+        "https://www.whitecase.com/insight-alert/eight-key-aspects-know-about-eu-ecodesign-sustainable-products-regulation",
+        "https://www.intertek.com/blog/2025/05-28-eu-ecodesign-digital-product-passport",
+        "https://oneclicklca.com/en/resources/articles/first-espr-working-plan",
+        "https://medium.com/@piconext/ecodesign-for-sustainable-products-regulation-espr-timeline-f4e2e2ba9dbd",
+        "https://www.intracen.org/resources/tools/standards-map",
+        "https://textileexchange.org/knowledge-center/documents/materials-processes-products-classification",
+        "https://sbs-sme.eu/publication/sbs-study-digital-product-passport-sme-requirements-and-recommendations",
+        "https://globalfashionagenda.org/resource/mapping-of-global-extended-producer-responsibility-for-textiles-epr"
+      ]
+    }
+  },
+  "recommendations": {
+    "add_to_zotero": [
+      {
+        "url": "https://doi.org/10.1007/978-3-031-70262-4_5",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/978-3-030-01614-2_19",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.procir.2024.12.030",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/NTMS65597.2025.11076730",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jii.2022.100345",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1108/JOCM-09-2020-0299",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1108/SCM-03-2024-0192",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.2139/ssrn.5227972",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/TIV.2023.3332675",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.aei.2025.103179",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1145/3690624.3709346",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jclepro.2020.122596",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jclepro.2019.02.085",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1111/jpim.12544",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/978-3-030-63076-8_11",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1145/3589334.3645678",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/ICSA59870.2024.00023",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1145/1168092.1168097",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1145/2843043.2843048",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1134/S1054661825010145",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.worlddev.2018.05.025",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1080/17543266.2025.2529158",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1111/poms.13115",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/b106715",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.compind.2021.107130",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1146/annurev-statistics-040720-031104",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1111/jiec.13305",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jnca.2023.103672",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1108/SCM-10-2018-0357",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jik.2025.100764",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jretai.2014.03.004",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1002/bse.4269",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.spc.2025.03.020",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.3390/su15065398",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/978-3-030-22018-1_14",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/978-3-319-38756-7_4",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.3390/machines13020109",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.sca.2024.100075",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.cie.2023.109768",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.hcc.2025.100303",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1111/exsy.13467",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/IS61756.2024.10705183",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1002/bse.70038",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.7717/peerj-cs.1943",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1080/13675567.2024.2324895",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jfineco.2024.103792",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1145/3707640.3731929",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/s11095-007-9511-1",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.7717/peerj-cs.2877",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.cose.2021.102402",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jclepro.2019.119299",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/ICMC60390.2024.00014",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/BIGCOMP.2016.7425981",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.4204/EPTCS.362.5",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/MC.2024.3414368",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1145/3643915.3644090",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.asoc.2024.112475",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.14778/3659437.3659459",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.future.2024.107639",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jbi.2024.104661",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1057/9780230274907",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.4324/9781315648088",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1177/0040517517723028",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/s41061-017-0165-0",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1177/0022242919825649",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1207/s15327663jcp1401&2_19",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jclepro.2018.02.266",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.compind.2024.104039",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.ijpe.2024.109175",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.3390/info12020050",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1109/ACCESS.2021.3060617",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.knosys.2024.111234",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.eswa.2023.122045",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://doi.org/10.1007/s43621-025-01466-5",
+        "type": "academic_journal",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://link.springer.com/article/10.1007/s10479-023-05477-1",
+        "type": "academic_conference",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://aclanthology.org/2025.coling-main.533",
+        "type": "academic_conference",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://proceedings.mlr.press/v97/recht19a.html",
+        "type": "academic_conference",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://link.springer.com/article/10.1007/s10676-024-09757-7",
+        "type": "academic_conference",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.25370",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2503.13657",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.19504",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.24272",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2401.13178",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.10762",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2304.03442",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.04618",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.12538",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.15994",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.10991",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.03858",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.13220",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.22852",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2107.07511",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2412.02646",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.15758",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2309.07864",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.18875",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.10991",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.17536",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.01499",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2005.00039",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2401.09379",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.12490",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.10609",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.13590",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.16572",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.10644",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.21105",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2412.01719",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2307.10222",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.10691",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2503.07231",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2406.04845",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://www.arxiv.org/abs/2408.10434",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.24716",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.24105",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2501.08686",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2402.08088",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://www.researchgate.net/publication/220381679_An_ontology-based_architecture_for_implementing_semantic_integration_of_supply_chain_management",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.20020",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2403.14442",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2502.02533",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.12508",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.12683",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.06250",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.11154",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.04851",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.11914",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.04439",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.20199",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2412.05563",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2009.14193",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/1905.03222",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/1904.06019",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2305.18404",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2401.12794",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.23464",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/1705.08500",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2310.11689",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2409.18645",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2502.06884",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2402.15610",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.12527",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2004.13912",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/1703.04977",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://openreview.net/forum?id=9Jq7wNrpUI",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2311.08718",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2402.10189",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2412.20892",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.22272",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.20295",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2402.19460",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2503.15850",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.08204",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2503.00172",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.13813",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.10409",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.24202",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/1803.09010",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2303.08774",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2307.15475",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2406.14758",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2405.06258",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.15918",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://openreview.net/forum?id=2GEipEDZB0",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.03692",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2204.06972",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.03811",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://ssrn.com/abstract=2847806",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2409.08006",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2311.14570",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.18765",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.18725",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.23864",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.03469",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.05156",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.18934",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.24698",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2405.02580",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2412.08603",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.08997",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.04133",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.15103",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.03320",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.07407",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.01767",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.05566",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.15233",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.13297",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.07556",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.15722",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.17419",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.02401",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2402.00809",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.15439",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://openreview.net/forum?id=sLQb8q0sUi",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2311.05304",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.00587",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2502.14743",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.09772",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://openreview.net/forum?id=G89r8Mgi5r",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.07957",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2502.12110",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.09038",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2407.18418",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.01333",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.10390",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.15393",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.06225",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.15186",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2411.15594",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.02279",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.01063",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2501.07913",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.08544",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.03255",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.15799",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2401.10895",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2502.17125",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2409.00088",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2508.06760",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2501.10685",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2410.05613",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2501.11549",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.02648",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2406.08695",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2509.05985",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.05428",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.02861",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.12311",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.19591",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.21594",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2506.24045",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2507.19550",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.06418",
+        "type": "academic_preprint",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018",
+        "type": "academic_book",
+        "action": "Add to Zotero manually"
+      },
+      {
+        "url": "https://www.amazon.de/-/en/Introduction-MultiAgent-Systems-Second/dp/0470519460",
+        "type": "academic_book",
+        "action": "Add to Zotero manually"
+      }
+    ],
+    "convert_to_footnote": [
+      {
+        "url": "https://spec-untp-fbb45f.opensource.unicc.org",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.wbcsd.org",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://gs1.eu/wp-content/uploads/2020/04/Circular-Economy-Plan-1.pdf",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://hmfoundation.com/2025/10/22/from-signals-to-systems-change",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://asiagarmenthub.net",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://bhr.stern.nyu.edu/rana-plaza",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.fashionrevolution.org/about/transparency",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.standardsmap.org",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://cirpassproject.eu/results",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://sigmatechnology.com/dpp-analysis",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.ibm.com/thought-leadership/institute-business-value/en-us/report/supply-chain-ai-automation-oracle",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://fibretrace.io",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.oecd.org/en/publications/trends-in-trade-in-counterfeit-and-pirated-goods_g2g9f533-en.html",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.gs1.org/standards/epcis",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.circularise.com/blogs/eu-battery-passport-regulation-requirements",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://cirpassproject.eu",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.ellenmacarthurfoundation.org/the-fashion-remodel/overview",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.ellenmacarthurfoundation.org/transforming-fashion-for-a-nature-positive-impact-gucci",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.oecd.org/en/publications/sme-digitalisation-to-manage-shocks-and-transitions_eb4ec9ac-en.html",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.oecd.org/en/publications/extended-producer-responsibility-in-the-garments-sector_8ee5adb2-en.html",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.fashionrevolution.org/wff-2024",
+        "type": "web_organization",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+        "type": "web_blog",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://fashionunited.com/news/business/h-m-zalando-join-eu-digital-product-passport-pilot",
+        "type": "web_news",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.darkreading.com/vulnerabilities-threats/figma-mcp-server-agentic-ai-compromise",
+        "type": "web_news",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.axios.com/2025/02/20/ai-agi-timeline-promises-openai-anthropic-deepmind",
+        "type": "web_news",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.bloomberg.com/news/articles/2018-03-27/h-m-s-4-3-billion-problem-is-a-bunch-of-clothes-nobody-wants",
+        "type": "web_news",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=lXUZvyajciY",
+        "type": "web_video",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://modelcontextprotocol.io/docs/concepts/architecture",
+        "type": "web_documentation",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://developers.google.com/agent-to-agent",
+        "type": "web_documentation",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://developer.okta.com/blog/2025/09/03/cross-app-access",
+        "type": "web_documentation",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability",
+        "type": "web_documentation",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://github.com/EvanZhuang/knowledge_flow",
+        "type": "web_documentation",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://interpret.ml",
+        "type": "web_documentation",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://commission.europa.eu/energy-climate-change-environment/standards-tools-and-labels/products-labelling-rules-and-requirements/ecodesign-sustainable-products-regulation_en",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.europarl.europa.eu/news/en/press-room",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1542",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.europarl.europa.eu/RegData/etudes",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.nist.gov/publications/modeling-supply-chain-reference-ontology-based-top-level-ontology",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.fda.gov/about-fda/center-drug-evaluation-and-research-cder/artificial-intelligence-drug-development",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://eur-lex.europa.eu/eli/dir/2024/2853/oj",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.sec.gov/rules/final/2012/34-67716.pdf",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.federalregister.gov/documents/2023/02/21/2023-03444/voluntary-consensus-standards-update-formaldehyde-emission-standards-for-composite-wood-products",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://ec.europa.eu/info/law/better-regulation/have-your-say/initiatives/13682-Ecodesign-for-sustainable-products-working-plan_en",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1781",
+        "type": "web_government",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://sustainability.aboutamazon.com",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.nber.org/system/files/chapters/c15309/c15309.pdf",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.sciencedirect.com/science/article/abs/pii/S1544612325004738",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://simonwillison.net/2025/Oct/16/claude-skills",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.insurancetimes.co.uk/news/technology-obsolescence-is-biggest-digital-threat-in-2024-beazley/1452976.article",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://ourworldindata.org/artificial-intelligence",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://fsc.org/en/chain-of-custody",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.whitecase.com/insight-alert/eight-key-aspects-know-about-eu-ecodesign-sustainable-products-regulation",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.intertek.com/blog/2025/05-28-eu-ecodesign-digital-product-passport",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://oneclicklca.com/en/resources/articles/first-espr-working-plan",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://medium.com/@piconext/ecodesign-for-sustainable-products-regulation-espr-timeline-f4e2e2ba9dbd",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://www.intracen.org/resources/tools/standards-map",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://textileexchange.org/knowledge-center/documents/materials-processes-products-classification",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://sbs-sme.eu/publication/sbs-study-digital-product-passport-sme-requirements-and-recommendations",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      },
+      {
+        "url": "https://globalfashionagenda.org/resource/mapping-of-global-extended-producer-responsibility-for-textiles-epr",
+        "type": "web_general",
+        "action": "Convert to footnote (not bibliography)"
+      }
+    ],
+    "review_required": []
+  }
+}
