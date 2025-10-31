@@ -11,6 +11,15 @@ Deep Biblio Tools is a Python library for processing LLM-generated bibliographie
 - **NEVER** modify files in place without explicit user request
 - **NEVER** import after sys.path modifications
 - **NEVER** move Claude guardrail files without updating GitHub Actions
+- **NEVER** re-implement existing functionality from scratch (Added 2025-10-31)
+  - **ALWAYS** search for existing code/tools in the codebase before creating new implementations
+  - **ALWAYS** read documentation in `docs/` directory for existing patterns and solutions
+  - **ALWAYS** reference existing code in new documentation (with file paths and line numbers)
+  - User quote: "we struggle so much with this as you try to create stuff from scratch and end up re-implementing the same stuff all over again without re-using old tools :("
+  - This is the ROOT CAUSE of long processes and repeated work
+  - Example: `CitationMatcher` class already exists with multi-strategy matching - don't create a new matcher
+  - Example: `extract_arxiv_id()` already strips versions - don't create a new function
+  - Before coding, ask: "Does this already exist? Where would it be? Did we document this before?"
 - **NEVER** implement directory cleaning operations - Claude Code cannot be trusted with this
   - Directory structures are too complex and Claude Code can easily wipe everything
   - ONLY remove specific, known output files (e.g., `output.pdf`) that will be regenerated
