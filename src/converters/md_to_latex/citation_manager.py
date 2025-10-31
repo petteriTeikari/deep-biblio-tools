@@ -674,34 +674,52 @@ class CitationManager:
             key = cite_key
 
         else:
-            # Not found in Zotero - try auto-add or create temporary key
-            # This will happen if:
-            # 1. No Zotero collection configured
-            # 2. Citation not in Zotero collection
-            logger.warning(
-                f"Citation not found in Zotero collection: {url} - attempting auto-add"
-            )
+            # Not found in Zotero
+            # In emergency mode: just create temp key, no auto-add attempts
+            # In normal mode: try auto-add or create temporary key
 
-            # Create placeholder Citation object for _handle_missing_citation()
-            placeholder_citation = Citation(
-                authors,
-                year,
-                url,
-                "temp",  # Will be replaced by _handle_missing_citation()
-                use_better_bibtex=False,  # BANNED - always use simple keys
-            )
+            if self.emergency_mode:
+                # EMERGENCY MODE: No auto-add, no fetching - just temp key
+                logger.info(f"Citation not in RDF (emergency mode): {url}")
+                key = f"failedAutoAdd_{abs(hash(url)) % 1000000:06d}"
 
-            # Try to auto-add to Zotero or generate appropriate temp key
-            key = self._handle_missing_citation(placeholder_citation, url)
+                # Track for user's missing citations list
+                self.failed_citations.append((url, ["Not found in RDF export"]))
 
-            # Create final Citation object with the determined key
-            citation = Citation(
-                authors,
-                year,
-                url,
-                key,
-                use_better_bibtex=False,  # BANNED - always use simple keys
-            )
+                # Create Citation with temp key
+                citation = Citation(
+                    authors,
+                    year,
+                    url,
+                    key,
+                    use_better_bibtex=False,
+                )
+            else:
+                # NORMAL MODE: Try auto-add
+                logger.warning(
+                    f"Citation not found in Zotero collection: {url} - attempting auto-add"
+                )
+
+                # Create placeholder Citation object for _handle_missing_citation()
+                placeholder_citation = Citation(
+                    authors,
+                    year,
+                    url,
+                    "temp",  # Will be replaced by _handle_missing_citation()
+                    use_better_bibtex=False,  # BANNED - always use simple keys
+                )
+
+                # Try to auto-add to Zotero or generate appropriate temp key
+                key = self._handle_missing_citation(placeholder_citation, url)
+
+                # Create final Citation object with the determined key
+                citation = Citation(
+                    authors,
+                    year,
+                    url,
+                    key,
+                    use_better_bibtex=False,  # BANNED - always use simple keys
+                )
         citations_found.append(citation)
         self.citations[key] = citation
 
@@ -1771,11 +1789,11 @@ class CitationManager:
                 f"(will appear as (?) in PDF)"
             )
 
-        # Create progress bar for metadata fetching if requested
+        # Create progress bar for BibTeX generation (NOT fetching - that's banned)
         if show_progress and filtered_citations:
             citation_pbar = tqdm(
                 filtered_citations,
-                desc="Fetching citation metadata",
+                desc="Generating BibTeX entries",
                 unit="citations",
                 leave=False,  # Don't leave the bar after completion
                 bar_format="{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
@@ -1787,12 +1805,13 @@ class CitationManager:
             # Update description with current citation being processed
             if show_progress and filtered_citations:
                 citation_pbar.set_description(
-                    f"Fetching: {citation.authors[:30]}..."
+                    f"Processing: {citation.authors[:30]}..."
                 )
 
-            # In emergency mode, use only RDF metadata and skip fetching
-            if not self.emergency_mode:
-                self.fetch_citation_metadata(citation)
+            # HARD-CODED BAN: Metadata fetching is DISABLED for emergency mode
+            # TODO: Re-enable with proper flag once we understand why flags failed
+            # if not self.emergency_mode:
+            #     self.fetch_citation_metadata(citation)
 
             bibtex_entries.append(citation.to_bibtex())
 

@@ -1093,14 +1093,19 @@ class MarkdownToLatexConverter:
                     "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env for best results"
                 )
 
-            # Pre-fetch metadata for all citations
-            if verbose:
-                pbar.set_description(
-                    f"Fetching metadata for {len(citations)} citations"
-                )
-
-            for citation in citations:
-                self.citation_manager.fetch_citation_metadata(citation)
+            # HARD-CODED BAN: Pre-fetch metadata is DISABLED
+            # This was causing 11-minute delays fetching data we don't use
+            # TODO: Re-enable with proper flag once we understand why flags failed
+            # if not self.emergency_mode:
+            #     if verbose:
+            #         pbar.set_description(
+            #             f"Fetching metadata for {len(citations)} citations"
+            #         )
+            #
+            #     for citation in citations:
+            #         self.citation_manager.fetch_citation_metadata(citation)
+            # elif verbose:
+            logger.info("Emergency mode: Pre-fetch BANNED, using RDF data only")
 
             # STAGE 3: Citation Key Generation Debug
             debugger.log_stage(3, "Citation Key Generation & Metadata Fetching")
