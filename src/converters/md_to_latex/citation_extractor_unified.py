@@ -84,6 +84,34 @@ class UnifiedCitationExtractor:
         "dryad.org",
     }
 
+    # Non-academic domains that should NEVER be treated as citations
+    # Even if they have author/year pattern in link text
+    NON_ACADEMIC_DOMAINS = {
+        "github.com",
+        "gitlab.com",
+        "bitbucket.org",
+        "x.com",
+        "twitter.com",
+        "facebook.com",
+        "linkedin.com",
+        "instagram.com",
+        "youtube.com",
+        "reddit.com",
+        "medium.com",
+        "substack.com",
+        "dev.to",
+        "stackoverflow.com",
+        "stackexchange.com",
+        # Company websites (from missing-citations.txt)
+        "haelixa.com",
+        "oritain.com",
+        "entrupy.com",
+        "eon.xyz",
+        ".xyz",  # General .xyz TLD often used for startups
+        "fashionunited.com",
+        "sigmatechnology.com",
+    }
+
     def __init__(self):
         """Initialize the citation extractor."""
         self.parser = MarkdownParser()
@@ -183,6 +211,12 @@ class UnifiedCitationExtractor:
         try:
             parsed = urlparse(url.lower())
             domain = parsed.netloc
+
+            # FIRST: Check exclusion list - if it matches, it's definitely NOT academic
+            # This prevents GitHub/company/social links from being treated as citations
+            for non_academic_domain in self.NON_ACADEMIC_DOMAINS:
+                if non_academic_domain in domain:
+                    return False
 
             # Check against known academic domains
             for academic_domain in self.ACADEMIC_DOMAINS:
@@ -383,6 +417,15 @@ class UnifiedCitationExtractor:
                 )
                 continue
 
+            # CRITICAL: Skip non-academic links even if they have a year
+            # This prevents GitHub/company/social links from being treated as citations
+            # Example: "[GitHub 2024](https://github.com/...)" should be skipped
+            if not citation.is_academic:
+                logger.info(
+                    f"Skipping non-academic link (GitHub/company/social): [{citation.text}]({citation.url})"
+                )
+                continue
+
             logger.info(
                 f"Parsed citation: authors='{authors}', year={year}, url={citation.url}"
             )
@@ -394,7 +437,7 @@ class UnifiedCitationExtractor:
                     "authors": authors,
                     "year": year,
                     "raw_markdown": f"[{citation.text}]({citation.url})",
-                    "is_orphan": not citation.is_academic,  # Interpret non-academic as orphan
+                    "is_orphan": False,  # It's academic and has a year, so it's a real citation
                 }
             )
 
