@@ -193,10 +193,13 @@ def convert_with_fallbacks(
 
     # EMERGENCY MODE - RDF ONLY (rdf_path is guaranteed to exist by argument parser)
     # Create converter with RDF source
+    # STRICT: NO auto-add, NO web fetching, NO cache - RDF data ONLY
     converter = MarkdownToLatexConverter(
         bibliography_rdf_file_path=rdf_path,  # RDF ONLY - .bib forbidden
         output_dir=output_dir,  # Pass output_dir to constructor
-        allow_failures=allow_failures,  # Allow partial success
+        allow_failures=allow_failures,  # Allow partial success with temp keys
+        enable_auto_add=False,  # NO Zotero API calls
+        use_cache=False,  # NO cache - emergency mode uses only RDF
     )
 
     # Perform conversion
