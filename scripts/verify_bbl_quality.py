@@ -108,7 +108,7 @@ def parse_bbl_file(bbl_path: Path) -> list[dict[str, Any]]:
 
         # 3. Fallback to first sentence after author line
         if not m:
-            lines = [l.strip() for l in body.split("\n") if l.strip()]
+            lines = [line.strip() for line in body.split("\n") if line.strip()]
             if len(lines) > 1:
                 # Take second line, split by period
                 potential_title = lines[1].split(".")[0]

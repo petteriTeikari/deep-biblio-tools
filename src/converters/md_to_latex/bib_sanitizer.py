@@ -115,10 +115,10 @@ def author_jaccard(a: str, b: str) -> float:
             if x.strip()
         }
 
-    A, B = extract_lastnames(a), extract_lastnames(b)
-    if not A or not B:
+    lastnames_a, lastnames_b = extract_lastnames(a), extract_lastnames(b)
+    if not lastnames_a or not lastnames_b:
         return 0
-    return len(A & B) / len(A | B)
+    return len(lastnames_a & lastnames_b) / len(lastnames_a | lastnames_b)
 
 
 def is_duplicate(a: dict[str, str], b: dict[str, str]) -> bool:
