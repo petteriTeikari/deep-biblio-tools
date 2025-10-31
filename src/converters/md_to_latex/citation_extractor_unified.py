@@ -86,10 +86,16 @@ class UnifiedCitationExtractor:
 
     # Non-academic domains that should NEVER be treated as citations
     # Even if they have author/year pattern in link text
+    #
+    # IMPORTANT: Per user (2025-10-31), links without year format are inline hyperlinks anyway.
+    # This list is for filtering links that DO have year format but aren't academic.
     NON_ACADEMIC_DOMAINS = {
+        # === Code Repositories ===
         "github.com",
         "gitlab.com",
         "bitbucket.org",
+
+        # === Social Media ===
         "x.com",
         "twitter.com",
         "facebook.com",
@@ -97,19 +103,78 @@ class UnifiedCitationExtractor:
         "instagram.com",
         "youtube.com",
         "reddit.com",
+
+        # === Tech Blogs and Developer Sites ===
         "medium.com",
         "substack.com",
         "dev.to",
+        "towardsdatascience.com",
+        "hackernoon.com",
+        "thenewstack.io",
+
+        # === Q&A and Community Sites ===
         "stackoverflow.com",
         "stackexchange.com",
-        # Company websites (from missing-citations.txt)
+        "quora.com",
+
+        # === News and Media ===
+        "bbc.com",
+        "bbc.co.uk",
+        "bloomberg.com",
+        "reuters.com",
+        "theguardian.com",
+        "wsj.com",
+        "ft.com",
+        "economist.com",
+        "forbes.com",
+        "wired.com",
+        "techcrunch.com",
+
+        # === Government and International Organizations ===
+        "europa.eu",
+        "ec.europa.eu",
+        "commission.europa.eu",
+        "europarl.europa.eu",
+        ".gov.uk",
+        ".gov",  # Catches most government domains
+        "un.org",
+        "oecd.org",
+        "who.int",
+        "wto.org",
+
+        # === Industry Organizations and Standards Bodies ===
+        "wbcsd.org",
+        "iso.org",
+        "w3.org",
+        "ietf.org",
+        "opengroup.org",
+        "gs1.eu",
+
+        # === Documentation Sites ===
+        "docs.",  # Catches docs.google.com, docs.python.org, etc.
+        "developer.",  # Catches developer.mozilla.org, etc.
+        "documentation.",
+
+        # === Company Blogs and Tech Companies ===
+        "anthropic.com",
+        "openai.com",
+        "google.com",
+        "microsoft.com",
+        "amazon.com",  # Main site
+        "aws.amazon.com",  # AWS blog
+        "blog.",  # Generic blog subdomain
+
+        # === Fashion Industry Companies (from missing-citations.txt) ===
         "haelixa.com",
         "oritain.com",
         "entrupy.com",
         "eon.xyz",
-        ".xyz",  # General .xyz TLD often used for startups
+        ".xyz",  # Startup TLD
         "fashionunited.com",
         "sigmatechnology.com",
+        "asiagarmenthub.net",
+        "bangladeshworkersafety.org",
+        "hmfoundation.com",
     }
 
     def __init__(self):
@@ -168,12 +233,12 @@ class UnifiedCitationExtractor:
             citations.append(citation)
 
             if is_academic:
-                logger.info(
-                    f"Found academic citation at line {citation.line}: [{citation.text}]({citation.url})"
+                logger.debug(
+                    f"[CLASSIFY] Academic: [{citation.text}]({citation.url})"
                 )
             else:
-                logger.debug(
-                    f"Found non-academic link at line {citation.line}: [{citation.text}]({citation.url})"
+                logger.info(
+                    f"[CLASSIFY] NON-academic (filtered): [{citation.text}]({citation.url})"
                 )
 
         logger.info(
@@ -216,6 +281,7 @@ class UnifiedCitationExtractor:
             # This prevents GitHub/company/social links from being treated as citations
             for non_academic_domain in self.NON_ACADEMIC_DOMAINS:
                 if non_academic_domain in domain:
+                    logger.info(f"[EXCLUDE] URL blocked by NON_ACADEMIC_DOMAINS: {url} (matched: {non_academic_domain})")
                     return False
 
             # Check against known academic domains
@@ -413,7 +479,7 @@ class UnifiedCitationExtractor:
             # This prevents regular hyperlinks like [Google Docs](URL) from being treated as citations
             if not year_found:
                 logger.info(
-                    f"Skipping non-citation hyperlink (no year found): [{citation.text}]({citation.url})"
+                    f"[FILTER-YEAR] Skipping (no year): [{citation.text}]({citation.url})"
                 )
                 continue
 
@@ -422,9 +488,11 @@ class UnifiedCitationExtractor:
             # Example: "[GitHub 2024](https://github.com/...)" should be skipped
             if not citation.is_academic:
                 logger.info(
-                    f"Skipping non-academic link (GitHub/company/social): [{citation.text}]({citation.url})"
+                    f"[FILTER-NON-ACADEMIC] Skipping: [{citation.text}]({citation.url})"
                 )
                 continue
+
+            logger.info(f"[KEEP] Citation accepted: [{authors}, {year}]({citation.url})")
 
             logger.info(
                 f"Parsed citation: authors='{authors}', year={year}, url={citation.url}"

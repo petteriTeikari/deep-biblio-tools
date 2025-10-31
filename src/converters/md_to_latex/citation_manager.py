@@ -1637,7 +1637,9 @@ class CitationManager:
 
                         if href:
                             # Normalize the URL for lookup
-                            normalized_href = normalize_url(href)
+                            # CRITICAL: Must match normalization in _build_normalized_url_lookup() (line 1539)
+                            # arXiv first (strip versions, /html/ → /abs/), then general normalization
+                            normalized_href = normalize_url(normalize_arxiv_url(href))
 
                             # Find the citation key
                             key = url_to_key.get(normalized_href)

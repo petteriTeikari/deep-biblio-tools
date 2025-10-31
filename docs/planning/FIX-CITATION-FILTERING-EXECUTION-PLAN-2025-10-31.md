@@ -116,14 +116,25 @@ normalized_href = normalize_arxiv_url(normalize_url(href))
 **Location**: `citation_extractor_unified.py` lines 89-113 (NON_ACADEMIC_DOMAINS)
 **Problem**: Classification lists incomplete
 
-**Examples of likely "unknown" domains**:
+**CRITICAL USER INSIGHT (2025-10-31)**:
+> "if the hyperlink is not in authoryear format, it is mostly likely not academic, as I have asked all the scientific citations to be in authoryear format from Claude Code, so that is quite strong heuristic!"
+
+**This changes everything!** The PRIMARY classification should be:
+1. Has year format? → **Potential citation** (check if academic)
+2. NO year format? → **Inline hyperlink** (NOT a citation at all)
+
+This is ALREADY implemented in lines 412-418 but verification script doesn't use it.
+
+**Examples of likely "unknown" domains** (that also lack year format):
 - News sites: bbc.com, bloomberg.com, reuters.com
 - Government: europa.eu, commission.europa.eu, gov.uk
 - Organizations: wbcsd.org, oecd.org, un.org
-- Blogs: towards datascience.com, hackernoon.com
+- Blogs: towardsdatascience.com, hackernoon.com
 - Documentation: docs.python.org, developer.mozilla.org
 
-**Solution**: Expand NON_ACADEMIC_DOMAINS to cover these categories
+**Solution**:
+1. Fix verification script to use year format as primary classifier
+2. Expand NON_ACADEMIC_DOMAINS for links that DO have year format but aren't academic
 
 ---
 

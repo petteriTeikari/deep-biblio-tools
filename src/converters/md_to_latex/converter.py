@@ -1082,16 +1082,27 @@ class MarkdownToLatexConverter:
                     f"Matched {matched}/{len(citations)} citations from local RDF"
                 )
                 if missing > 0:
-                    logger.warning(
-                        f"{missing} citations not found in RDF - will fetch from APIs"
-                    )
+                    if self.emergency_mode:
+                        logger.warning(
+                            f"🚨 {missing} citations not found in RDF - will appear as (?) in PDF (emergency mode: NO API fetching)"
+                        )
+                    else:
+                        logger.warning(
+                            f"{missing} citations not found in RDF - these are legitimate missing citations"
+                        )
             else:
-                logger.warning(
-                    "No Zotero source configured - will fetch all citations from APIs"
-                )
-                logger.warning(
-                    "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env for best results"
-                )
+                if self.emergency_mode:
+                    logger.error(
+                        "🚨 EMERGENCY MODE VIOLATION: No Zotero source configured! Emergency mode requires RDF file."
+                    )
+                    raise RuntimeError("Emergency mode requires RDF file - cannot proceed without bibliography source")
+                else:
+                    logger.warning(
+                        "No Zotero source configured - will fetch all citations from APIs"
+                    )
+                    logger.warning(
+                        "Set ZOTERO_API_KEY and ZOTERO_LIBRARY_ID in .env for best results"
+                    )
 
             # HARD-CODED BAN: Pre-fetch metadata is DISABLED
             # This was causing 11-minute delays fetching data we don't use
