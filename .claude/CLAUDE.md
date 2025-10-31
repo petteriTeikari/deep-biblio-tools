@@ -314,6 +314,37 @@ ZOTERO_COLLECTION=dpp-fashion  # Default collection name
 ### Known Issues
 - **ACM Digital Library**: Often provides shortened titles only. See `.claude/known-issues-acm.md` for details.
 
+### Missing Citations - CRITICAL REQUIREMENT (Added 2025-10-31)
+
+**RULE**: Missing citations MUST appear as (?) in the PDF, NOT get temp keys in .bib file.
+
+**The Problem with failedAutoAdd_* keys** (now BANNED):
+- They obscured which citations were actually missing from Zotero
+- They created hallucinated "phantom" entries in the bibliography
+- They made it unclear what needed to be added to Zotero
+- User quote: "not hallucinating some weird temp citations to the list!"
+
+**Correct Behavior**:
+1. Citation found in RDF → Add to references.bib with proper metadata
+2. Citation NOT found in RDF → Do NOT add to references.bib at all
+3. LaTeX will automatically render missing \cite{} as (?) in PDF
+4. User can then see EXACTLY which citations need to be added to Zotero
+
+**Implementation** (citation_manager.py:1720-1776):
+- `generate_bibtex_file()` filters out all `failedAutoAdd_*` keys
+- `allow_failures=True` allows conversion to continue despite missing citations
+- Missing citations remain as `\cite{failedAutoAdd_*}` in .tex but NOT in .bib
+- LaTeX renders these as (?) since they're not in references.bib
+
+**User Requirement**:
+> "The correct way to handle a missing citation is to have (?) in the article so that it is clear that there are missing citations which need to be fixed."
+
+**Historical Context**:
+- User repeatedly asked to ban failedAutoAdd usage
+- Previous behavior: Generated temp keys WITH fetched metadata (confusing!)
+- Now: Generate temp \cite{} keys in .tex, but EXCLUDE from .bib entirely
+- Result: Clear (?) in PDF shows what's missing, no phantom bibliography entries
+
 ## Dollar Sign Handling
 - **Dollar signs in markdown = currency (USD)**
 - **NEVER** convert "$50-200" to LaTeX math mode

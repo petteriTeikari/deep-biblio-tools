@@ -243,7 +243,9 @@ class CitationManager:
         zotero_api_key: str | None = None,
         zotero_library_id: str | None = None,
         zotero_collection: str | None = None,
-        bibliography_file_path: Path | str | None = None,  # NEW: Local bibliography file
+        bibliography_file_path: Path
+        | str
+        | None = None,  # NEW: Local bibliography file
         use_cache: bool = True,
         enable_auto_add: bool = True,
         auto_add_dry_run: bool = True,
@@ -263,7 +265,9 @@ class CitationManager:
         # NEW: Use modular bibliography source architecture
         self.bibliography_source: BiblographySource | None = None
         self.zotero_entries = {}  # Dict mapping citation keys to BibTeX entries
-        self.citation_matcher: CitationMatcher | None = None  # NEW: Production-grade matcher
+        self.citation_matcher: CitationMatcher | None = (
+            None  # NEW: Production-grade matcher
+        )
 
         # Legacy Zotero client for backwards compatibility
         self.zotero_client = None
@@ -277,7 +281,9 @@ class CitationManager:
                 local_file_path=bibliography_file_path,
             )
 
-            logger.info(f"Using bibliography source: {self.bibliography_source.source_name()}")
+            logger.info(
+                f"Using bibliography source: {self.bibliography_source.source_name()}"
+            )
 
             # Load entries from source
             csl_entries = self.bibliography_source.load_entries()
@@ -288,7 +294,9 @@ class CitationManager:
                 if cite_key:
                     self.zotero_entries[cite_key] = entry
 
-            logger.info(f"Loaded {len(self.zotero_entries)} entries from bibliography source")
+            logger.info(
+                f"Loaded {len(self.zotero_entries)} entries from bibliography source"
+            )
 
             # Initialize production-grade CitationMatcher with loaded entries
             # This handles DOI, arXiv, ISBN, and URL normalization
@@ -296,31 +304,28 @@ class CitationManager:
                 zotero_entries=csl_entries,
                 allow_zotero_write=enable_auto_add and not auto_add_dry_run,
             )
-            logger.info("Initialized CitationMatcher with multi-strategy matching")
+            logger.info(
+                "Initialized CitationMatcher with multi-strategy matching"
+            )
 
             # Initialize legacy Zotero client if using API source (for backwards compatibility)
-            if zotero_api_key and zotero_library_id and not bibliography_file_path:
+            if (
+                zotero_api_key
+                and zotero_library_id
+                and not bibliography_file_path
+            ):
                 self.zotero_client = ZoteroClient(
                     api_key=zotero_api_key, library_id=zotero_library_id
                 )
 
-        except ValueError as e:
-            # If no bibliography source is available, require Better BibTeX keys
-            if use_better_bibtex_keys:
-                error_msg = (
-                    f"CRITICAL ERROR: {str(e)}\n\n"
-                    "Bibliography source is required when use_better_bibtex_keys=True.\n"
-                    "Zotero keys prevent local key generation. Accepts two formats:\n"
-                    "  - Web API keys: author_title_year (e.g., niinimaki_environmental_2020)\n"
-                    "  - Better BibTeX plugin keys: authorTitleYear (e.g., adisornDigitalProductPassport2021)\n\n"
-                    "Both are deterministic and from Zotero."
-                )
-                logger.error(error_msg)
-                raise ValueError(error_msg) from e
-            else:
-                # Allow running without bibliography source if not requiring Better BibTeX keys
-                logger.warning("No bibliography source available, will generate keys locally")
-                self.zotero_entries = {}
+        except ValueError:
+            # Allow running without bibliography source - will generate simple keys locally
+            # NOTE: Better BibTeX keys are BANNED per CLAUDE.md (2025-10-30)
+            # We use simple URL-based keys: doi_*, arxiv_*, amazon_*, etc.
+            logger.warning(
+                "No bibliography source available, will generate simple keys locally"
+            )
+            self.zotero_entries = {}
 
         # No need to load cache explicitly - SQLite cache handles it
 
@@ -336,7 +341,9 @@ class CitationManager:
 
         # Graceful degradation: allow conversion to continue even when citations fail
         self.allow_failures = allow_failures
-        self.failed_citations: list[tuple[str, list[str]]] = []  # (url, reasons)
+        self.failed_citations: list[
+            tuple[str, list[str]]
+        ] = []  # (url, reasons)
 
         # Initialize auto-add system (after zotero_client initialization)
         self.zotero_auto_add = None
@@ -401,7 +408,9 @@ class CitationManager:
                     )
                     return (cite_key, entry)
                 else:
-                    logger.warning(f"CitationMatcher found entry but no 'id' field: {entry.get('title', 'NO_TITLE')[:60]}")
+                    logger.warning(
+                        f"CitationMatcher found entry but no 'id' field: {entry.get('title', 'NO_TITLE')[:60]}"
+                    )
             return None
 
         # FALLBACK: Legacy lookup if CitationMatcher not initialized
@@ -449,8 +458,13 @@ class CitationManager:
 
                 # Match by Amazon ASIN (handle Amazon URL variations)
                 if amazon_normalized:
-                    entry_amazon_normalized = self._normalize_amazon_url(entry_url)
-                    if entry_amazon_normalized and amazon_normalized == entry_amazon_normalized:
+                    entry_amazon_normalized = self._normalize_amazon_url(
+                        entry_url
+                    )
+                    if (
+                        entry_amazon_normalized
+                        and amazon_normalized == entry_amazon_normalized
+                    ):
                         logger.debug(
                             f"Found Zotero entry by Amazon ASIN match: {cite_key} (ASIN: {amazon_normalized})"
                         )
@@ -477,7 +491,11 @@ class CitationManager:
                 return None  # Force re-fetch from Zotero
 
             # Check if cached key looks like a temp key (contains "Temp" or is too short)
-            if "Temp" in citation_key or "temp" in citation_key or len(citation_key) < 15:
+            if (
+                "Temp" in citation_key
+                or "temp" in citation_key
+                or len(citation_key) < 15
+            ):
                 logger.warning(
                     f"Cache entry for {url} has temp/invalid key '{citation_key}' - invalidating cache"
                 )
@@ -1720,25 +1738,44 @@ class CitationManager:
     def generate_bibtex_file(
         self, output_path: Path, show_progress: bool = False
     ) -> None:
-        """Generate BibTeX file with all citations."""
+        """Generate BibTeX file with all citations.
+
+        EMERGENCY MODE REQUIREMENT: Excludes failedAutoAdd_* entries.
+        Missing citations should appear as (?) in PDF, NOT get .bib entries.
+        """
         bibtex_entries = []
         citations_list = sorted(self.citations.items())
 
+        # Filter out failedAutoAdd entries (user requirement: these should NOT be in .bib)
+        # Missing citations will appear as (?) in PDF when LaTeX can't find them
+        filtered_citations = [
+            (key, citation)
+            for key, citation in citations_list
+            if not key.startswith("failedAutoAdd_")
+        ]
+
+        skipped_count = len(citations_list) - len(filtered_citations)
+        if skipped_count > 0:
+            logger.info(
+                f"Excluding {skipped_count} failedAutoAdd entries from .bib "
+                f"(will appear as (?) in PDF)"
+            )
+
         # Create progress bar for metadata fetching if requested
-        if show_progress and citations_list:
+        if show_progress and filtered_citations:
             citation_pbar = tqdm(
-                citations_list,
+                filtered_citations,
                 desc="Fetching citation metadata",
                 unit="citations",
                 leave=False,  # Don't leave the bar after completion
                 bar_format="{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
             )
         else:
-            citation_pbar = citations_list
+            citation_pbar = filtered_citations
 
         for key, citation in citation_pbar:
             # Update description with current citation being processed
-            if show_progress and citations_list:
+            if show_progress and filtered_citations:
                 citation_pbar.set_description(
                     f"Fetching: {citation.authors[:30]}..."
                 )
@@ -1934,14 +1971,22 @@ class CitationManager:
             else:
                 # Validation failed or translation failed
                 logger.error(f"❌ Auto-add FAILED for: {url}")
-                error_details = "\n".join(f"  - {w}" for w in warnings) if warnings else "  - No details available"
+                error_details = (
+                    "\n".join(f"  - {w}" for w in warnings)
+                    if warnings
+                    else "  - No details available"
+                )
 
                 # Track failure for reporting
-                self.failed_citations.append((url, warnings if warnings else ["No details available"]))
+                self.failed_citations.append(
+                    (url, warnings if warnings else ["No details available"])
+                )
 
                 # If allow_failures is True, generate temp key and continue
                 if self.allow_failures:
-                    logger.warning("⚠️  Allow-failures enabled - generating temp key and continuing")
+                    logger.warning(
+                        "⚠️  Allow-failures enabled - generating temp key and continuing"
+                    )
                     temp_key = f"failedAutoAdd_{abs(hash(url)) % 1000000:06d}"
                     logger.warning(f"  Temporary key: {temp_key}")
                     return temp_key
@@ -1964,7 +2009,9 @@ class CitationManager:
 
         # If allow_failures is True, generate temp key and continue
         if self.allow_failures:
-            logger.warning("⚠️  Allow-failures enabled - generating temp key and continuing")
+            logger.warning(
+                "⚠️  Allow-failures enabled - generating temp key and continuing"
+            )
             temp_key = f"failedAutoAdd_{abs(hash(url)) % 1000000:06d}"
             logger.warning(f"  Temporary key: {temp_key}")
             return temp_key
@@ -2171,14 +2218,16 @@ class CitationManager:
                 report.append(f"   - {reason}")
             report.append("")
 
-        report.extend([
-            "=" * 80,
-            "NEXT STEPS:",
-            "1. Manually add these citations to your Zotero collection",
-            "2. Re-run conversion (failed citations should resolve automatically)",
-            "3. Repeat until zero failures",
-            "=" * 80,
-            ""
-        ])
+        report.extend(
+            [
+                "=" * 80,
+                "NEXT STEPS:",
+                "1. Manually add these citations to your Zotero collection",
+                "2. Re-run conversion (failed citations should resolve automatically)",
+                "3. Repeat until zero failures",
+                "=" * 80,
+                "",
+            ]
+        )
 
         return "\n".join(report)
