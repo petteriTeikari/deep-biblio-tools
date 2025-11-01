@@ -91,6 +91,7 @@ contexts:
 priority:
   - "CLAUDE.md"
   - ".claude/CLAUDE.md"
+  - ".claude/CITATION-REQUIREMENTS.md"  # Quick reference summary - READ FIRST for citation work
   - ".claude/repo-maturity.yaml"
   - ".claude/golden-paths.md"
   - ".claude/guardrails-learnings.md"

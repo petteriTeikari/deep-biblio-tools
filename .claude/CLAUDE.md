@@ -389,38 +389,138 @@ ZOTERO_COLLECTION=dpp-fashion  # Default collection name
 - Now: Generate temp \cite{} keys in .tex, but EXCLUDE from .bib entirely
 - Result: Clear (?) in PDF shows what's missing, no phantom bibliography entries
 
+### Missing Citations Report - AUTO-GENERATION REQUIRED (Added 2025-11-01)
+
+**RULE**: Missing citations reports MUST be auto-generated on EVERY conversion if there are failed citations.
+
+**Files That Must Be Generated**:
+- `output/missing-citations-report.json` - Machine-readable format with counts and reasons
+- `output/missing-citations-review.csv` - Human-reviewable with supervision columns
+
+**Report Contents**:
+- Citation text from markdown (e.g., `[Author (Year)](URL)`)
+- URL
+- Authors (extracted from markdown)
+- Year (extracted from markdown)
+- Reason (e.g., "Not found in RDF export")
+- Action (e.g., "Add this paper to your Zotero collection and re-export RDF")
+- Empty supervision columns for user's manual review
+
+**Implementation**: `converter.py:1171-1244`
+
+**Bug Fixed** (2025-11-01): Reports were checking for `citation.authors == "Unknown"` but emergency mode extracts authors from markdown text, so they're never "Unknown". Fixed to use `self.citation_manager.failed_citations` list which tracks ALL failed citation lookups.
+
+**Verification**:
+```bash
+ls -lh output/missing-citations-report.json output/missing-citations-review.csv
+jq '.missing_count' output/missing-citations-report.json
+```
+
+### .bbl Hardcoding Workflow (Added 2025-11-01)
+
+**Purpose**: Convert .bib → hardcoded .bbl with hyperlinked authors for final submission.
+
+**When to Use**:
+- Final journal/conference submission
+- Archival versions
+- When you want clickable author-year links in PDF
+
+**What It Does**:
+- Converts `\bibliography{references}` → inline `\begin{thebibliography}...\end{thebibliography}`
+- Hyperlinks author-year: `\href{https://doi.org/...}{Author (Year)}`
+- Standalone bibliography (no external .bib file needed)
+
+**Scripts Available**:
+- `scripts/hardcode_bibliography.py` - Standard formatting (line 417-656)
+- `scripts/create_hardcoded_bibliography_uadreview.py` - With natbib label support
+
+**User's Workflow**:
+1. Run markdown → LaTeX conversion (generates references.bib)
+2. Compile with BibTeX (generates .bbl)
+3. Optionally modify .bbl by hand (e.g., fix formatting)
+4. Use hardcoding script OR manually copy .bbl into .tex
+5. Final .tex has embedded bibliography
+
+**Important**: references.bib is ephemeral (deleted before each conversion). User works with modified .bbl files which are copied into final .tex.
+
+**For More Details**: See `.claude/bbl-hardcoding-guide.md`
+
+## Quick Reference Summary
+
+**ALWAYS READ FIRST**: `.claude/CITATION-REQUIREMENTS.md` contains a 1-page summary of ALL citation management requirements including:
+- Current state
+- Core non-negotiable requirements
+- Quality checks before claiming success
+- References to detailed documentation
+
+This quick reference prevents forgetting critical requirements between sessions.
+
 ## Dollar Sign Handling
 - **Dollar signs in markdown = currency (USD)**
 - **NEVER** convert "$50-200" to LaTeX math mode
 - **ALWAYS** escape as `\$` when converting to LaTeX
 
-## Conversion Success Criteria - ZERO TOLERANCE
+## Conversion Success Criteria - CORRECT UNDERSTANDING
 
-### The ONLY measure of success: Working PDF with ALL citations resolved
+### Understanding (?) Citations - CRITICAL CONCEPT
+
+**(?) in PDF is EXPECTED and CORRECT behavior for citations missing from Zotero RDF.**
+
+**Three types of citations in PDF**:
+1. ✅ **GOOD**: Paper in Zotero → Full citation in bibliography (e.g., "Smith et al., 2020")
+2. ✅ **GOOD**: Paper NOT in Zotero → (?) in PDF (shows what needs manual addition)
+3. ❌ **BAD**: Paper NOT in Zotero → Phantom citation with hallucinated/fetched data
+
+**The goal is NOT zero (?), the goal is ACCURATE citations.**
+- (?) = Missing paper user needs to add to Zotero
+- (?) is a FEATURE showing gaps, not a bug to eliminate
+
+### Success Criteria (Emergency Mode)
 
 **BEFORE claiming conversion success, verify ALL of these**:
-1. ✅ PDF generates without LaTeX errors
-2. ✅ PDF has ZERO (?) citations (use Read tool to check PDF visually)
-3. ✅ PDF has ZERO (Unknown) or (Anonymous) citations
-4. ✅ All citations show proper author names and years
-5. ✅ references.bib has ZERO "Unknown" or "Anonymous" entries
-6. ✅ LaTeX log has ZERO compilation errors
-7. ✅ BibTeX log has ZERO fatal errors (warnings OK)
 
-**Intermediate steps do NOT count as success:**
-- ❌ "citations extracted" - meaningless without verification
-- ❌ "BibTeX generated" - meaningless if it contains Unknown entries
-- ❌ "PDF compiled" - meaningless if citations show as (?)
-- ❌ "no LaTeX errors" - meaningless if bibliography is broken
+1. ✅ **PDF generates** without LaTeX errors
+2. ✅ **Citation counts match**: Total extracted = Matched + Missing
+   - Example: 308 total = 210 matched + 98 missing
+3. ✅ **Missing citations show as (?)** in PDF (use Read tool to verify)
+4. ✅ **Missing citations reports generated**:
+   - `output/missing-citations-report.json`
+   - `output/missing-citations-review.csv`
+5. ✅ **references.bib has ZERO**:
+   - "Unknown" or "Anonymous" entries
+   - `failedAutoAdd_*` entries (must be filtered out)
+6. ✅ **Matched citations show proper** author names and years (not ?)
+7. ✅ **LaTeX/BibTeX logs** have ZERO fatal errors (warnings OK)
+8. ✅ **Output directory correct**: `input_dir/output/`, NOT `/tmp`
 
-**The WORKFLOW must be:**
+**Important**: If you have 98 missing citations, you SHOULD see ~98 (?) in the PDF. That's correct.
+
+### What Counts as Failure
+
+**THESE are actual problems**:
+- ❌ Unknown/Anonymous entries in references.bib
+- ❌ failedAutoAdd_* entries in references.bib (they were filtered but appeared anyway)
+- ❌ Phantom citations with fetched data for missing papers
+- ❌ Citation counts don't match (extraction vs matched+missing)
+- ❌ Missing citations reports not generated
+- ❌ Output saved to /tmp instead of input_dir/output/
+
+**THESE are NOT problems**:
+- ✅ (?) in PDF for papers not in Zotero (expected)
+- ✅ 98 missing citations reported (user needs to add to Zotero)
+- ✅ BibTeX warnings about missing citations (expected)
+
+### Workflow for Success
+
 1. Run conversion
-2. Check references.bib for Unknown/Anonymous entries
-3. If found, FIX the root cause (don't just report it)
-4. Re-run conversion
-5. Read the PDF with Read tool
-6. Verify EVERY citation shows author names (not ?)
-7. ONLY THEN claim success
+2. Check citation counts: `total = matched + missing`
+3. Verify missing reports exist in output/
+4. Check references.bib for Zero Unknown/Anonymous/failedAutoAdd
+5. Read PDF and verify:
+   - Matched citations show author names ✅
+   - Missing citations show (?) ✅
+6. Count (?) in PDF matches missing count
+7. THEN claim success (even with (?) present)
 
 ### Development Workflow
 

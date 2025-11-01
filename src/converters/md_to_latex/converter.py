@@ -1095,7 +1095,9 @@ class MarkdownToLatexConverter:
                     logger.error(
                         "🚨 EMERGENCY MODE VIOLATION: No Zotero source configured! Emergency mode requires RDF file."
                     )
-                    raise RuntimeError("Emergency mode requires RDF file - cannot proceed without bibliography source")
+                    raise RuntimeError(
+                        "Emergency mode requires RDF file - cannot proceed without bibliography source"
+                    )
                 else:
                     logger.warning(
                         "No Zotero source configured - will fetch all citations from APIs"
@@ -1168,20 +1170,31 @@ class MarkdownToLatexConverter:
                     "See error message above for details and fix suggestions."
                 ) from e
 
-            # Collect failed citations for report
+            # Collect failed citations for report from citation_manager's tracked failures
+            # Build lookup: URL -> Citation object for extracting authors/year
+            url_to_citation = {c.url: c for c in citations}
+
+            # Use citation_manager's failed_citations list (format: [(url, [reasons])])
             failed_citations = []
-            for citation in citations:
-                if citation.authors == "Unknown" or citation.year == "Unknown":
+            for url, reasons in self.citation_manager.failed_citations:
+                # Find the citation object to get authors/year
+                citation = url_to_citation.get(url)
+                if citation:
                     # Reconstruct original citation text format: [authors (year)](url)
                     original_text = f"[{citation.authors} ({citation.year})]({citation.url})"
+                    reason_text = (
+                        "; ".join(reasons)
+                        if isinstance(reasons, list)
+                        else str(reasons)
+                    )
                     failed_citations.append(
                         {
                             "text": original_text,
                             "url": citation.url,
                             "authors": citation.authors,
                             "year": citation.year,
-                            "reason": "Not found in Zotero collection, external API fetch failed or returned incomplete data",
-                            "action": "Verify URL is correct, check if item exists in Zotero, or add manually to dpp-fashion collection",
+                            "reason": reason_text,
+                            "action": "Add this paper to your Zotero collection and re-export RDF",
                         }
                     )
 
@@ -1210,16 +1223,14 @@ class MarkdownToLatexConverter:
                 csv_path = self.output_dir / "missing-citations-review.csv"
                 with open(csv_path, "w", newline="", encoding="utf-8") as f:
                     writer = csv.writer(f)
-                    # Header with review columns
+                    # Header with 3 binary classification columns
                     writer.writerow(
                         [
                             "Citation Text",
                             "URL",
-                            "Current Authors",
-                            "Current Year",
-                            "Reason",
-                            "Is Real Problem? (YES/NO)",
-                            "Should Be In Zotero? (YES/NO)",
+                            "Actually Missing? (YES/NO)",
+                            "Non-Academic? (YES/NO)",
+                            "Matching Error? (YES/NO)",
                             "Notes",
                         ]
                     )
@@ -1229,11 +1240,9 @@ class MarkdownToLatexConverter:
                             [
                                 cit["text"],
                                 cit["url"],
-                                cit["authors"],
-                                cit["year"],
-                                cit["reason"],
-                                "",  # User fills: Is this a real problem?
-                                "",  # User fills: Should this be in Zotero?
+                                "",  # User fills: Actually missing (should add to Zotero)?
+                                "",  # User fills: Non-academic (shouldn't be in bibliography)?
+                                "",  # User fills: Matching error (IS in Zotero but not matched)?
                                 "",  # User fills: Additional notes
                             ]
                         )
